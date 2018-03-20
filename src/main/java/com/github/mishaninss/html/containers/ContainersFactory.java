@@ -19,7 +19,7 @@ package com.github.mishaninss.html.containers;
 import com.github.mishaninss.data.CsvDataExtractor;
 import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.exceptions.ContainerInitException;
-import com.github.mishaninss.html.basics.BasicElement;
+import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.composites.IndexedElement;
 import com.github.mishaninss.html.composites.TemplatedElement;
 import com.github.mishaninss.html.containers.annotations.*;
@@ -357,7 +357,7 @@ public class ContainersFactory {
         Class<?> clazz = instance.getClass();
         if (clazz.isAnnotationPresent(Nested.class)) {
             Class<?> declaringClass = clazz.getDeclaringClass();
-            if (declaringClass != null && BaseContainer.class.isAssignableFrom(declaringClass)){
+            if (declaringClass != null && ArmaContainer.class.isAssignableFrom(declaringClass)){
                 ILocatable context = initContainer(declaringClass);
                 instance.setContext(context);
                 if (context instanceof IFrame){
@@ -586,7 +586,7 @@ public class ContainersFactory {
             }
         }
         if (clazz == null){
-            clazz = BasicElement.class;
+            clazz = ArmaElement.class;
         }
         if (!IInteractiveElement.class.isAssignableFrom(clazz)){
             throw getException("%s field type %s is not compatible with IInteractiveElement class", controllerField.getName(), clazz.getName());
@@ -641,7 +641,7 @@ public class ContainersFactory {
     }
 
     private void setReader(IInteractiveElement element, Field controllerField){
-        if (element instanceof BasicElement) {
+        if (element instanceof ArmaElement) {
             Element elementProps = getElementProps(controllerField);
             if (elementProps != null) {
                 Reader readerProps = elementProps.reader();
@@ -649,7 +649,7 @@ public class ContainersFactory {
                 if (!Objects.equals(type, NoopReader.class)) {
                     String[] args = readerProps.args();
                     AbstractReader reader = applicationContext.getBean(type, args);
-                    ((BasicElement) element).setReader(reader);
+                    ((ArmaElement) element).setReader(reader);
                 }
             }
         }
@@ -699,7 +699,7 @@ public class ContainersFactory {
         Element elementProps = getElementProps(controllerField);
         if (elementProps != null) {
             Class<? extends IInteractiveContainer> nextPageClass = elementProps.nextPage();
-            if (!nextPageClass.equals(BaseContainer.class) && IInteractiveContainer.class.isAssignableFrom(nextPageClass)) {
+            if (!nextPageClass.equals(ArmaContainer.class) && IInteractiveContainer.class.isAssignableFrom(nextPageClass)) {
                 element.setNextPage(nextPageClass);
                 return;
             }

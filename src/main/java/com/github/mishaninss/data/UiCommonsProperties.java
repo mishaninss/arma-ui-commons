@@ -60,9 +60,9 @@ public class UiCommonsProperties{
      */
     @Component("uiCommonsDriverProps")
     public static class Driver {
-        public static final String TIMEOUTS_ELEMENT = "taf.driver.timeouts.element.presence";
-        public static final String TIMEOUTS_PAGE_LOAD = "taf.driver.timeouts.page.load";
-        public static final String TIMEOUTS_DRIVER_OPERATION = "taf.driver.timeouts.drivers.operation";
+        public static final String TIMEOUTS_ELEMENT = "arma.driver.timeouts.element.presence";
+        public static final String TIMEOUTS_PAGE_LOAD = "arma.driver.timeouts.page.load";
+        public static final String TIMEOUTS_DRIVER_OPERATION = "arma.driver.timeouts.drivers.operation";
 
         @Value("${" + TIMEOUTS_ELEMENT + ":20000}")
         public int timeoutsElement;
@@ -74,14 +74,8 @@ public class UiCommonsProperties{
 
     @Component("uiCommonsFrameworkProps")
     public static class Framework{
-        public static final String DRIVERS_FACTORY_IMPL = "taf.framework.drivers.factory.impl";
-        public static final String CAPABILITIES_PROVIDER_IMPL = "taf.framework.capabilities.provider.impl";
-        public static final String DEBUG_MODE = "taf.framework.debug.mode";
+        public static final String DEBUG_MODE = "arma.framework.debug.mode";
 
-        @Value("${" + DRIVERS_FACTORY_IMPL + ":}")
-        public String driversFactoryImpl;
-        @Value("${" + CAPABILITIES_PROVIDER_IMPL + ":}")
-        public String capabilitiesProviderImpl;
         @Value("${" + DEBUG_MODE + ":false}")
         public boolean debugMode;
     }
@@ -91,9 +85,9 @@ public class UiCommonsProperties{
      */
     @Component("uiCommonsApplicationProps")
     public static class Application {
-        public static final String APP_LOCALE = "taf.app.locale";
-        public static final String APP_URL = "taf.app.url";
-        public static final String APP_ENV = "taf.app.env";
+        public static final String APP_LOCALE = "arma.app.locale";
+        public static final String APP_URL = "arma.app.url";
+        public static final String APP_ENV = "arma.app.env";
 
         @Value("${" + APP_LOCALE + ":}")
         public String locale;

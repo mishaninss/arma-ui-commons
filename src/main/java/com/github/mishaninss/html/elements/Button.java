@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
-import com.github.mishaninss.html.basics.interfaces.IEditable;
-import com.github.mishaninss.html.basics.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
-import com.github.mishaninss.html.listeners.ElementEvent;
-import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.readers.AttributeReader;
-import org.openqa.selenium.Keys;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * Controller for the simple Button control.
+ * @author Sergey Mishanin
+ */
 @Element
-public class TextBox extends BasicElement implements IEditable, IReadable{
+public class Button extends ArmaElement {
 
-    public TextBox(){}
-    
-    public TextBox(String locator) {
+    public Button(){}
+
+    public Button(String locator) {
         super(locator);
     }
-
-    public TextBox(String locator, IInteractiveContainer context) {
-        super(locator, context);
+    
+    public Button(String locator, IInteractiveContainer container) {
+        super(locator, container);
     }
 
-    public TextBox(IInteractiveElement element){
+    public Button(IInteractiveElement element){
         super(element);
     }
 
@@ -51,19 +50,8 @@ public class TextBox extends BasicElement implements IEditable, IReadable{
     }
 
     @Override
-    @FiresEvent(ElementEvent.CHANGE_VALUE)
     public void changeValue(Object value) {
-        elementDriver.clearElement(this);
-        elementDriver.sendKeysToElement(this, value.toString());
-    }
-
-    @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public void addText(Object value) {
-        elementDriver.sendKeysToElement(this, value.toString());
-    }
-
-    public void pressEnter() {
-        elementDriver.sendKeysToElement(this, Keys.ENTER);
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -14,44 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
-import com.github.mishaninss.html.readers.AttributeReader;
-
-import javax.annotation.PostConstruct;
 
 @Element
-public class Image extends BasicElement {
+public class Link extends ArmaElement implements IReadable{
 
-    public Image(){
-        super();
-    }
+    public Link(){}
 
-    public Image(String locator) {
+    public Link(String locator) {
         super(locator);
     }
 
-    public Image(String locator, IInteractiveContainer context) {
+    public Link(String locator, IInteractiveContainer context) {
         super(locator, context);
     }
 
-    public Image(IInteractiveElement element){
+    public Link(IInteractiveElement element){
         super(element);
     }
 
-    @PostConstruct
-    private void init(){
-        reader = applicationContext.getBean(AttributeReader.class, AttributeReader.ALT);
-    }
-
     @FiresEvent(ElementEvent.READ_VALUE)
-    public String getSrc(){
-        return read().attribute("src");
+    public String getHref(){
+        return read().attribute("href");
     }
 
 }

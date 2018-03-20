@@ -36,7 +36,7 @@ public interface IHaveUrl {
         if (StringUtils.isBlank(url)){
             throw new IllegalArgumentException("URL was not specified for this container");
         }
-        Arma.get().pageDriver().goToUrl(url);
+        Arma.get().page().goToUrl(url);
     }
 
     default void goToUrl(Object... args){
@@ -45,7 +45,7 @@ public interface IHaveUrl {
             throw new IllegalArgumentException("URL was not specified for this container");
         }
         url = String.format(url, args);
-        Arma.get().pageDriver().goToUrl(url);
+        Arma.get().page().goToUrl(url);
     }
 
     static String getUrlIfApplicable(Object object){

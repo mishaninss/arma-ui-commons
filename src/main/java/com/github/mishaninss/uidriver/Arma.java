@@ -40,6 +40,8 @@ public class Arma {
     private IPageDriver pageDriver;
     @Autowired
     private IWaitingDriver waitingDriver;
+    @Autowired
+    private IBrowserDriver browserDriver;
 
     private Arma(){}
 
@@ -57,23 +59,27 @@ public class Arma {
         return INSTANCES.get();
     }
 
-    public IElementDriver elementDriver(){
+    public IElementDriver element(){
         return elementDriver;
     }
     
-    public ISelectElementDriver selectElementDriver(){
+    public ISelectElementDriver selectElement(){
         return selectElementDriver;
     }
     
-    public IElementsDriver elementsDriver(){
+    public IElementsDriver elements(){
         return elementsDriver;
     }
     
-    public IPageDriver pageDriver(){
+    public IPageDriver page(){
         return pageDriver;
     }
 
-    public IWaitingDriver waitingDriver(){
+    public IBrowserDriver browser(){
+        return browserDriver;
+    }
+
+    public IWaitingDriver waiting(){
         return waitingDriver;
     }
 

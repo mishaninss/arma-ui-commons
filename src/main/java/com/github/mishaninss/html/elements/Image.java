@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
@@ -26,21 +26,21 @@ import com.github.mishaninss.html.readers.AttributeReader;
 import javax.annotation.PostConstruct;
 
 @Element
-public class Icon extends BasicElement{
+public class Image extends ArmaElement {
 
-    public Icon(){
+    public Image(){
         super();
     }
 
-    public Icon(String locator) {
+    public Image(String locator) {
         super(locator);
     }
 
-    public Icon(String locator, IInteractiveContainer context) {
+    public Image(String locator, IInteractiveContainer context) {
         super(locator, context);
     }
 
-    public Icon(IInteractiveElement element){
+    public Image(IInteractiveElement element){
         super(element);
     }
 
@@ -53,8 +53,5 @@ public class Icon extends BasicElement{
     public String getSrc(){
         return read().attribute("src");
     }
-
-    @FiresEvent(ElementEvent.READ_VALUE)
-    public String getHref() {return read().attribute("href");}
 
 }

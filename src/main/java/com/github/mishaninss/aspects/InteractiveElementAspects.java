@@ -25,6 +25,7 @@ import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
 import com.github.mishaninss.uidriver.interfaces.IPageDriver;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,8 @@ import java.util.List;
 public class InteractiveElementAspects {
     @Autowired
     private IPageDriver pageDriver;
+    @Autowired
+    private IBrowserDriver browserDriver;
     @Autowired
     private IReporter reporter;
 
@@ -120,7 +123,7 @@ public class InteractiveElementAspects {
         if (cause instanceof SessionLostException){
             throw new SessionLostException(sb.toString(), cause);
        } else {
-        	if (pageDriver.isBrowserStarted()) {
+        	if (browserDriver.isBrowserStarted()) {
 				reporter.attachScreenshot(pageDriver.takeScreenshot());
 				sb.append("\nURL: ").append(pageDriver.getCurrentUrl());
 				sb.append("\nPage title: ").append(pageDriver.getPageTitle());

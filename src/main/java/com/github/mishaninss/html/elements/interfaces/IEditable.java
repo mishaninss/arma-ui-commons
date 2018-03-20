@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics.interfaces;
+package com.github.mishaninss.html.elements.interfaces;
 
 /**
  * Supposed to be applied to a class of element controller to mark that value of an element of this type can be changed

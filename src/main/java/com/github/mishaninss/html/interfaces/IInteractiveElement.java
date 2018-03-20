@@ -109,7 +109,7 @@ public interface IInteractiveElement extends ILocatable {
     void setNextPage(IInteractiveContainer nextPage);
 
     default String getAttribute(String attributeName){
-        return Arma.get().elementDriver().getAttributeOfElement(this, attributeName);
+        return Arma.get().element().getAttributeOfElement(this, attributeName);
     }
 
 }

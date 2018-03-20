@@ -17,9 +17,9 @@
 package com.github.mishaninss.html.actions;
 
 
+import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
-import com.github.mishaninss.uidriver.interfaces.IPageDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -27,16 +27,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-/**
- * Created by Sergey_Mishanin on 2/22/17.
- */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClickAndSwitchToWindowAction implements AbstractAction {
     @Autowired
     private IElementDriver elementDriver;
     @Autowired
-    private IPageDriver pageDriver;
+    private IBrowserDriver browserDriver;
 
     @Override
     public void dispatchAction(ILocatable element, Object... args) {
@@ -45,7 +42,7 @@ public class ClickAndSwitchToWindowAction implements AbstractAction {
         if (args.length > 0){
             windowIndex = (int) args[0];
         }
-        ArrayList<String> tabs = new ArrayList<>(pageDriver.getWindowHandles());
-        pageDriver.switchToWindow(tabs.get(windowIndex-1));
+        ArrayList<String> tabs = new ArrayList<>(browserDriver.getWindowHandles());
+        browserDriver.switchToWindow(tabs.get(windowIndex-1));
     }
 }

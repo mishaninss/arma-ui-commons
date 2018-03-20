@@ -17,8 +17,8 @@
 package com.github.mishaninss.html.containers;
 
 import com.github.mishaninss.data.DataObjectUtils;
-import com.github.mishaninss.html.basics.interfaces.IEditable;
-import com.github.mishaninss.html.basics.interfaces.IReadable;
+import com.github.mishaninss.html.elements.interfaces.IEditable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Container;
 import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
 import com.github.mishaninss.html.containers.interfaces.IHaveUrl;
@@ -43,7 +43,7 @@ import java.util.*;
  */
 @SuppressWarnings("unused")
 @Container
-public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
+public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     @Autowired
     protected ContainersFactory containersFactory;
@@ -76,18 +76,18 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
 // Constructors ********************************************************************************************************
 
-    protected BaseContainer(){}
+    protected ArmaContainer(){}
     
-    protected BaseContainer(String locator){
+    protected ArmaContainer(String locator){
         this.locator = locator;
     }
     
-    protected BaseContainer(String locator, BaseContainer context){
+    protected ArmaContainer(String locator, ArmaContainer context){
         this.locator = locator;
         this.context = context;
     }
 
-    protected <T extends IBatchElementsContainer> BaseContainer(T container){
+    protected <T extends IBatchElementsContainer> ArmaContainer(T container){
         setLocator(container.getLocator());
         setContextLookup(container.useContextLookup());
         setContext(container.getContext());
@@ -104,7 +104,7 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      * @return this container
      */
     @Override
-    public BaseContainer changeValues(Map<String, ?> inputData){
+    public ArmaContainer changeValues(Map<String, ?> inputData){
         getEditableElements().forEach((elementId, element) -> {
             Object value = inputData.get(elementId);
             if (value != null) {
@@ -119,7 +119,7 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      * @param dataObject - data object
      * @return this container
      */
-    public BaseContainer changeValues(Object dataObject){
+    public ArmaContainer changeValues(Object dataObject){
         Map<String, Object> inputData = DataObjectUtils.readDataFromObject(elements.keySet(), dataObject);
         changeValues(inputData);
         return this;
@@ -298,7 +298,7 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      * @return this container
      */
     @Override
-    public BaseContainer addElement(String elementId, IInteractiveElement element){
+    public ArmaContainer addElement(String elementId, IInteractiveElement element){
         element.setContext(this);
         elements.put(ContainersFactory.sanitizeElementId(elementId), element);
         return this;
@@ -309,7 +309,7 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      * @param elements - a map, where a key is an element ID and a value is an element controller
      */
     @Override
-    public BaseContainer addElements(Map<String, IInteractiveElement> elements){
+    public ArmaContainer addElements(Map<String, IInteractiveElement> elements){
         elements.values().parallelStream().forEach(element -> element.setContext(this));
         this.elements.putAll(elements);
         return this;
@@ -377,7 +377,7 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
 
     @Override
-    public BaseContainer setName(String name) {
+    public ArmaContainer setName(String name) {
         this.name = name;
         return this;
     }
@@ -445,8 +445,8 @@ public class BaseContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BaseContainer)) return false;
-        BaseContainer that = (BaseContainer) o;
+        if (!(o instanceof ArmaContainer)) return false;
+        ArmaContainer that = (ArmaContainer) o;
         return contextLookup == that.contextLookup &&
                 Objects.equals(elements, that.elements) &&
                 Objects.equals(name, that.name) &&

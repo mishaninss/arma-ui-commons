@@ -27,12 +27,12 @@ public interface IFrame extends ILocatable {
         while (!path.isEmpty()) {
             ILocatable element = path.pop();
             if (element instanceof IFrame) {
-                Arma.get().pageDriver().switchToFrame(element);
+                Arma.get().page().switchToFrame(element);
             }
         }
     }
 
     default void switchBack(){
-        Arma.get().pageDriver().switchToDefaultContent();
+        Arma.get().page().switchToDefaultContent();
     }
 }

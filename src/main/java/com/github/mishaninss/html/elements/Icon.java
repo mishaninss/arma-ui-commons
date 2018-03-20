@@ -14,35 +14,47 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
-import com.github.mishaninss.html.basics.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
+import com.github.mishaninss.html.readers.AttributeReader;
+
+import javax.annotation.PostConstruct;
 
 @Element
-public class Link extends BasicElement implements IReadable{
+public class Icon extends ArmaElement {
 
-    public Link(){}
+    public Icon(){
+        super();
+    }
 
-    public Link(String locator) {
+    public Icon(String locator) {
         super(locator);
     }
 
-    public Link(String locator, IInteractiveContainer context) {
+    public Icon(String locator, IInteractiveContainer context) {
         super(locator, context);
     }
 
-    public Link(IInteractiveElement element){
+    public Icon(IInteractiveElement element){
         super(element);
     }
 
-    @FiresEvent(ElementEvent.READ_VALUE)
-    public String getHref(){
-        return read().attribute("href");
+    @PostConstruct
+    private void init(){
+        reader = applicationContext.getBean(AttributeReader.class, AttributeReader.ALT);
     }
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    public String getSrc(){
+        return read().attribute("src");
+    }
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    public String getHref() {return read().attribute("href");}
 
 }

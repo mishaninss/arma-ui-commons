@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
+import com.github.mishaninss.html.elements.interfaces.IEditable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.html.listeners.ElementEvent;
+import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.readers.AttributeReader;
+import org.openqa.selenium.Keys;
 
 import javax.annotation.PostConstruct;
 
-/**
- * Controller for the simple Button control.
- * @author Sergey Mishanin
- */
 @Element
-public class Button extends BasicElement{
+public class TextBox extends ArmaElement implements IEditable, IReadable{
 
-    public Button(){}
-
-    public Button(String locator) {
+    public TextBox(){}
+    
+    public TextBox(String locator) {
         super(locator);
     }
-    
-    public Button(String locator, IInteractiveContainer container) {
-        super(locator, container);
+
+    public TextBox(String locator, IInteractiveContainer context) {
+        super(locator, context);
     }
 
-    public Button(IInteractiveElement element){
+    public TextBox(IInteractiveElement element){
         super(element);
     }
 
@@ -50,8 +51,19 @@ public class Button extends BasicElement{
     }
 
     @Override
+    @FiresEvent(ElementEvent.CHANGE_VALUE)
     public void changeValue(Object value) {
-        throw new UnsupportedOperationException();
+        elementDriver.clearElement(this);
+        elementDriver.sendKeysToElement(this, value.toString());
+    }
+
+    @FiresEvent(ElementEvent.CHANGE_VALUE)
+    public void addText(Object value) {
+        elementDriver.sendKeysToElement(this, value.toString());
+    }
+
+    public void pressEnter() {
+        elementDriver.sendKeysToElement(this, Keys.ENTER);
     }
 
 }

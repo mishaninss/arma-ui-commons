@@ -31,7 +31,7 @@ import java.util.function.Function;
  * Created by Sergey_Mishanin on 9/21/17.
  */
 @Component
-public class IndexedContainer<T extends IBatchElementsContainer> extends BaseContainer {
+public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaContainer {
     private T wrappedContainer;
     private Map<Integer, T> indexedContainers = new HashMap<>();
 

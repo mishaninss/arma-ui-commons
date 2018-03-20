@@ -16,13 +16,13 @@
 
 package com.github.mishaninss.html.composites;
 
-import com.github.mishaninss.html.containers.BaseContainer;
+import com.github.mishaninss.html.containers.ArmaContainer;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 
 @Element
-public abstract class CompositeElement extends BaseContainer implements IInteractiveElement {
+public abstract class CompositeElement extends ArmaContainer implements IInteractiveElement {
 
     private boolean optional = false;
     private IInteractiveContainer nextPage;

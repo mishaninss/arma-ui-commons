@@ -16,15 +16,9 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.logging.LogEntries;
-
-import java.util.Set;
-
 /**
- * 
+ * Provides methods to interact with a page in browser.
  * @author Sergey Mishanin
- *
  */
 public interface IPageDriver 
 {
@@ -56,37 +50,13 @@ public interface IPageDriver
 
     byte[] takeScreenshot();
 
-	void deleteAllCookies();
+    IPageDriver switchToFrame(String nameOrId);
 
-    void deleteCookieNamed(String cookieName);
+    IPageDriver switchToFrame(ILocatable frameElement);
 
-    Set<Cookie> getAllCookies();
-
-    void addCookie(Cookie cookie);
-
-    Cookie getCookieNamed(String cookieName);
-
-	Set<String> getWindowHandles();
-
-    void switchToWindow(String windowHandle);
-
-    void switchToFrame(String nameOrId);
-
-    void switchToFrame(ILocatable frameElement);
-
-    void closeCurrentWindow();
-
-    void closeWindow(String windowHandle);
-
-    void switchToDefaultContent();
-
-    void maximizeWindow();
+    IPageDriver switchToDefaultContent();
 
     boolean scrollToBottom();
 
-    void scrollToTop();
-
-    LogEntries getLogEntries(String logType);
-
-    boolean isBrowserStarted();
+    IPageDriver scrollToTop();
 }

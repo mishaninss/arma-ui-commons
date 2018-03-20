@@ -16,22 +16,22 @@
 
 package com.github.mishaninss.html.composites;
 
-import com.github.mishaninss.html.basics.BasicElement;
-import com.github.mishaninss.html.basics.interfaces.IEditable;
-import com.github.mishaninss.html.basics.interfaces.IReadable;
+import com.github.mishaninss.html.elements.ArmaElement;
+import com.github.mishaninss.html.elements.interfaces.IEditable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 
 @Element
 public class DropdownSelect extends CompositeElement implements IReadable, IEditable {
 
     @Element(locator = ".//div[contains(@class,'select__value')]")
-    public BasicElement selectedValueElement;
+    public ArmaElement selectedValueElement;
 
     @Element(locator = ".//ul/li[@data-value='%s']")
-    public TemplatedElement<BasicElement> optionElement;
+    public TemplatedElement<ArmaElement> optionElement;
 
     @Element(locator = ".//ul/li[.='%s']")
-    public TemplatedElement<BasicElement> optionElementText;
+    public TemplatedElement<ArmaElement> optionElementText;
 
     public DropdownSelect(String locator){
         super(locator);

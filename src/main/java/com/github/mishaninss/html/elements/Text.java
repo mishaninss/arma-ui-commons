@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
-import com.github.mishaninss.html.basics.interfaces.IReadable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 
 @Element
-public class Text extends BasicElement implements IReadable {
+public class Text extends ArmaElement implements IReadable {
 
     public Text() {}
 

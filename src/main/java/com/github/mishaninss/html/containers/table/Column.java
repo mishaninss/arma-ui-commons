@@ -17,7 +17,7 @@
 package com.github.mishaninss.html.containers.table;
 
 import com.github.mishaninss.html.actions.AbstractAction;
-import com.github.mishaninss.html.basics.interfaces.IReadable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;

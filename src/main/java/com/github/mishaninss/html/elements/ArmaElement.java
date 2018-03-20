@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
 import com.github.mishaninss.html.actions.Actions;
 import com.github.mishaninss.html.containers.ContainersFactory;
@@ -46,7 +46,7 @@ import java.util.*;
  * @author Sergey Mishanin
  */
 @Element
-public class BasicElement implements IInteractiveElement, IListenableElement, INamed{
+public class ArmaElement implements IInteractiveElement, IListenableElement, INamed{
     @Autowired
     protected IReporter reporter;
     @Autowired
@@ -71,13 +71,13 @@ public class BasicElement implements IInteractiveElement, IListenableElement, IN
 
 // Constructors ********************************************************************************************************
 
-    protected BasicElement(){}
+    protected ArmaElement(){}
 
     /**
      * Creates an instance of Basic element
      * @param locator - locator of the element
      */
-    public BasicElement(String locator){
+    public ArmaElement(String locator){
         if (StringUtils.isBlank(locator)){
             throw new IllegalArgumentException(EXCEPTION_ILLEGAL_LOCATOR);
         }
@@ -89,12 +89,12 @@ public class BasicElement implements IInteractiveElement, IListenableElement, IN
      * @param locator - locator of the element
      * @param context - container of the element
      */
-    public BasicElement(String locator, IInteractiveContainer context){
+    public ArmaElement(String locator, IInteractiveContainer context){
         this(locator);
         this.context = context;
     }
 
-    public BasicElement(IInteractiveElement element){
+    public ArmaElement(IInteractiveElement element){
         this.locator = element.getLocator();
         this.optional = element.isOptional();
         this.contextLookup = element.useContextLookup();
@@ -106,8 +106,8 @@ public class BasicElement implements IInteractiveElement, IListenableElement, IN
         if (element instanceof INamed){
             setName(((INamed)element).getName());
         }
-        if (element instanceof BasicElement){
-            this.reader = ((BasicElement) element).reader;
+        if (element instanceof ArmaElement){
+            this.reader = ((ArmaElement) element).reader;
         }
     }
 
@@ -230,7 +230,7 @@ public class BasicElement implements IInteractiveElement, IListenableElement, IN
 // INamed **************************************************************************************************************
 
     @Override
-    public BasicElement setName(String name) {
+    public ArmaElement setName(String name) {
         this.name = name;
         return this;
     }
@@ -274,8 +274,8 @@ public class BasicElement implements IInteractiveElement, IListenableElement, IN
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BasicElement)) return false;
-        BasicElement that = (BasicElement) o;
+        if (!(o instanceof ArmaElement)) return false;
+        ArmaElement that = (ArmaElement) o;
         return optional == that.optional &&
                 contextLookup == that.contextLookup &&
                 Objects.equals(name, that.name) &&

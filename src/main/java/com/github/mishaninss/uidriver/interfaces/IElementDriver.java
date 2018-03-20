@@ -123,6 +123,7 @@ public interface IElementDriver
      */
     IElementDriver scrollToElement(ILocatable element);
 
+
     WebElement findElement(ILocatable element);
 
     byte[] takeElementScreenshot(ILocatable element);

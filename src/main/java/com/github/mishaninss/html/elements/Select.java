@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.basics;
+package com.github.mishaninss.html.elements;
 
-import com.github.mishaninss.html.basics.interfaces.IEditable;
-import com.github.mishaninss.html.basics.interfaces.IReadable;
+import com.github.mishaninss.html.elements.interfaces.IEditable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
@@ -35,7 +35,7 @@ import java.util.List;
  * @author Sergey Mishanin
  */
 @Element
-public class Select extends BasicElement implements IEditable, IReadable{
+public class Select extends ArmaElement implements IEditable, IReadable{
     @Autowired
     protected ISelectElementDriver selectElementDriver;
     private static final String ITEMS_SEPARATOR = "::";

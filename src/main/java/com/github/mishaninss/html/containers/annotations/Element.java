@@ -17,8 +17,8 @@
 package com.github.mishaninss.html.containers.annotations;
 
 import com.github.mishaninss.data.UiCommonsProperties;
-import com.github.mishaninss.html.basics.BasicElement;
-import com.github.mishaninss.html.containers.BaseContainer;
+import com.github.mishaninss.html.elements.ArmaElement;
+import com.github.mishaninss.html.containers.ArmaContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.readers.NoopReader;
@@ -63,7 +63,7 @@ public @interface Element {
     /** Specifies if this element */
     boolean dynamic() default false;
     boolean contextLookup() default true;
-    Class<? extends IInteractiveContainer> nextPage() default BaseContainer.class;
-    Class<? extends IInteractiveElement> type() default BasicElement.class;
+    Class<? extends IInteractiveContainer> nextPage() default ArmaContainer.class;
+    Class<? extends IInteractiveElement> type() default ArmaElement.class;
     Reader reader() default @Reader(NoopReader.class);
 }
