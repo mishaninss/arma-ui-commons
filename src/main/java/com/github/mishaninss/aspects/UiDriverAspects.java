@@ -34,17 +34,17 @@ public class UiDriverAspects {
     @Autowired
     private IElementDriver elementDriver;
 
-    @Pointcut("call(* com.github.uidriver.interfaces.IElementDriver.* (..)) && !call(* com.github.uidriver.interfaces.IElementDriver.clearCache (..))" )
+    @Pointcut("call(* com.github.mishaninss.uidriver.interfaces.IElementDriver.* (..)) && !call(* com.github.mishaninss.uidriver.interfaces.IElementDriver.clearCache (..))" )
     public void pointcutIElementDriverCall() {
         //Declaration of a pointcut for call to any IElementDriver interface method
     }
 
-    @Pointcut("execution(* com.github.uidriver.interfaces.IElementsDriver.* (..))" )
+    @Pointcut("execution(* com.github.mishaninss.uidriver.interfaces.IElementsDriver.* (..))" )
     public void pointcutIElementsDriverCall() {
         //Declaration of a pointcut for call to any IElementsDriver interface method
     }
 
-    @Pointcut("execution(* com.github.uidriver.interfaces.IPageDriver.* (..))" )
+    @Pointcut("execution(* com.github.mishaninss.uidriver.interfaces.IPageDriver.* (..))" )
     public void pointcutIPageDriverCall() {
         //Declaration of a pointcut for call to any IElementsDriver interface method
     }

@@ -44,12 +44,12 @@ public class InteractiveElementAspects {
     @Autowired
     private IReporter reporter;
 
-    @Pointcut("call(@com.github.html.listeners.FiresEvent * * (..))")
+    @Pointcut("call(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
 	public void firesEvent() {
 		//NOSONAR
 	}
 
-    @Pointcut("withincode(@com.github.html.listeners.FiresEvent * * (..))")
+    @Pointcut("withincode(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
     public void withinCodeFiresEvent() {
         //NOSONAR
     }
