@@ -17,6 +17,7 @@
 package com.github.mishaninss.html.elements;
 
 import com.github.mishaninss.html.containers.annotations.Element;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.readers.AttributeReader;
@@ -28,7 +29,7 @@ import javax.annotation.PostConstruct;
  * @author Sergey Mishanin
  */
 @Element
-public class Button extends ArmaElement {
+public class Button extends ArmaElement implements IReadable{
 
     public Button(){}
 

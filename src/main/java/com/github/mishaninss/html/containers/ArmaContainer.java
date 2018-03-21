@@ -17,11 +17,11 @@
 package com.github.mishaninss.html.containers;
 
 import com.github.mishaninss.data.DataObjectUtils;
-import com.github.mishaninss.html.elements.interfaces.IEditable;
-import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.containers.annotations.Container;
 import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
 import com.github.mishaninss.html.containers.interfaces.IHaveUrl;
+import com.github.mishaninss.html.elements.interfaces.IEditable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
@@ -105,9 +105,10 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      */
     @Override
     public ArmaContainer changeValues(Map<String, ?> inputData){
-        getEditableElements().forEach((elementId, element) -> {
-            Object value = inputData.get(elementId);
-            if (value != null) {
+        final Map<String, IInteractiveElement> editableElements = getEditableElements();
+        inputData.forEach((elementId, value) -> {
+            IInteractiveElement element = editableElements.get(ContainersFactory.sanitizeElementId(elementId));
+            if (element != null){
                 element.changeValue(value);
             }
         });
@@ -245,7 +246,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      */
     @Override
     public void performAction(final String elementId){
-        Preconditions.checkArgument(StringUtils.isBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
+        Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = getElement(elementId);
         element.performAction();
     }

@@ -17,6 +17,7 @@
 package com.github.mishaninss.html.elements;
 
 import com.github.mishaninss.html.elements.interfaces.IEditable;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.elements.interfaces.ISelectable;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
@@ -25,7 +26,7 @@ import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 
 @Element
-public class RadioButton extends ArmaElement implements ISelectable, IEditable {
+public class RadioButton extends ArmaElement implements ISelectable, IEditable, IReadable {
 
     public RadioButton(){}
     

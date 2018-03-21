@@ -17,6 +17,7 @@
 package com.github.mishaninss.html.elements;
 
 import com.github.mishaninss.html.containers.annotations.Element;
+import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
@@ -26,7 +27,7 @@ import com.github.mishaninss.html.readers.AttributeReader;
 import javax.annotation.PostConstruct;
 
 @Element
-public class Image extends ArmaElement {
+public class Image extends ArmaElement implements IReadable{
 
     public Image(){
         super();
