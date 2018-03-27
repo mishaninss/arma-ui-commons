@@ -90,8 +90,12 @@ public class Arma {
         return applicationContext.getBean(IActionsChain.class);
     }
 
-    public IElementActionsChain elementActionsChain(){
-        return applicationContext.getBean(IElementActionsChain.class);
+    public IElementActionsChain elementActionsChain(ILocatable element){
+        return applicationContext.getBean(IElementActionsChain.class, element);
+    }
+
+    public IThisElementDriver thisElement(ILocatable element){
+        return applicationContext.getBean(IThisElementDriver.class, element);
     }
 
     public IReporter reporter(){

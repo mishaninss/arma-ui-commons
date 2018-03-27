@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class IFrameEventHandler implements IElementEventHandler {
     @Override
-    public void beforeEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         ILocatable context = element.getContext();
         if (context != null && context instanceof IFrame){
             ((IFrame) context).switchTo();
@@ -32,7 +32,7 @@ public class IFrameEventHandler implements IElementEventHandler {
     }
 
     @Override
-    public void afterEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         ILocatable context = element.getContext();
         if (context != null && context instanceof IFrame){
             ((IFrame) context).switchBack();

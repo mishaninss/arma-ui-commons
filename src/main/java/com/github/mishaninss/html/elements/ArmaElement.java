@@ -16,21 +16,19 @@
 
 package com.github.mishaninss.html.elements;
 
-import com.github.mishaninss.html.actions.Actions;
 import com.github.mishaninss.html.containers.ContainersFactory;
 import com.github.mishaninss.html.containers.annotations.Element;
-import com.github.mishaninss.html.interfaces.*;
+import com.github.mishaninss.html.interfaces.IInteractiveContainer;
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.html.interfaces.IListenableElement;
+import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
 import com.github.mishaninss.html.readers.AbstractReader;
-import com.github.mishaninss.html.readers.Readers;
 import com.github.mishaninss.html.readers.TextReader;
 import com.github.mishaninss.reporting.IReporter;
-import com.github.mishaninss.uidriver.interfaces.IElementActionsChain;
-import com.github.mishaninss.uidriver.interfaces.IElementDriver;
-import com.github.mishaninss.uidriver.interfaces.IElementWaitingDriver;
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
+import com.github.mishaninss.uidriver.interfaces.*;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -243,8 +241,8 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
 // Other stuff *********************************************************************************************************
 
-    public Actions perform(){
-        return applicationContext.getBean(Actions.class, this);
+    public IThisElementDriver perform(){
+        return applicationContext.getBean(IThisElementDriver.class, this);
     }
 
     public IElementActionsChain action(){
@@ -255,8 +253,8 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
         return applicationContext.getBean(IElementActionsChain.class, this);
     }
 
-    public Readers read(){
-        return applicationContext.getBean(Readers.class, this);
+    public IElementReadActionDriver read(){
+        return applicationContext.getBean(IElementReadActionDriver.class, this);
     }
 
     public IElementWaitingDriver waitUntil(){

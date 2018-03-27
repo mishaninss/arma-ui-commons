@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.listeners;
+package com.github.mishaninss.uidriver.interfaces;
 
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
+public interface ILocatableWrapper {
 
-public interface IElementEventHandler {
-    default void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {}
-    default void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {}
+    ILocatable getElement();
 }

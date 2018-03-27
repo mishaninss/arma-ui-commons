@@ -27,14 +27,14 @@ public class WaitingEventHandler implements IElementEventHandler {
     private IWaitingDriver waitingDriver;
 
     @Override
-    public void beforeEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         if (event != ElementEvent.IS_DISPLAYED){
             waitingDriver.waitForPageUpdate();
         }
     }
 
     @Override
-    public void afterEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         if (event != ElementEvent.IS_DISPLAYED){
             waitingDriver.waitForPageUpdate();
         }

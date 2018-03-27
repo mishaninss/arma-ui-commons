@@ -26,16 +26,20 @@ import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
+import com.github.mishaninss.uidriver.interfaces.ILocatableWrapper;
 import com.github.mishaninss.uidriver.interfaces.IPageDriver;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 @Aspect
@@ -46,6 +50,7 @@ public class InteractiveElementAspects {
     private IBrowserDriver browserDriver;
     @Autowired
     private IReporter reporter;
+    private static final Map<Signature, String> ACTION_NAMES = new Hashtable<>();
 
     @Pointcut("call(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
 	public void firesEvent() {
@@ -60,30 +65,57 @@ public class InteractiveElementAspects {
     @Before("firesEvent() && !withinCodeFiresEvent()")
     public void adviceBeforeFireEvent(JoinPoint joinPoint) {
 	    Object target = joinPoint.getTarget();
-	    if (target != null && target instanceof IListenableElement && target instanceof IInteractiveElement) {
-            IInteractiveElement element = (IInteractiveElement) target;
-            Object[] args = joinPoint.getArgs();
-            FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
-            ElementEvent event = firesEvent.value();
-            List<IElementEventHandler> listeners = ((IListenableElement)target).getEventListeners(event);
-            if (CollectionUtils.isNotEmpty(listeners)) {
-                listeners.forEach(listener -> listener.beforeEvent(element, event, args));
+        if (target != null) {
+            if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
+                executeBeforeEvents((IInteractiveElement) target, joinPoint);
+            } else if (target instanceof ILocatableWrapper){
+                target = ((ILocatableWrapper) target).getElement();
+                if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
+                    executeBeforeEvents((IInteractiveElement) target, joinPoint);
+                }
             }
+        }
+    }
+
+    private String getActionName(Signature signature){
+        return ACTION_NAMES.computeIfAbsent(signature, sign ->
+                StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(sign.getName()), " ")
+                    .toLowerCase()
+                    .trim());
+    }
+
+    private void executeBeforeEvents(IInteractiveElement element, JoinPoint joinPoint){
+        Object[] args = joinPoint.getArgs();
+        FiresEvent firesEvent = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
+        ElementEvent event = firesEvent.value();
+        List<IElementEventHandler> listeners = ((IListenableElement) element).getEventListeners(event);
+        if (CollectionUtils.isNotEmpty(listeners)) {
+            listeners.forEach(listener -> listener.beforeEvent(element, event, getActionName(joinPoint.getSignature()), args));
         }
     }
 
     @AfterReturning(value = "firesEvent() && !withinCodeFiresEvent()", returning = "ret")
     public void adviceAfterFireEvent(Object ret, JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
-        if (target != null && target instanceof IListenableElement && target instanceof IInteractiveElement) {
-            IInteractiveElement element = (IInteractiveElement) target;
-            FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
-            ElementEvent event = firesEvent.value();
-            List<IElementEventHandler> listeners = ((IListenableElement)target).getEventListeners(event);
-            if (CollectionUtils.isNotEmpty(listeners)) {
-                for (int i = listeners.size() - 1; i >= 0; i--) {
-                    listeners.get(i).afterEvent(element, event, ret);
+        if (target != null) {
+            if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
+                executeAfterEvents((IInteractiveElement) target, joinPoint, ret);
+            } else if (target instanceof ILocatableWrapper){
+                target = ((ILocatableWrapper) target).getElement();
+                if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
+                    executeAfterEvents((IInteractiveElement) target, joinPoint, ret);
                 }
+            }
+        }
+    }
+
+    private void executeAfterEvents(IInteractiveElement element, JoinPoint joinPoint, Object ret){
+        FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
+        ElementEvent event = firesEvent.value();
+        List<IElementEventHandler> listeners = ((IListenableElement)element).getEventListeners(event);
+        if (CollectionUtils.isNotEmpty(listeners)) {
+            for (int i = listeners.size() - 1; i >= 0; i--) {
+                listeners.get(i).afterEvent(element, event, getActionName(joinPoint.getSignature()), ret);
             }
         }
     }

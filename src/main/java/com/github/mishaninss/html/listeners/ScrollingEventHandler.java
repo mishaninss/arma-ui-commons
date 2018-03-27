@@ -27,14 +27,14 @@ public class ScrollingEventHandler implements IElementEventHandler {
     private IElementDriver elementDriver;
 
     @Override
-    public void beforeEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         if (event != ElementEvent.IS_DISPLAYED){
             elementDriver.scrollToElement(element);
         }
     }
 
     @Override
-    public void afterEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         if (event == ElementEvent.IS_DISPLAYED && args.length > 0 && args[0] instanceof Boolean && (boolean)args[0]){
             elementDriver.scrollToElement(element);
         }

@@ -19,6 +19,7 @@ package com.github.mishaninss.html.listeners;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.utils.GenericUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,15 +28,16 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class HighlightEventHandler implements IElementEventHandler {
     private static final String CHANGE_VALUE_MESSAGE = "Change value: %s";
-    private static final String READ_VALUE_MESSAGE = "Read value";
-    private static final String PERFORM_ACTION_MESSAGE = "Perform action";
+    private static final String READ_VALUE_MESSAGE = "Read %s";
+    private static final String PERFORM_ACTION_MESSAGE = "Perform %s";
     private static final String IS_DISPLAYED_MESSAGE = "Check if displayed";
 
     @Autowired
     private IElementDriver elementDriver;
 
     @Override
-    public void beforeEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
+        String actionName;
         switch (event){
             case CHANGE_VALUE:
                 elementDriver.highlightElement(element);
@@ -43,13 +45,15 @@ public class HighlightEventHandler implements IElementEventHandler {
                 GenericUtils.pause(TimeUnit.MILLISECONDS,700);
                 break;
             case READ_VALUE:
+                actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim(): "value";
                 elementDriver.highlightElement(element);
-                elementDriver.addElementDebugInfo(element, READ_VALUE_MESSAGE, "");
+                elementDriver.addElementDebugInfo(element, String.format(READ_VALUE_MESSAGE, actionName), "");
                 GenericUtils.pause(TimeUnit.MILLISECONDS,700);
                 break;
             case ACTION:
+                actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "perform").trim(): "value";
                 elementDriver.highlightElement(element);
-                elementDriver.addElementDebugInfo(element, PERFORM_ACTION_MESSAGE, "");
+                elementDriver.addElementDebugInfo(element, String.format(PERFORM_ACTION_MESSAGE, actionName), "");
                 GenericUtils.pause(TimeUnit.MILLISECONDS,700);
                 break;
             default:
@@ -57,8 +61,7 @@ public class HighlightEventHandler implements IElementEventHandler {
     }
 
     @Override
-    public void afterEvent(IInteractiveElement element, ElementEvent event, Object... args) {
-        String message;
+    public void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         switch (event){
             case CHANGE_VALUE:
             case READ_VALUE:

@@ -16,44 +16,38 @@
 
 package com.github.mishaninss.html.listeners;
 
-import com.github.mishaninss.html.actions.AbstractAction;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class LoggingEventHandler implements IElementEventHandler {
-    private static Map<Class<? extends AbstractAction>, String> actionNames = new HashMap<>();
     private static final String MESSAGE_PERFORM_ACTION = "Perform %s on %s";
-    private static final String MESSAGE_SET_VALUE = "Set value to %s: %s";
-    private static final String MESSAGE_GET_VALUE = "Get value from %s: %s";
+    private static final String MESSAGE_SET_VALUE = "%s of %s: %s";
+    private static final String MESSAGE_GET_VALUE = "Read %s from %s: %s";
     private static final String MESSAGE_IS_DISPLAYED = "Check if element %s is displayed: %s";
 
     @Autowired
     private IReporter reporter;
 
     @Override
-    public void beforeEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment,  Object... args) {
         String message;
+        String actionName;
         switch (event){
             case CHANGE_VALUE:
-                message = getLogMessage(MESSAGE_SET_VALUE, element, args);
+                actionName = StringUtils.isNoneBlank(comment) ? comment: "Change value";
+                message = getLogMessage(MESSAGE_SET_VALUE, actionName, element, args);
                 reporter.info(message);
                 break;
             case ACTION:
-                String actionName = "action";
-                if (ArrayUtils.isNotEmpty(args) && args[0] instanceof AbstractAction){
-                    actionName = getActionName((AbstractAction) args[0]);
-                }
+                actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "perform").trim(): "action";
                 message = getLogMessage(MESSAGE_PERFORM_ACTION, actionName, element);
                 reporter.info(message);
                 break;
@@ -62,11 +56,12 @@ public class LoggingEventHandler implements IElementEventHandler {
     }
 
     @Override
-    public void afterEvent(IInteractiveElement element, ElementEvent event, Object... args) {
+    public void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         String message;
         switch (event){
             case READ_VALUE:
-                message = getLogMessage(MESSAGE_GET_VALUE, element, args);
+                String actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim(): "value";
+                message = getLogMessage(MESSAGE_GET_VALUE, actionName, element, args);
                 reporter.info(message);
                 break;
             case IS_DISPLAYED:
@@ -87,16 +82,5 @@ public class LoggingEventHandler implements IElementEventHandler {
             }
         }
         return String.format(format, args);
-    }
-
-    private static String getActionName(AbstractAction action){
-        return actionNames.computeIfAbsent(action.getClass(),
-                aClass ->
-                        StringUtils.join(
-                                StringUtils.splitByCharacterTypeCamelCase(aClass.getSimpleName()), " ")
-                                .toLowerCase()
-                                .replace("action", "")
-                                .trim()
-        );
     }
 }

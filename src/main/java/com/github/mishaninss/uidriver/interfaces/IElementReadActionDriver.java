@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.listeners;
+package com.github.mishaninss.uidriver.interfaces;
 
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.html.listeners.ElementEvent;
+import com.github.mishaninss.html.listeners.FiresEvent;
 
-public interface IElementEventHandler {
-    default void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {}
-    default void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {}
+public interface IElementReadActionDriver extends ILocatableWrapper{
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    boolean isSelected();
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    String attribute(String attribute);
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    String text();
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    String fullText();
+
+    @FiresEvent(ElementEvent.READ_VALUE)
+    String tagName();
 }
