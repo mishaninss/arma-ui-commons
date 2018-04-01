@@ -16,7 +16,11 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
+import org.openqa.selenium.OutputType;
+
 public interface IScreenshoter {
 
     byte[] takeScreenshot();
+
+    <X> X takeScreenshotAs(OutputType<X> outputType);
 }

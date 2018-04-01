@@ -91,9 +91,13 @@ public class UiCommonsProperties{
     @Component("uiCommonsFrameworkProps")
     public static class Framework{
         public static final String DEBUG_MODE = "arma.framework.debug.mode";
+        public static final String SCREENSHOTS_DIR = "arma.framework.screenshots.dir";
 
         @Value("${" + DEBUG_MODE + ":false}")
         public boolean debugMode;
+
+        @Value("${" + SCREENSHOTS_DIR + ":./target}")
+        public String screenshotsDir;
     }
 
     /**
