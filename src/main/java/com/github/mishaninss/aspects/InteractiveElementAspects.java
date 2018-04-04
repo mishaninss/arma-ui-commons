@@ -25,6 +25,9 @@ import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
+import com.github.mishaninss.uidriver.annotations.BrowserDriver;
+import com.github.mishaninss.uidriver.annotations.PageDriver;
 import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatableWrapper;
 import com.github.mishaninss.uidriver.interfaces.IPageDriver;
@@ -44,11 +47,11 @@ import java.util.Map;
 @SuppressWarnings("unused")
 @Aspect
 public class InteractiveElementAspects {
-    @Autowired
+    @PageDriver
     private IPageDriver pageDriver;
-    @Autowired
+    @BrowserDriver
     private IBrowserDriver browserDriver;
-    @Autowired
+    @Reporter
     private IReporter reporter;
     private static final Map<Signature, String> ACTION_NAMES = new Hashtable<>();
 

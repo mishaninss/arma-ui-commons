@@ -25,8 +25,9 @@ import java.util.Map;
  * @author Sergey Mishanin
  *
  */
-public interface IElementsDriver 
-{
+public interface IElementsDriver {
+    String QUALIFIER = "IElementsDriver";
+
     /**
      * Can be used for text inputs to clear the current value
      * @param locator - locator of elements

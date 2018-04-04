@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.actions;
+package com.github.mishaninss.uidriver.annotations;
 
-import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
+import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-/**
- * Created by Sergey_Mishanin on 2/22/17.
- */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class SimpleClickAction implements AbstractAction {
-    @ElementDriver
-    private IElementDriver elementDriver;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    @Override
-    public void dispatchAction(ILocatable element, Object... args) {
-        elementDriver.simpleClickOnElement(element);
-    }
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+@Autowired
+@Qualifier(IElementDriver.QUALIFIER)
+public @interface ElementDriver {}

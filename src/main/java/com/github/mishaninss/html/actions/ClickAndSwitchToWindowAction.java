@@ -17,6 +17,8 @@
 package com.github.mishaninss.html.actions;
 
 
+import com.github.mishaninss.uidriver.annotations.BrowserDriver;
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
@@ -30,9 +32,9 @@ import java.util.ArrayList;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClickAndSwitchToWindowAction implements AbstractAction {
-    @Autowired
+    @ElementDriver
     private IElementDriver elementDriver;
-    @Autowired
+    @BrowserDriver
     private IBrowserDriver browserDriver;
 
     @Override

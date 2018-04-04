@@ -6,6 +6,8 @@ import org.openqa.selenium.logging.LogEntries;
 import java.util.Set;
 
 public interface IBrowserDriver {
+    String QUALIFIER = "IBrowserDriver";
+
     void deleteAllCookies();
 
     void deleteCookieNamed(String cookieName);

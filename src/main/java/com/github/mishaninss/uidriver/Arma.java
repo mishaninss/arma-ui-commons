@@ -17,6 +17,8 @@
 package com.github.mishaninss.uidriver;
 
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
+import com.github.mishaninss.uidriver.annotations.*;
 import com.github.mishaninss.uidriver.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,19 +33,19 @@ public class Arma {
 
     @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
+    @ElementDriver
     private IElementDriver elementDriver;
-    @Autowired
+    @ElementsDriver
     private IElementsDriver elementsDriver;
-    @Autowired
+    @SelectElementDriver
     private ISelectElementDriver selectElementDriver;
-    @Autowired
+    @PageDriver
     private IPageDriver pageDriver;
-    @Autowired
+    @WaitingDriver
     private IWaitingDriver waitingDriver;
-    @Autowired
+    @BrowserDriver
     private IBrowserDriver browserDriver;
-    @Autowired
+    @Reporter
     private IReporter reporter;
 
     private Arma(){}

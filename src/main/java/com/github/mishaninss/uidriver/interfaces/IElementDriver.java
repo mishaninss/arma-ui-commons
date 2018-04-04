@@ -25,8 +25,9 @@ import org.openqa.selenium.WebElement;
  * @author Sergey Mishanin
  *
  */
-public interface IElementDriver 
-{
+public interface IElementDriver {
+    String QUALIFIER = "IElementDriver";
+
     /**
      * Can be used for text inputs to clear the current value
      * @param element - locator of the element

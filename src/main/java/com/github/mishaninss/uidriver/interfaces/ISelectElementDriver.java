@@ -21,8 +21,8 @@ package com.github.mishaninss.uidriver.interfaces;
  * @author Sergey Mishanin
  *
  */
-public interface ISelectElementDriver 
-{
+public interface ISelectElementDriver {
+    String QUALIFIER = "ISelectElementDriver";
 
     ISelectElementDriver selectByIndex(ILocatable element, int index);
 

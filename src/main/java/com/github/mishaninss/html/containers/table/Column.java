@@ -22,6 +22,7 @@ import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.html.readers.AbstractReader;
+import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +42,7 @@ import java.util.function.Predicate;
 @SuppressWarnings("unused")
 @Element
 public class Column<T extends IInteractiveElement> {
-    @Autowired
+    @ElementsDriver
     private IElementsDriver elementsDriver;
     @Autowired
     private ApplicationContext applicationContext;

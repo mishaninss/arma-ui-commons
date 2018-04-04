@@ -43,6 +43,7 @@ import com.github.mishaninss.utils.UrlUtils;
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
@@ -297,8 +298,10 @@ public class ContainersFactory {
             for (Element element: elements){
                 String property = element.prop();
                 String expectedValue = element.val();
-                String actualValue = env.getProperty(property);
-                if (StringUtils.equals(actualValue, expectedValue)){
+                if (Element.PROFILE_PROPERTY.equals(property)
+                        && ArrayUtils.contains(env.getActiveProfiles(), expectedValue)) {
+                    return element;
+                } else if (StringUtils.equals(env.getProperty(property), expectedValue)) {
                     return element;
                 } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
                     defaultParameters = element;
@@ -567,31 +570,29 @@ public class ContainersFactory {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Class<? extends IInteractiveElement> getControllerClass(Field controllerField){
-        Class<?> clazz = controllerField.getType();
-        if (clazz.equals(IndexedElement.class) || clazz.equals(TemplatedElement.class)){
-            clazz = ReflectionUtils.getGenericClass(controllerField.getGenericType(), 0);
-            if (clazz == null){
-                Element elementProps = getElementProps(controllerField);
-                if (elementProps != null) {
-                    clazz = elementProps.type();
-                }
+        Class<?> fieldType = controllerField.getType();
+        Element elementProps = getElementProps(controllerField);
+        Class<?> elementType = elementProps != null ? elementProps.type() : ArmaElement.class;
+        if (fieldType.equals(IndexedElement.class)
+                || fieldType.equals(TemplatedElement.class)
+                || fieldType.equals(Column.class)){
+            Class<?> genericType = ReflectionUtils.getGenericClass(controllerField.getGenericType(), 0);
+            if (genericType != null){
+                elementType = genericType;
             }
-        } else if (clazz.equals(Column.class)){
-            clazz = ReflectionUtils.getGenericClass(controllerField.getGenericType(), 0);
-        } else if (clazz.equals(IInteractiveElement.class)){
-            Element elementProps = getElementProps(controllerField);
-            if (elementProps != null) {
-                clazz = elementProps.type();
-            }
+        } else if (!fieldType.isInterface()){
+            elementType = fieldType;
         }
-        if (clazz == null){
-            clazz = ArmaElement.class;
+
+        if (!fieldType.isAssignableFrom(elementType)){
+            throw getException("%s field type %s is not compatible with % element type", controllerField.getName(), fieldType.getName(), elementType.getName());
         }
-        if (!IInteractiveElement.class.isAssignableFrom(clazz)){
-            throw getException("%s field type %s is not compatible with IInteractiveElement class", controllerField.getName(), clazz.getName());
+        if (!IInteractiveElement.class.isAssignableFrom(elementType)){
+            throw getException("%s field type %s is not compatible with IInteractiveElement type", controllerField.getName(), elementType.getName());
         }
-        return (Class<? extends IInteractiveElement>)clazz;
+        return (Class<? extends IInteractiveElement>)elementType;
     }
 
     private IInteractiveElement createElementController(Class<? extends IInteractiveElement> clazz, List<String> locators) {

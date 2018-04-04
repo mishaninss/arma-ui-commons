@@ -28,6 +28,8 @@ import com.github.mishaninss.html.listeners.IElementEventHandler;
 import com.github.mishaninss.html.readers.AbstractReader;
 import com.github.mishaninss.html.readers.TextReader;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.*;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
@@ -45,9 +47,9 @@ import java.util.*;
  */
 @Element
 public class ArmaElement implements IInteractiveElement, IListenableElement, INamed{
-    @Autowired
+    @Reporter
     protected IReporter reporter;
-    @Autowired
+    @ElementDriver
     protected IElementDriver elementDriver;
     @Autowired
     protected ContainersFactory containersFactory;

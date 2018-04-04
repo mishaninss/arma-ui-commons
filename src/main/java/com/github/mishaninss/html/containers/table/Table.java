@@ -20,6 +20,7 @@ import com.github.mishaninss.html.containers.table.annotations.IColumn;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,7 @@ import java.util.*;
 @SuppressWarnings("unused")
 @Component
 public class Table implements ILocatable, INamed{
-    @Autowired
+    @Reporter
     private IReporter reporter;
 
     private Map<String, Column<? extends IInteractiveElement>> namedColumns = new LinkedHashMap<>();

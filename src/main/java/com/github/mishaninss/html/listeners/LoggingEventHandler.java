@@ -19,6 +19,7 @@ package com.github.mishaninss.html.listeners;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class LoggingEventHandler implements IElementEventHandler {
     private static final String MESSAGE_GET_VALUE = "Read %s from %s: %s";
     private static final String MESSAGE_IS_DISPLAYED = "Check if element %s is displayed: %s";
 
-    @Autowired
+    @Reporter
     private IReporter reporter;
 
     @Override

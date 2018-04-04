@@ -17,6 +17,7 @@
 package com.github.mishaninss.html.listeners;
 
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.utils.GenericUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,7 @@ public class HighlightEventHandler implements IElementEventHandler {
     private static final String PERFORM_ACTION_MESSAGE = "Perform %s";
     private static final String IS_DISPLAYED_MESSAGE = "Check if displayed";
 
-    @Autowired
+    @ElementDriver
     private IElementDriver elementDriver;
 
     @Override

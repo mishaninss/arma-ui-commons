@@ -21,6 +21,7 @@ import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ import java.util.Map;
 
 @Element
 public class TemplatedElement<T extends IInteractiveElement> implements IInteractiveElement, INamed {
-    @Autowired
+    @Reporter
     private IReporter reporter;
     @Autowired
     private ApplicationContext applicationContext;

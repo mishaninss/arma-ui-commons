@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.elements.interfaces;
+package com.github.mishaninss.uidriver.annotations;
 
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-public interface ISelectable extends IInteractiveElement{
-    
-    boolean isSelected();
-    
-    IInteractiveElement select();
-    
-    IInteractiveElement deselect();
-}
+import javax.annotation.Resource;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+@Autowired
+@Qualifier(IWaitingDriver.QUALIFIER)
+public @interface WaitingDriver {}

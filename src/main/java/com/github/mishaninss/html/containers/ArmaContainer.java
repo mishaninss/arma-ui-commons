@@ -25,6 +25,9 @@ import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
+import com.github.mishaninss.uidriver.annotations.WaitingDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
@@ -49,11 +52,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     protected ContainersFactory containersFactory;
     @Autowired
     protected ApplicationContext applicationContext;
-    @Autowired
+    @ElementDriver
     protected IElementDriver elementDriver;
-    @Autowired
+    @WaitingDriver
     protected IWaitingDriver waitingDriver;
-    @Autowired
+    @Reporter
     private IReporter reporter;
 
     @PostConstruct

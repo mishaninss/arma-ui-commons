@@ -22,6 +22,8 @@ import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
+import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
@@ -34,9 +36,9 @@ import java.util.function.Function;
 
 @Element
 public class IndexedElement<T extends IInteractiveElement> implements IInteractiveElement, INamed, Iterable<T> {
-    @Autowired
+    @Reporter
     private IReporter reporter;
-    @Autowired
+    @ElementsDriver
     private IElementsDriver elementsDriver;
     @Autowired
     private ApplicationContext applicationContext;

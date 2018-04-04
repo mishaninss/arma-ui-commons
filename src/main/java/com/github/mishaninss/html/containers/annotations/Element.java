@@ -41,7 +41,9 @@ import java.lang.annotation.Target;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public @interface Element {
-    String prop() default UiCommonsProperties.Application.APP_LOCALE;
+    String PROFILE_PROPERTY = "profile";
+
+    String prop() default PROFILE_PROPERTY;
 
     String val() default "";
 

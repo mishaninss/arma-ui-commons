@@ -17,6 +17,7 @@
 package com.github.mishaninss.html.actions;
 
 
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ContextClickAction implements AbstractAction {
-    @Autowired
+    @ElementDriver
     private IElementDriver elementDriver;
 
     @Override

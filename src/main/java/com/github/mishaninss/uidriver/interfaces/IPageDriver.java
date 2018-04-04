@@ -20,8 +20,9 @@ package com.github.mishaninss.uidriver.interfaces;
  * Provides methods to interact with a page in browser.
  * @author Sergey Mishanin
  */
-public interface IPageDriver 
-{
+public interface IPageDriver {
+	String QUALIFIER = "IPageDriver";
+
     IPageDriver goToUrl(String url);
 
 	boolean isAlertDisplayed();

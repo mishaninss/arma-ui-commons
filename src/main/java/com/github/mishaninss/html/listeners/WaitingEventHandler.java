@@ -17,13 +17,14 @@
 package com.github.mishaninss.html.listeners;
 
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.uidriver.annotations.WaitingDriver;
 import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WaitingEventHandler implements IElementEventHandler {
-    @Autowired
+    @WaitingDriver
     private IWaitingDriver waitingDriver;
 
     @Override

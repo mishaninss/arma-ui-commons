@@ -23,6 +23,7 @@ import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
+import com.github.mishaninss.uidriver.annotations.SelectElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ISelectElementDriver;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 @Element
 public class Select extends ArmaElement implements IEditable, IReadable{
-    @Autowired
+    @SelectElementDriver
     protected ISelectElementDriver selectElementDriver;
     private static final String ITEMS_SEPARATOR = "::";
     private Boolean multiple;

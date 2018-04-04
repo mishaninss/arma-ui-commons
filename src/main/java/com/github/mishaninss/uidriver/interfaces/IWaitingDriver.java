@@ -19,6 +19,8 @@ package com.github.mishaninss.uidriver.interfaces;
 import java.time.temporal.TemporalUnit;
 
 public interface IWaitingDriver {
+    String QUALIFIER = "IWaitingDriver";
+
     void waitForElementIsVisible(ILocatable element);
 
     void waitForElementIsVisible(ILocatable element, long timeoutInSeconds);

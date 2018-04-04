@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.aspects;
 
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -31,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UiDriverAspects {
     private static final Logger LOGGER = LoggerFactory.getLogger("Framework");
 
-    @Autowired
+    @ElementDriver
     private IElementDriver elementDriver;
 
     @Pointcut("call(* com.github.mishaninss.uidriver.interfaces.IElementDriver.* (..)) && !call(* com.github.mishaninss.uidriver.interfaces.IElementDriver.clearCache (..))" )

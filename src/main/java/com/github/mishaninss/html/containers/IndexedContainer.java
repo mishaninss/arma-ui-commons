@@ -18,6 +18,7 @@ package com.github.mishaninss.html.containers;
 
 import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
 import com.github.mishaninss.html.interfaces.INamed;
+import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     private T wrappedContainer;
     private Map<Integer, T> indexedContainers = new HashMap<>();
 
-    @Autowired
+    @ElementsDriver
     protected IElementsDriver elementsDriver;
 
     public IndexedContainer(){}

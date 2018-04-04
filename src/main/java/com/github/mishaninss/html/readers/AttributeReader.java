@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.html.readers;
 
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +39,7 @@ public class AttributeReader implements AbstractReader {
         this.defaultAttribute = defaultAttribute;
     }
 
-    @Autowired
+    @ElementDriver
     private IElementDriver elementDriver;
 
     @Override
