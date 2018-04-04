@@ -18,6 +18,7 @@ package com.github.mishaninss.uidriver.interfaces;
 
 import java.time.Duration;
 
+@SuppressWarnings("unused")
 public interface IActionsChain {
     IActionsChain click(ILocatable element);
 
