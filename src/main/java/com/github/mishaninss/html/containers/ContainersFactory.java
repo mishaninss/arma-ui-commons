@@ -36,6 +36,7 @@ import com.github.mishaninss.html.interfaces.*;
 import com.github.mishaninss.html.listeners.*;
 import com.github.mishaninss.html.readers.AbstractReader;
 import com.github.mishaninss.html.readers.NoopReader;
+import com.github.mishaninss.uidriver.LocatorType;
 import com.github.mishaninss.uidriver.interfaces.IFrame;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import com.github.mishaninss.utils.ReflectionUtils;
@@ -332,11 +333,18 @@ public class ContainersFactory {
     private void setContainerLocator(IElementsContainer instance){
         Container containerProps = getContainerProps(instance);
         if (containerProps != null){
-            String locator = containerProps.value();
-            if (StringUtils.isBlank(locator)) {
-                locator = containerProps.locator();
+            String locator = getTypedContainerLocator(containerProps);
+            if (StringUtils.isNotBlank(locator)){
+                instance.setLocator(locator);
+                return;
             }
-            if (StringUtils.isNoneBlank(locator)) {
+            locator = containerProps.value();
+            if (StringUtils.isNotBlank(locator)){
+                instance.setLocator(locator);
+                return;
+            }
+            locator = containerProps.locator();
+            if (StringUtils.isNotBlank(locator)){
                 instance.setLocator(locator);
             }
         }
@@ -522,7 +530,7 @@ public class ContainersFactory {
         element.setContext(container);
         addDefaultListeners(element);
         setElementName(element, controllerField);
-        setElementDynamicMark(element, controllerField);
+        setElementOptionalMark(element, controllerField);
         if (container instanceof IFrame) {
             element.setContextLookup(false);
         } else {
@@ -664,11 +672,18 @@ public class ContainersFactory {
                 return locators;
             }
             locators = new ArrayList<>();
-            String locator = elementProps.value();
-            if (StringUtils.isBlank(locator)) {
-                locator = elementProps.locator();
+            String locator = getTypedElementLocator(elementProps);
+            if (StringUtils.isNotBlank(locator)) {
+                locators.add(locator);
+                return locators;
             }
-            if (StringUtils.isNoneBlank(locator)){
+            locator = elementProps.value();
+            if (StringUtils.isNotBlank(locator)) {
+                locators.add(locator);
+                return locators;
+            }
+            locator = elementProps.locator();
+            if (StringUtils.isNotBlank(locator)){
                 locators.add(locator);
             }
             return locators;
@@ -676,13 +691,87 @@ public class ContainersFactory {
         return new ArrayList<>();
     }
 
-    private void setElementDynamicMark(IInteractiveElement element, Field controllerField){
+    private String getTypedElementLocator(Element elementProps){
+        String locator = elementProps.byId();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildId(locator);
+        }
+        locator = elementProps.byName();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildName(locator);
+        }
+        locator = elementProps.byXpath();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildXpath(locator);
+        }
+        locator = elementProps.byCss();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildCss(locator);
+        }
+        locator = elementProps.byClass();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildClass(locator);
+        }
+        locator = elementProps.byTag();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildTag(locator);
+        }
+        locator = elementProps.byLink();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildLink(locator);
+        }
+        locator = elementProps.byPatrialLink();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildPartialLink(locator);
+        }
+
+        return null;
+    }
+
+    private String getTypedContainerLocator(Container containerProps){
+        String locator = containerProps.byId();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildId(locator);
+        }
+        locator = containerProps.byName();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildName(locator);
+        }
+        locator = containerProps.byXpath();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildXpath(locator);
+        }
+        locator = containerProps.byCss();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildCss(locator);
+        }
+        locator = containerProps.byClass();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildClass(locator);
+        }
+        locator = containerProps.byTag();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildTag(locator);
+        }
+        locator = containerProps.byLink();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildLink(locator);
+        }
+        locator = containerProps.byPatrialLink();
+        if (StringUtils.isNotBlank(locator)){
+            return LocatorType.buildPartialLink(locator);
+        }
+
+        return null;
+    }
+
+    private void setElementOptionalMark(IInteractiveElement element, Field controllerField){
         if (controllerField.isAnnotationPresent(Optional.class)){
             element.setOptional(true);
         } else {
             Element elementProps = getElementProps(controllerField);
             if (elementProps != null) {
-                element.setOptional(elementProps.dynamic());
+                element.setOptional(elementProps.optional());
             }
         }
     }

@@ -39,4 +39,27 @@ public @interface Container {
     String locators() default "";
     String name() default "";
     String value() default "";
+    /** Specifies XPath locator of an element */
+    String byXpath() default "";
+
+    /** Specifies CSS locator of an element */
+    String byCss() default "";
+
+    /** Specifies Name locator of an element */
+    String byName() default "";
+
+    /** Specifies Id locator of an element */
+    String byId() default "";
+
+    /** Specifies className locator of an element */
+    String byClass() default "";
+
+    /** Specifies tagName locator of an element */
+    String byTag() default "";
+
+    /** Specifies linkText locator of an element */
+    String byLink() default "";
+
+    /** Specifies partialLinkText locator of an element */
+    String byPatrialLink() default "";
 }

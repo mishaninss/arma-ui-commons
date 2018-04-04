@@ -62,8 +62,32 @@ public @interface Element {
     /** Specifies a human readable name of an element for logging purposes */
     String name() default "";
 
-    /** Specifies if this element */
-    boolean dynamic() default false;
+    /** Specifies XPath locator of an element */
+    String byXpath() default "";
+
+    /** Specifies CSS locator of an element */
+    String byCss() default "";
+
+    /** Specifies Name locator of an element */
+    String byName() default "";
+
+    /** Specifies Id locator of an element */
+    String byId() default "";
+
+    /** Specifies className locator of an element */
+    String byClass() default "";
+
+    /** Specifies tagName locator of an element */
+    String byTag() default "";
+
+    /** Specifies linkText locator of an element */
+    String byLink() default "";
+
+    /** Specifies partialLinkText locator of an element */
+    String byPatrialLink() default "";
+
+    /** Specifies if this element is optional */
+    boolean optional() default false;
     boolean contextLookup() default true;
     Class<? extends IInteractiveContainer> nextPage() default ArmaContainer.class;
     Class<? extends IInteractiveElement> type() default ArmaElement.class;
