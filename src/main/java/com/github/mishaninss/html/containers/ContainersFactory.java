@@ -56,6 +56,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -702,7 +704,7 @@ public class ContainersFactory {
         }
         locator = elementProps.byXpath();
         if (StringUtils.isNotBlank(locator)){
-            return LocatorType.buildXpath(locator);
+            return (locator);
         }
         locator = elementProps.byCss();
         if (StringUtils.isNotBlank(locator)){

@@ -16,11 +16,19 @@
 
 package com.github.mishaninss.uidriver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 /**
  * Locator types
  */
-public final class LocatorType
-{
+public final class LocatorType {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocatorType.class);
+
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String XPATH = "xpath";
@@ -34,6 +42,11 @@ public final class LocatorType
     private LocatorType() {}
 
     public static String buildXpath(String locator){
+        try {
+            XPathFactory.newInstance().newXPath().compile(locator);
+        } catch (XPathExpressionException ex){
+            LOGGER.warn("Invalid XPath locator provided: {}", locator);
+        }
         return buildLocator(locator, XPATH);
     }
 
