@@ -284,7 +284,6 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     @Override
     public int hashCode() {
-
         return Objects.hash(name, getLocatorDeque(), optional, contextLookup);
     }
 

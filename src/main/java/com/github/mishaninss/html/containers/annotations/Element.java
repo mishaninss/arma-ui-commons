@@ -16,9 +16,8 @@
 
 package com.github.mishaninss.html.containers.annotations;
 
-import com.github.mishaninss.data.UiCommonsProperties;
-import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.containers.ArmaContainer;
+import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.readers.NoopReader;

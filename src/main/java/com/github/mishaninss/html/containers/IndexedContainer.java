@@ -21,7 +21,6 @@ import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -42,6 +41,7 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     public IndexedContainer(){}
 
     @PostConstruct
+    @Override
     @SuppressWarnings("unchecked")
     public void init(){
         super.init();

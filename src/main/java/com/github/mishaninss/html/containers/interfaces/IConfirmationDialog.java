@@ -28,6 +28,8 @@ public interface IConfirmationDialog extends IInteractiveContainer {
     class Buttons{
         public static final String ACCEPT = "Accept";
         public static final String DECLINE = "Cancel";
+
+        private Buttons(){}
     }
     
     /** Performs click on the Accept button */

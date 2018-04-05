@@ -16,7 +16,6 @@
 
 package com.github.mishaninss.uidriver.annotations;
 
-import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

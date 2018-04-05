@@ -25,7 +25,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @SuppressWarnings("unused")
 @Aspect
@@ -50,9 +49,9 @@ public class UiDriverAspects {
         //Declaration of a pointcut for call to any IElementsDriver interface method
     }
 
-	@Around("pointcutIElementDriverCall() || pointcutIElementsDriverCall() || pointcutIPageDriverCall()")
+    @Around("pointcutIElementDriverCall() || pointcutIElementsDriverCall() || pointcutIPageDriverCall()")
     public Object adviceAroundIElementDriverMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        LOGGER.trace(joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+        LOGGER.trace("{}.{}",joinPoint.getSignature().getDeclaringTypeName(),joinPoint.getSignature().getName());
         try {
             return joinPoint.proceed();
         } catch (StaleElementReferenceException ex){

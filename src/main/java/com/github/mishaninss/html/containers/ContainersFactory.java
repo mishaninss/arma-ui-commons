@@ -19,7 +19,6 @@ package com.github.mishaninss.html.containers;
 import com.github.mishaninss.data.CsvDataExtractor;
 import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.exceptions.ContainerInitException;
-import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.composites.IndexedElement;
 import com.github.mishaninss.html.composites.TemplatedElement;
 import com.github.mishaninss.html.containers.annotations.*;
@@ -32,6 +31,7 @@ import com.github.mishaninss.html.containers.table.annotations.IColumn;
 import com.github.mishaninss.html.containers.table.annotations.IContextualColumn;
 import com.github.mishaninss.html.containers.table.annotations.IContextualTable;
 import com.github.mishaninss.html.containers.table.annotations.ITable;
+import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.interfaces.*;
 import com.github.mishaninss.html.listeners.*;
 import com.github.mishaninss.html.readers.AbstractReader;
@@ -56,8 +56,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -117,7 +115,7 @@ public class ContainersFactory {
                 resetContainer(clazz);
             } catch(Exception ex){
                 LOGGER.error(ex.getMessage());
-                String message = String.format("Cannot reset container [%s]", clazz.getName());
+                String message = String.format(EXCEPTION_RESET_FAILURE, clazz.getName());
                 throw new ContainerInitException(message, ex);
             }
         });

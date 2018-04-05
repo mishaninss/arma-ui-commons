@@ -16,9 +16,9 @@
 
 package com.github.mishaninss.html.elements;
 
+import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.elements.interfaces.IEditable;
 import com.github.mishaninss.html.elements.interfaces.IReadable;
-import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;

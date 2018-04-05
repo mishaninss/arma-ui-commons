@@ -46,14 +46,13 @@ public class TemplatedElement<T extends IInteractiveElement> implements IInterac
 	
 	@SuppressWarnings("unchecked")
 	public T resolveTemplate(String... args){
-        T clone = resolvedElements.get(args);
-        if (clone == null) {
-            clone = applicationContext.getBean((Class<T>) element.getClass(), element);
-            clone.setLocator(String.format(clone.getLocator(), args));
-            INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + StringUtils.join(args, "; ") + "]");
-            resolvedElements.put(args, clone);
-        }
-		return clone;
+        return resolvedElements.computeIfAbsent(args, key -> {
+            T clone = applicationContext.getBean((Class<T>) element.getClass(), element);
+            clone.setLocator(String.format(clone.getLocator(), key));
+            INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + StringUtils.join(key, "; ") + "]");
+            resolvedElements.put(key, clone);
+            return  clone;
+        });
 	}
 
     @Override

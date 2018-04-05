@@ -19,7 +19,6 @@ package com.github.mishaninss.html.listeners;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

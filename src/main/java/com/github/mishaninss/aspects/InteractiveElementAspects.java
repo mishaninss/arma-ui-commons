@@ -37,7 +37,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
@@ -53,7 +52,7 @@ public class InteractiveElementAspects {
     private IBrowserDriver browserDriver;
     @Reporter
     private IReporter reporter;
-    private static final Map<Signature, String> ACTION_NAMES = new Hashtable<>();
+    private static final Map<Signature, String> ACTION_NAMES = new Hashtable<>(); //NOSONAR
 
     @Pointcut("call(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
 	public void firesEvent() {

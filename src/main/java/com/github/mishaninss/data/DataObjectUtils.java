@@ -19,6 +19,8 @@ package com.github.mishaninss.data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -26,6 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataObjectUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectUtils.class);
+
+    private DataObjectUtils(){}
 
     public static Map<String, Object> readDataFromObject(Iterable<String> desiredProperties, Object object){
         Map<String, Object> data = new HashMap<>();
@@ -61,7 +66,7 @@ public class DataObjectUtils {
                 }
             }
         } catch (Exception ex){
-            ex.printStackTrace();
+            LOGGER.trace("Could not set {} property to {} data object", property, object.getClass());
         }
     }
 
@@ -90,8 +95,7 @@ public class DataObjectUtils {
 
     private static Method findGetter(Class<?> clazz, String property){
         String getterName = "get" + StringUtils.capitalize(property);
-        Method getter = MethodUtils.getMatchingAccessibleMethod(clazz, getterName);
-        return  getter;
+        return MethodUtils.getMatchingAccessibleMethod(clazz, getterName);
     }
 
     private static Field findPropertyField(Class<?> clazz, String property){

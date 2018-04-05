@@ -17,7 +17,6 @@
 package com.github.mishaninss.uidriver.annotations;
 
 import com.github.mishaninss.uidriver.interfaces.IPageDriver;
-import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

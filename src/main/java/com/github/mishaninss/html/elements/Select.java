@@ -16,9 +16,9 @@
 
 package com.github.mishaninss.html.elements;
 
+import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.elements.interfaces.IEditable;
 import com.github.mishaninss.html.elements.interfaces.IReadable;
-import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
@@ -26,7 +26,6 @@ import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.uidriver.annotations.SelectElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ISelectElementDriver;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -122,5 +121,15 @@ public class Select extends ArmaElement implements IEditable, IReadable{
         if (multiple) {
             selectElementDriver.deselectAll(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
