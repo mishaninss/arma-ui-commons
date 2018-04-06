@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.config;
 
+import com.github.mishaninss.aspects.IElementWaitingDriverAspects;
 import com.github.mishaninss.aspects.InteractiveElementAspects;
 import com.github.mishaninss.aspects.UiDriverAspects;
 import org.aspectj.lang.Aspects;
@@ -36,6 +37,11 @@ public class UiCommonsConfig {
     @Bean(autowire = Autowire.BY_TYPE)
     public UiDriverAspects uiDriverAspects() {
         return Aspects.aspectOf(UiDriverAspects.class);
+    }
+
+    @Bean(autowire = Autowire.BY_TYPE)
+    public IElementWaitingDriverAspects iElementWaitingDriverAspects() {
+        return Aspects.aspectOf(IElementWaitingDriverAspects.class);
     }
 
 }

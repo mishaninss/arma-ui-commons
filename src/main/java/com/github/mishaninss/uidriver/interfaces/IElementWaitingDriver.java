@@ -19,6 +19,10 @@ package com.github.mishaninss.uidriver.interfaces;
 import java.time.temporal.TemporalUnit;
 
 public interface IElementWaitingDriver {
+    IElementWaitingDriver quietly();
+
+    boolean isQuietly();
+
     void isVisible();
 
     void isVisible(long timeoutInSeconds);

@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.uidriver;
 
+import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.*;
@@ -47,6 +48,8 @@ public class Arma {
     private IBrowserDriver browserDriver;
     @Reporter
     private IReporter reporter;
+    @Autowired
+    private ElementBuilder elementBuilder;
 
     private Arma(){}
 
@@ -106,5 +109,9 @@ public class Arma {
 
     public IReporter reporter(){
         return reporter;
+    }
+
+    public ElementBuilder by(){
+        return elementBuilder;
     }
 }
