@@ -20,6 +20,7 @@ import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import com.github.mishaninss.utils.GenericUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,8 @@ public class HighlightEventHandler implements IElementEventHandler {
         switch (event){
             case CHANGE_VALUE:
                 elementDriver.highlightElement(element);
-                elementDriver.addElementDebugInfo(element, String.format(CHANGE_VALUE_MESSAGE, args[0]), "");
+                Object value = ArrayUtils.isNotEmpty(args) ? args[0] : "";
+                elementDriver.addElementDebugInfo(element, String.format(CHANGE_VALUE_MESSAGE, value), "");
                 GenericUtils.pause(TimeUnit.MILLISECONDS,700);
                 break;
             case READ_VALUE:

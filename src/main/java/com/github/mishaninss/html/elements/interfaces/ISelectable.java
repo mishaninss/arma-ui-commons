@@ -17,12 +17,16 @@
 package com.github.mishaninss.html.elements.interfaces;
 
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.html.listeners.ElementEvent;
+import com.github.mishaninss.html.listeners.FiresEvent;
 
 public interface ISelectable extends IInteractiveElement{
     
     boolean isSelected();
-    
+
+    @FiresEvent(ElementEvent.CHANGE_VALUE)
     IInteractiveElement select();
-    
+
+    @FiresEvent(ElementEvent.CHANGE_VALUE)
     IInteractiveElement deselect();
 }

@@ -88,15 +88,19 @@ public class Arma {
         return waitingDriver;
     }
 
+    public IElementWaitingDriver waiting(ILocatable element){
+        return applicationContext.getBean(IElementWaitingDriver.class, element);
+    }
+
     public IActionsChain actionsChain(){
         return applicationContext.getBean(IActionsChain.class);
     }
 
-    public IElementActionsChain elementActionsChain(ILocatable element){
+    public IElementActionsChain actionsChain(ILocatable element){
         return applicationContext.getBean(IElementActionsChain.class, element);
     }
 
-    public IThisElementDriver thisElement(ILocatable element){
+    public IThisElementDriver element(ILocatable element){
         return applicationContext.getBean(IThisElementDriver.class, element);
     }
 

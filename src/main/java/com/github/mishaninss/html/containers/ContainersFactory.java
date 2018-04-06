@@ -32,6 +32,7 @@ import com.github.mishaninss.html.containers.table.annotations.IContextualColumn
 import com.github.mishaninss.html.containers.table.annotations.IContextualTable;
 import com.github.mishaninss.html.containers.table.annotations.ITable;
 import com.github.mishaninss.html.elements.ArmaElement;
+import com.github.mishaninss.html.elements.NoopElement;
 import com.github.mishaninss.html.interfaces.*;
 import com.github.mishaninss.html.listeners.*;
 import com.github.mishaninss.html.readers.AbstractReader;
@@ -582,23 +583,26 @@ public class ContainersFactory {
     private Class<? extends IInteractiveElement> getControllerClass(Field controllerField){
         Class<?> fieldType = controllerField.getType();
         Element elementProps = getElementProps(controllerField);
-        Class<?> elementType = elementProps != null ? elementProps.type() : ArmaElement.class;
-        if (fieldType.equals(IndexedElement.class)
-                || fieldType.equals(TemplatedElement.class)
-                || fieldType.equals(Column.class)){
+        Class<?> elementType = elementProps != null ? elementProps.type() : NoopElement.class;
+        if (ReflectionUtils.isGenericType(fieldType)){
             Class<?> genericType = ReflectionUtils.getGenericClass(controllerField.getGenericType(), 0);
             if (genericType != null){
                 elementType = genericType;
+            } else if (elementType.equals(NoopElement.class)){
+                throw getException("Type of an element field [%s] is a generic type [%s], but type parameter was not provided. Add generic parameter of a field type or use @Element(type = <element type>)", controllerField.getName(), fieldType.getName());
+            }
+        } else if (!elementType.equals(NoopElement.class)){
+            if (!fieldType.isAssignableFrom(elementType)){
+                throw getException("Element type, specified for field [%s], is [%s], and it's not compatible with field type [%s]", controllerField.getName(), elementType.getName(), fieldType.getName());
             }
         } else if (!fieldType.isInterface()){
             elementType = fieldType;
+        } else {
+            throw getException("Type of an element field [%s] is an interface [%s], but implementation type was not provided. Provide concrete element type using @Element(type = <element type>)", controllerField.getName(), fieldType.getName());
         }
 
-        if (!fieldType.isAssignableFrom(elementType)){
-            throw getException("%s field type %s is not compatible with % element type", controllerField.getName(), fieldType.getName(), elementType.getName());
-        }
         if (!IInteractiveElement.class.isAssignableFrom(elementType)){
-            throw getException("%s field type %s is not compatible with IInteractiveElement type", controllerField.getName(), elementType.getName());
+            throw getException("Element type, specified for field [%s], is [%s], and it's not compatible with IInteractiveElement type", controllerField.getName(), elementType.getName());
         }
         return (Class<? extends IInteractiveElement>)elementType;
     }
