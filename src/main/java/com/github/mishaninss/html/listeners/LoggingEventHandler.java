@@ -28,10 +28,10 @@ import java.util.Arrays;
 
 @Component
 public class LoggingEventHandler implements IElementEventHandler {
-    private static final String MESSAGE_PERFORM_ACTION = "Perform %s on %s";
-    private static final String MESSAGE_SET_VALUE = "%s of %s: %s";
-    private static final String MESSAGE_GET_VALUE = "Read %s from %s: %s";
-    private static final String MESSAGE_IS_DISPLAYED = "Check if element %s is displayed: %s";
+    private static final String MESSAGE_PERFORM_ACTION = "%s -> Perform %s";
+    private static final String MESSAGE_SET_VALUE = "%s -> %s: %s";
+    private static final String MESSAGE_GET_VALUE = "%s -> Read %s: %s";
+    private static final String MESSAGE_IS_DISPLAYED = "%s -> Check if displayed: %s";
 
     @Reporter
     private IReporter reporter;
@@ -43,12 +43,12 @@ public class LoggingEventHandler implements IElementEventHandler {
         switch (event){
             case CHANGE_VALUE:
                 actionName = StringUtils.isNoneBlank(comment) ? comment: "Change value";
-                message = getLogMessage(MESSAGE_SET_VALUE, actionName, element, args);
+                message = getLogMessage(MESSAGE_SET_VALUE, element, actionName, args);
                 reporter.info(message);
                 break;
             case ACTION:
                 actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "perform").trim(): "action";
-                message = getLogMessage(MESSAGE_PERFORM_ACTION, actionName, element);
+                message = getLogMessage(MESSAGE_PERFORM_ACTION, element, actionName);
                 reporter.info(message);
                 break;
             default:
@@ -61,7 +61,7 @@ public class LoggingEventHandler implements IElementEventHandler {
         switch (event){
             case READ_VALUE:
                 String actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim(): "value";
-                message = getLogMessage(MESSAGE_GET_VALUE, actionName, element, args);
+                message = getLogMessage(MESSAGE_GET_VALUE, element, actionName, args);
                 reporter.info(message);
                 break;
             case IS_DISPLAYED:

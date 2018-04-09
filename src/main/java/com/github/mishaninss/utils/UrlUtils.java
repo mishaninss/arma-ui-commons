@@ -17,7 +17,6 @@
 package com.github.mishaninss.utils;
 
 import com.github.mishaninss.data.UiCommonsProperties;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -33,11 +32,13 @@ public final class UrlUtils {
 
     @Autowired
     private Environment environment;
+    @Autowired
+    private UiCommonsProperties properties;
 
     private UrlUtils(){}
 
     public String getRawAppUrl(){
-        String appUrl = environment.getProperty(UiCommonsProperties.Application.APP_URL);
+        String appUrl = properties.application().url;
         Pattern p = Pattern.compile("(https://|http://|www\\.)(.*:.+@)(.+)");
         Matcher m = p.matcher(appUrl);
         if (m.matches()){
@@ -80,9 +81,9 @@ public final class UrlUtils {
             if (!resolvedUrl.startsWith("/")){
                 resolvedUrl = "/" + resolvedUrl;
             }
-            resolvedUrl = StringUtils.stripEnd(environment.getProperty(UiCommonsProperties.Application.APP_URL, "").trim(), "/") + resolvedUrl;
+            resolvedUrl = properties.application().url + resolvedUrl;
         }
-        return resolvedUrl;
+        return environment.resolvePlaceholders(resolvedUrl);
     }
 
 

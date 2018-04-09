@@ -149,4 +149,5 @@ public interface IElementDriver {
 
     Object executeJsOnElement(String javaScript, ILocatable element);
 
+    IElementDriver setValueToElement(ILocatable element, String value);
 }

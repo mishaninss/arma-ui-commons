@@ -27,4 +27,9 @@ public class InteractionException extends RuntimeException {
     public InteractionException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    @Override
+    public Throwable fillInStackTrace() {
+        return null;
+    }
 }

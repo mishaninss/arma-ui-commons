@@ -19,6 +19,8 @@ package com.github.mishaninss.data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -90,14 +92,28 @@ public class UiCommonsProperties{
 
     @Component("uiCommonsFrameworkProps")
     public static class Framework{
+        @Autowired
+        private ApplicationContext applicationContext;
+
+        public static final String BASE_CONFIG = "arma.base.config";
+        public static final String FORCE_CLOSE = "arma.force.close";
         public static final String DEBUG_MODE = "arma.framework.debug.mode";
         public static final String SCREENSHOTS_DIR = "arma.framework.screenshots.dir";
+
+        @Value("${" + FORCE_CLOSE + ":false}")
+        public boolean forceClose;
 
         @Value("${" + DEBUG_MODE + ":false}")
         public boolean debugMode;
 
         @Value("${" + SCREENSHOTS_DIR + ":./target}")
         public String screenshotsDir;
+
+        public Framework enableForcedClosing(){
+            forceClose = true;
+            ((AnnotationConfigApplicationContext) applicationContext).registerShutdownHook();
+            return this;
+        }
     }
 
     /**

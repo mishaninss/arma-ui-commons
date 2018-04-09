@@ -39,9 +39,7 @@ import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unused")
 @Aspect
@@ -90,7 +88,7 @@ public class InteractiveElementAspects {
         Object[] args = joinPoint.getArgs();
         FiresEvent firesEvent = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
         ElementEvent event = firesEvent.value();
-        List<IElementEventHandler> listeners = ((IListenableElement) element).getEventListeners(event);
+        LinkedHashSet<IElementEventHandler> listeners = ((IListenableElement) element).getEventListeners(event);
         if (CollectionUtils.isNotEmpty(listeners)) {
             listeners.forEach(listener -> listener.beforeEvent(element, event, getActionName(joinPoint.getSignature()), args));
         }
@@ -114,10 +112,11 @@ public class InteractiveElementAspects {
     private void executeAfterEvents(IInteractiveElement element, JoinPoint joinPoint, Object ret){
         FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
         ElementEvent event = firesEvent.value();
-        List<IElementEventHandler> listeners = ((IListenableElement)element).getEventListeners(event);
+        LinkedList<IElementEventHandler> listeners = new LinkedList<>(IListenableElement.getListenersIfApplicable(element, event));
         if (CollectionUtils.isNotEmpty(listeners)) {
-            for (int i = listeners.size() - 1; i >= 0; i--) {
-                listeners.get(i).afterEvent(element, event, getActionName(joinPoint.getSignature()), ret);
+            Iterator<IElementEventHandler> iterator = listeners.descendingIterator();
+            while (iterator.hasNext()) {
+                iterator.next().afterEvent(element, event, getActionName(joinPoint.getSignature()), ret);
             }
         }
     }
@@ -125,7 +124,7 @@ public class InteractiveElementAspects {
     @AfterThrowing(value="firesEvent() && !withinCodeFiresEvent()", throwing="e")
     public void adviceAfterThrowingFromEventFiringMethod(Exception e, JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
-        if (target != null && target instanceof IInteractiveElement) {
+        if (target instanceof IInteractiveElement) {
             IInteractiveElement element = (IInteractiveElement) target;
             FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
             ElementEvent event = firesEvent.value();
@@ -152,7 +151,7 @@ public class InteractiveElementAspects {
             sb.append(" [").append(element.getLocator()).append("]");
         }
 
-        sb.append("\nLocator: ").append(element.getLocator());
+        sb.append("\nLocator: ").append(element.getLocatorsPath());
 
         if (cause instanceof SessionLostException){
             throw new SessionLostException(sb.toString(), cause);

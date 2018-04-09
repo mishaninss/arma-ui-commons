@@ -20,7 +20,6 @@ import com.github.mishaninss.aspects.IElementWaitingDriverAspects;
 import com.github.mishaninss.aspects.InteractiveElementAspects;
 import com.github.mishaninss.aspects.UiDriverAspects;
 import org.aspectj.lang.Aspects;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -29,17 +28,17 @@ import org.springframework.context.annotation.Import;
 @Import(CommonsConfig.class)
 public class UiCommonsConfig {
 
-    @Bean(autowire = Autowire.BY_TYPE)
+    @Bean
     public InteractiveElementAspects interactiveElementAspects() {
         return Aspects.aspectOf(InteractiveElementAspects.class);
     }
 
-    @Bean(autowire = Autowire.BY_TYPE)
+    @Bean
     public UiDriverAspects uiDriverAspects() {
         return Aspects.aspectOf(UiDriverAspects.class);
     }
 
-    @Bean(autowire = Autowire.BY_TYPE)
+    @Bean
     public IElementWaitingDriverAspects iElementWaitingDriverAspects() {
         return Aspects.aspectOf(IElementWaitingDriverAspects.class);
     }

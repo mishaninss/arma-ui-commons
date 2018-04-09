@@ -45,6 +45,10 @@ public interface INamed extends ILocatable {
         return "";
     }
 
+    static void setLoggableNameIfApplicable(Object element){
+        setNameIfApplicable(element, getLoggableNameIfApplicable(element));
+    }
+
     default Deque<String> getNameDeque(){
         Deque<ILocatable> cascade = getObjectDeque();
     Deque<String> path = new ArrayDeque<>();

@@ -77,6 +77,14 @@ public final class LocatorType {
         return buildLocator(locator, PARTIAL_LINK);
     }
 
+    public static String buildText(String locator){
+        return buildLocator(String.format(".//*[.='%s']", locator), XPATH);
+    }
+
+    public static String buildPartialText(String locator){
+        return buildLocator(String.format(".//*[contains(., '%s')]", locator), XPATH);
+    }
+
     private static String buildLocator(final String locator, final String type){
         if (locator == null){
             return locator;

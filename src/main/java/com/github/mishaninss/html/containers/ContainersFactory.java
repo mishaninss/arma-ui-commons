@@ -62,6 +62,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Provides mechanism for creating and initializing of container instances
@@ -255,8 +256,10 @@ public class ContainersFactory {
             for (Container container: containers){
                 String property = container.prop();
                 String expectedValue = container.val();
-                String actualValue = env.getProperty(property, "");
-                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)){
+                if (Element.PROFILE_PROPERTY.equals(property)
+                        && ArrayUtils.contains(env.getActiveProfiles(), expectedValue)) {
+                    return container;
+                } else if (StringUtils.equals(env.getProperty(property), expectedValue)) {
                     return container;
                 } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
                     defaultParameters = container;
@@ -615,23 +618,15 @@ public class ContainersFactory {
         return applicationContext.getBean(clazz, locators);
     }
 
-    private void addDefaultListeners(IInteractiveElement element){
+    public void addDefaultListeners(IInteractiveElement element){
         if (element instanceof IListenableElement) {
             IListenableElement listenableElement = ((IListenableElement)element);
             ILocatable context = element.getContext();
-            if (context != null && context instanceof IFrame){
+            if (context instanceof IFrame){
                 IFrameEventHandler iFrameEventHandler = applicationContext.getBean(IFrameEventHandler.class);
-                listenableElement
-                        .addEventListener(ElementEvent.CHANGE_VALUE, iFrameEventHandler)
-                        .addEventListener(ElementEvent.READ_VALUE, iFrameEventHandler)
-                        .addEventListener(ElementEvent.ACTION, iFrameEventHandler)
-                        .addEventListener(ElementEvent.IS_DISPLAYED, iFrameEventHandler);
+                listenableElement.addEventListener(iFrameEventHandler);
             }
-            listenableElement
-                    .addEventListeners(ElementEvent.CHANGE_VALUE, defaultListeners)
-                    .addEventListeners(ElementEvent.READ_VALUE, defaultListeners)
-                    .addEventListeners(ElementEvent.ACTION, defaultListeners)
-                    .addEventListeners(ElementEvent.IS_DISPLAYED, defaultListeners);
+            listenableElement.addEventListeners(defaultListeners);
         }
     }
 
@@ -673,24 +668,24 @@ public class ContainersFactory {
         if (elementProps != null) {
             List<String> locators = Arrays.asList(elementProps.locators());
             if (CollectionUtils.isNotEmpty(locators)) {
-                return locators;
+                return resolvePlaceholders(locators);
             }
             locators = new ArrayList<>();
             String locator = getTypedElementLocator(elementProps);
             if (StringUtils.isNotBlank(locator)) {
                 locators.add(locator);
-                return locators;
+                return resolvePlaceholders(locators);
             }
             locator = elementProps.value();
             if (StringUtils.isNotBlank(locator)) {
                 locators.add(locator);
-                return locators;
+                return resolvePlaceholders(locators);
             }
             locator = elementProps.locator();
             if (StringUtils.isNotBlank(locator)){
                 locators.add(locator);
             }
-            return locators;
+            return resolvePlaceholders(locators);
         }
         return new ArrayList<>();
     }
@@ -980,5 +975,13 @@ public class ContainersFactory {
 
     private static ContainerInitException getException(Throwable cause, String message, Object... args){
         return new ContainerInitException(String.format(message, args), cause);
+    }
+
+    private String resolvePlaceholders(String value){
+        return env.resolvePlaceholders(value);
+    }
+
+    private List<String> resolvePlaceholders(List<String> values){
+        return values.stream().map(this::resolvePlaceholders).collect(Collectors.toList());
     }
 }

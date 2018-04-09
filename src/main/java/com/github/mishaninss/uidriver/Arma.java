@@ -16,13 +16,22 @@
 
 package com.github.mishaninss.uidriver;
 
+import com.github.mishaninss.config.UiCommonsConfig;
+import com.github.mishaninss.data.UiCommonsProperties;
+import com.github.mishaninss.html.composites.IndexedElementBuilder;
+import com.github.mishaninss.html.containers.ArmaContainer;
 import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.*;
 import com.github.mishaninss.uidriver.interfaces.*;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +39,8 @@ import javax.annotation.PreDestroy;
 
 @Component
 public class Arma {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Arma.class);
+
     private static final ThreadLocal<Arma> INSTANCES = new ThreadLocal<>();
 
     @Autowired
@@ -50,6 +61,10 @@ public class Arma {
     private IReporter reporter;
     @Autowired
     private ElementBuilder elementBuilder;
+    @Autowired
+    private IndexedElementBuilder indexedElementBuilder;
+    @Autowired
+    private UiCommonsProperties properties;
 
     private Arma(){}
 
@@ -64,7 +79,33 @@ public class Arma {
     }
 
     public static Arma get(){
-        return INSTANCES.get();
+        Arma arma = INSTANCES.get();
+        if (arma == null){
+            return up(null);
+        } else {
+            return arma;
+        }
+
+    }
+
+    public static Arma get(String browserName){
+        Arma arma = INSTANCES.get();
+        if (arma == null){
+            return up(browserName);
+        } else {
+            return arma;
+        }
+    }
+
+    public static void kill(){
+        Arma arma = INSTANCES.get();
+        if (arma != null) {
+            arma.close();
+        }
+    }
+
+    public void close(){
+        ((ConfigurableApplicationContext)applicationContext).close();
     }
 
     public IElementDriver element(){
@@ -81,6 +122,21 @@ public class Arma {
     
     public IPageDriver page(){
         return pageDriver;
+    }
+
+    public <T> T page(Class<T> pageClass){
+        return applicationContext.getBean(pageClass);
+    }
+
+    public <T extends ArmaContainer> T open(Class<T> pageClass){
+        T page = applicationContext.getBean(pageClass);
+        page.goToUrl();
+        return page;
+    }
+
+    public <T extends ArmaContainer> T open(String url, Class<T> pageClass){
+        pageDriver.goToUrl(url);
+        return applicationContext.getBean(pageClass);
     }
 
     public IBrowserDriver browser(){
@@ -113,5 +169,49 @@ public class Arma {
 
     public ElementBuilder by(){
         return elementBuilder;
+    }
+
+    public ElementBuilder by(boolean withListeners){
+        return elementBuilder.withListeners(withListeners);
+    }
+
+    public IndexedElementBuilder bys(){
+        return indexedElementBuilder;
+    }
+
+    public IndexedElementBuilder bys(boolean withListeners){
+        return indexedElementBuilder.withListeners(withListeners);
+    }
+
+    public UiCommonsProperties config(){
+        return properties;
+    }
+
+    public static Arma chrome(){
+        return get("chrome");
+    }
+
+    public static void withBaseConfig(Class<?> configClass){
+        System.setProperty(UiCommonsProperties.Framework.BASE_CONFIG, configClass.getCanonicalName());
+    }
+
+    private static Arma up(String browserName){
+        String baseConfig = System.getProperty(UiCommonsProperties.Framework.BASE_CONFIG);
+        Class<?> configClass = UiCommonsConfig.class;
+        if (StringUtils.isNotBlank(baseConfig)){
+            try {
+                configClass = Class.forName(baseConfig);
+            } catch (ClassNotFoundException e) {
+                LOGGER.warn("Couldn't load config class", e);
+            }
+        }
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+        ctx.register(configClass);
+
+        if (StringUtils.isNotBlank(browserName)) {
+            ctx.getEnvironment().setActiveProfiles(browserName);
+        }
+        ctx.refresh();
+        return ctx.getBean(Arma.class);
     }
 }

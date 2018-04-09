@@ -19,7 +19,7 @@ package com.github.mishaninss.html.interfaces;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -30,11 +30,32 @@ public interface IListenableElement {
 
     IListenableElement addEventListener(ElementEvent event, IElementEventHandler listener);
 
-    IListenableElement setEventListeners(Map<ElementEvent, List<IElementEventHandler>> listeners);
+    default IListenableElement addEventListener(IElementEventHandler listener){
+        for (ElementEvent event: ElementEvent.values()){
+            addEventListener(event, listener);
+        }
+        return this;
+    }
+
+    IListenableElement setEventListeners(Map<ElementEvent, LinkedHashSet<IElementEventHandler>> listeners);
 
     default IListenableElement addEventListeners(ElementEvent event, IElementEventHandler... listeners){
         for (IElementEventHandler listener: listeners){
             addEventListener(event, listener);
+        }
+        return this;
+    }
+
+    default IListenableElement addEventListeners(IElementEventHandler... listeners){
+        for (ElementEvent event: ElementEvent.values()){
+            addEventListeners(event, listeners);
+        }
+        return this;
+    }
+
+    default IListenableElement addEventListeners(Iterable<IElementEventHandler> listeners){
+        for (ElementEvent event: ElementEvent.values()){
+            addEventListeners(event, listeners);
         }
         return this;
     }
@@ -46,9 +67,17 @@ public interface IListenableElement {
         return this;
     }
 
-    Map<ElementEvent, List<IElementEventHandler>> getEventListeners();
+    Map<ElementEvent, LinkedHashSet<IElementEventHandler>> getEventListeners();
 
-    default List<IElementEventHandler> getEventListeners(ElementEvent event){
+    default LinkedHashSet<IElementEventHandler> getEventListeners(ElementEvent event){
         return getEventListeners().get(event);
+    }
+
+    static LinkedHashSet<IElementEventHandler> getListenersIfApplicable(Object object, ElementEvent event){
+        if (object instanceof IListenableElement){
+            return ((IListenableElement) object).getEventListeners(event);
+        } else {
+            return new LinkedHashSet<>();
+        }
     }
 }

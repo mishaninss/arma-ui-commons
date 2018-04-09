@@ -74,4 +74,6 @@ public interface IThisElementDriver extends ILocatableWrapper {
     @FiresEvent(ElementEvent.ACTION)
     IThisElementDriver jsClick();
 
+    @FiresEvent(ElementEvent.CHANGE_VALUE)
+    IThisElementDriver setValue(String value);
 }

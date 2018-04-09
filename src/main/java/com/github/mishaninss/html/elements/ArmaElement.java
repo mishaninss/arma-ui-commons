@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -46,6 +47,7 @@ import java.util.*;
  * @author Sergey Mishanin
  */
 @Element
+@Primary
 public class ArmaElement implements IInteractiveElement, IListenableElement, INamed{
     @Reporter
     protected IReporter reporter;
@@ -67,11 +69,11 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     private   boolean contextLookup = true;
     private ILocatable context;
     private IInteractiveContainer nextPage;
-    private Map<ElementEvent, List<IElementEventHandler>> eventListeners = new EnumMap<>(ElementEvent.class);
+    private Map<ElementEvent, LinkedHashSet<IElementEventHandler>> eventListeners = new EnumMap<>(ElementEvent.class);
 
 // Constructors ********************************************************************************************************
 
-    protected ArmaElement(){}
+    public ArmaElement(){}
 
     /**
      * Creates an instance of Basic element
@@ -191,7 +193,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     @Override
     public IInteractiveContainer nextPage(){
-        if (nextPage == null && IInteractiveContainer.class.isAssignableFrom(context.getClass())){
+        if (nextPage == null && context != null && IInteractiveContainer.class.isAssignableFrom(context.getClass())){
             nextPage = (IInteractiveContainer) context;
         }
         return nextPage;
@@ -211,19 +213,19 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     @Override
     public IListenableElement addEventListener(ElementEvent event, IElementEventHandler listener) {
-        List<IElementEventHandler> typeListeners = eventListeners.computeIfAbsent(event, k -> new LinkedList<>());
+        LinkedHashSet<IElementEventHandler> typeListeners = eventListeners.computeIfAbsent(event, k -> new LinkedHashSet<>());
         typeListeners.add(listener);
         return this;
     }
 
     @Override
-    public IListenableElement setEventListeners(Map<ElementEvent, List<IElementEventHandler>> listeners) {
+    public IListenableElement setEventListeners(Map<ElementEvent, LinkedHashSet<IElementEventHandler>> listeners) {
         eventListeners = new EnumMap<>(listeners);
         return this;
     }
 
     @Override
-    public Map<ElementEvent, List<IElementEventHandler>> getEventListeners() {
+    public Map<ElementEvent, LinkedHashSet<IElementEventHandler>> getEventListeners() {
         return eventListeners;
     }
 

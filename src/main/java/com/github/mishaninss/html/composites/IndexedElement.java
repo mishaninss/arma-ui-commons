@@ -18,6 +18,7 @@ package com.github.mishaninss.html.composites;
 
 import com.github.mishaninss.html.containers.IndexedContainer;
 import com.github.mishaninss.html.containers.annotations.Element;
+import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
@@ -28,7 +29,6 @@ import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,7 +41,7 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
     @ElementsDriver
     private IElementsDriver elementsDriver;
     @Autowired
-    private ApplicationContext applicationContext;
+    private ElementBuilder elementBuilder;
 
 	private T wrappedElement;
     private Map<Integer, T> indexedElements = new HashMap<>();
@@ -54,7 +54,7 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
 	public T index(int index){
         return indexedElements.computeIfAbsent(index,
             i -> {
-                T clone = applicationContext.getBean((Class<T>) wrappedElement.getClass(), wrappedElement);
+                T clone = elementBuilder.clone(wrappedElement);
                 clone.setLocator(IndexedContainer.getIndexedLocator(clone.getLocator(), i));
                 INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
                 indexedElements.put(index, clone);

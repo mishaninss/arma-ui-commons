@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  * An element controller instance will be parametrized with values, specified using this annotation.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public @interface Element {

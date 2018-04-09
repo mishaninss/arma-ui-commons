@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
 /**
  * Provides common interface for an abstract UI element
@@ -38,6 +39,19 @@ public interface ILocatable{
             }
         });
         return path;
+    }
+
+    default String getLocatorsPath(){
+        Deque<String> path = getLocatorDeque();
+        StringBuilder sb = new StringBuilder();
+        if (!path.isEmpty()) {
+            Iterator<String> iterator = path.descendingIterator();
+            sb.append(iterator.next());
+            while (iterator.hasNext()) {
+                sb.append(" -> ").append(iterator.next());
+            }
+        }
+        return sb.toString();
     }
 
     default Deque<ILocatable> getObjectDeque(){

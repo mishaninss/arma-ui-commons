@@ -16,7 +16,6 @@
 
 package com.github.mishaninss.html.containers.annotations;
 
-import com.github.mishaninss.data.UiCommonsProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -33,7 +32,7 @@ import java.lang.annotation.Target;
 @Autowired
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public @interface Container {
-    String prop() default UiCommonsProperties.Application.APP_LOCALE;
+    String prop() default Element.PROFILE_PROPERTY;
     String val() default "";
     String locator() default "";
     String locators() default "";

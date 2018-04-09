@@ -16,46 +16,136 @@
 
 package com.github.mishaninss.html.elements;
 
+import com.github.mishaninss.html.containers.ContainersFactory;
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.uidriver.LocatorType;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings("unchecked")
 public class ElementBuilder {
     @Autowired
     private ApplicationContext applicationContext;
-    private static final String BEAN_NAME = "armaElement";
+    @Autowired
+    private ContainersFactory containersFactory;
+
+    private boolean withListeners = true;
+
+    public ElementBuilder withListeners(){
+        withListeners = true;
+        return this;
+    }
+
+    public ElementBuilder withListeners(boolean withListeners){
+        this.withListeners = withListeners;
+        return this;
+    }
+
+    public ElementBuilder withoutListeners(){
+        withListeners = false;
+        return this;
+    }
 
     public ArmaElement xpath(String xpath){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildXpath(xpath));
+        return xpath(xpath, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T xpath(String xpath, Class<T> elementType){
+        return buildElement(LocatorType.buildXpath(xpath), elementType);
     }
 
     public ArmaElement css(String css){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildCss(css));
+        return css(css, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T css(String css, Class<T> elementType){
+        return buildElement(LocatorType.buildCss(css), elementType);
     }
 
     public ArmaElement id(String id){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildId(id));
+        return id(id, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T id(String id, Class<T> elementType){
+        return buildElement(LocatorType.buildId(id), elementType);
     }
 
     public ArmaElement name(String name){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildName(name));
+        return name(name, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T name(String name, Class<T> elementType){
+        return buildElement(LocatorType.buildName(name), elementType);
     }
 
     public ArmaElement link(String linkText){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildLink(linkText));
+        return link(linkText, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T link(String linkText, Class<T> elementType){
+        return buildElement(LocatorType.buildLink(linkText), elementType);
     }
 
     public ArmaElement partialLink(String partialLinkText){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildPartialLink(partialLinkText));
+        return partialLink(partialLinkText, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T partialLink(String partialLinkText, Class<T> elementType){
+        return buildElement(LocatorType.buildPartialLink(partialLinkText), elementType);
     }
 
     public ArmaElement tag(String tag){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildTag(tag));
+        return tag(tag, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T tag(String tag, Class<T> elementType){
+        return buildElement(LocatorType.buildTag(tag), elementType);
     }
 
     public ArmaElement className(String className){
-        return (ArmaElement) applicationContext.getBean(BEAN_NAME, LocatorType.buildClass(className));
+        return className(className, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T className(String className, Class<T> elementType){
+        return buildElement(LocatorType.buildClass(className), elementType);
+    }
+
+    public ArmaElement text(String text){
+        return text(text, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T text(String text, Class<T> elementType){
+        return buildElement(LocatorType.buildText(text), elementType);
+    }
+
+    public ArmaElement partialText(String text){
+        return partialText(text, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T partialText(String text, Class<T> elementType){
+        return buildElement(LocatorType.buildPartialText(text), elementType);
+    }
+
+    public <T extends IInteractiveElement> T clone(IInteractiveElement elementToClone){
+        Preconditions.checkArgument(elementToClone != null, "element to clone cannot be null");
+        return  (T) applicationContext.getBean(getBeanName(elementToClone.getClass()), elementToClone);
+    }
+
+    private <T extends IInteractiveElement> T buildElement(String locator, Class<T> elementType){
+        T element = (T) applicationContext.getBean(getBeanName(elementType), locator);
+        if (withListeners) {
+            containersFactory.addDefaultListeners(element);
+            INamed.setLoggableNameIfApplicable(element);
+        }
+        return element;
+    }
+    
+    private static String getBeanName(Class<?> elementType){
+        return StringUtils.uncapitalize(elementType.getSimpleName());
     }
 }
