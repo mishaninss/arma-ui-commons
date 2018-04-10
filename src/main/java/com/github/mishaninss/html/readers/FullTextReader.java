@@ -17,9 +17,9 @@
 package com.github.mishaninss.html.readers;
 
 
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ public class FullTextReader implements AbstractReader {
     private IElementDriver elementDriver;
 
     @Override
-    public String readProperty(ILocatable element, Object... args) {
+    public String apply(IInteractiveElement element) {
         return elementDriver.getFullTextFromElement(element);
     }
 }

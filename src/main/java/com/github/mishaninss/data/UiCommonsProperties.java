@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Set;
 
 /**
  * Provides an Application Context properties
@@ -95,10 +96,18 @@ public class UiCommonsProperties{
         @Autowired
         private ApplicationContext applicationContext;
 
+        public static final String DEFAULT_EVENT_HANDLERS = "arma.default.event.handlers";
+        public static final String ARE_DEFAULT_LISTENERS_ENABLED = "arma.enable.default.listeners";
         public static final String BASE_CONFIG = "arma.base.config";
         public static final String FORCE_CLOSE = "arma.force.close";
         public static final String DEBUG_MODE = "arma.framework.debug.mode";
         public static final String SCREENSHOTS_DIR = "arma.framework.screenshots.dir";
+
+        @Value("#{'${" + DEFAULT_EVENT_HANDLERS + ":}'.split(',')}")
+        public Set<String> defaultEventHandlers;
+
+        @Value("${" + ARE_DEFAULT_LISTENERS_ENABLED + ":true}")
+        public boolean areDefaultListenersEnabled;
 
         @Value("${" + FORCE_CLOSE + ":false}")
         public boolean forceClose;
@@ -112,6 +121,16 @@ public class UiCommonsProperties{
         public Framework enableForcedClosing(){
             forceClose = true;
             ((AnnotationConfigApplicationContext) applicationContext).registerShutdownHook();
+            return this;
+        }
+
+        public Framework enableDefaultEventHandlers(){
+            areDefaultListenersEnabled = true;
+            return this;
+        }
+
+        public Framework dibableDefaultEventHandlers(){
+            areDefaultListenersEnabled = false;
             return this;
         }
     }

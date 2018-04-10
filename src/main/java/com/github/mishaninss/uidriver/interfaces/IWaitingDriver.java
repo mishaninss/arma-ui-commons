@@ -51,6 +51,12 @@ public interface IWaitingDriver {
 
     void waitForElementToBeNotSelected(ILocatable element, long timeout, TemporalUnit unit);
 
+    void waitForAlertIsPresent();
+
+    void waitForAlertIsPresent(long timeoutInSeconds);
+
+    void waitForAlertIsPresent(long timeout, TemporalUnit unit);
+
     void waitForPageUpdate();
 
     void waitForPageUpdate(long timeoutInSeconds);

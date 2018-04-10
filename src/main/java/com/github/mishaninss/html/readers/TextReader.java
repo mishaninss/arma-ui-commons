@@ -16,24 +16,26 @@
 
 package com.github.mishaninss.html.readers;
 
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Function;
 
 /**
  * Created by Sergey_Mishanin on 3/30/17.
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class TextReader implements AbstractReader {
+public class TextReader implements Function<IInteractiveElement, String> {
     @ElementDriver
     private IElementDriver elementDriver;
 
     @Override
-    public String readProperty(ILocatable element, Object... args) {
+    public String apply(IInteractiveElement element) {
         return elementDriver.getTextFromElement(element);
     }
 }

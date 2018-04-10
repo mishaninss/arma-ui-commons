@@ -16,7 +16,6 @@
 
 package com.github.mishaninss.uidriver.annotations;
 
-import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -26,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Autowired
-@Qualifier(IElementsDriver.QUALIFIER)
+@Qualifier
 public @interface ElementsDriver {}

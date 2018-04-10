@@ -16,12 +16,13 @@
 
 package com.github.mishaninss.html.containers.annotations;
 
-import com.github.mishaninss.html.readers.AbstractReader;
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Function;
 
 /**
  * Indicates that a field describes an element of a page object.
@@ -34,5 +35,5 @@ public @interface Reader {
     /** If an element constructor requires multiple locators to be passed, use this parameter to specify a list of locators */
     String[] args() default {};
 
-    Class<? extends AbstractReader> value();
+    Class<? extends Function<IInteractiveElement, String>> value();
 }

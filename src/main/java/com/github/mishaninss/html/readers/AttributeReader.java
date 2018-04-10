@@ -16,41 +16,39 @@
 
 package com.github.mishaninss.html.readers;
 
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Function;
 
 /**
  * Created by Sergey_Mishanin on 3/30/17.
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class AttributeReader implements AbstractReader {
-    private String defaultAttribute;
+public class AttributeReader implements Function<IInteractiveElement, String> {
+    private String attribute = VALUE;
 
     public AttributeReader(){}
 
-    public AttributeReader(String defaultAttribute){
-        this.defaultAttribute = defaultAttribute;
+    public AttributeReader(String attribute){
+        this.attribute = attribute;
     }
 
     @ElementDriver
     private IElementDriver elementDriver;
 
     @Override
-    public String readProperty(ILocatable element, Object... args) {
-        String attribute =
-            args.length > 0 && StringUtils.isNoneBlank(args[0].toString())
-            ? args[0].toString()
-            : defaultAttribute;
+    public String apply(IInteractiveElement element) {
         return elementDriver.getAttributeOfElement(element, attribute);
     }
 
     public static final String VALUE = "value";
+    public static final String CLASS = "class";
     public static final String SRC = "src";
     public static final String HREF = "href";
     public static final String ALT = "alt";

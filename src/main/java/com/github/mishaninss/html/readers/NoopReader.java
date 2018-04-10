@@ -16,7 +16,7 @@
 
 package com.github.mishaninss.html.readers;
 
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 public class NoopReader implements AbstractReader {
 
     @Override
-    public String readProperty(ILocatable element, Object... args) {
+    public String apply(IInteractiveElement element) {
         return "";
     }
 }

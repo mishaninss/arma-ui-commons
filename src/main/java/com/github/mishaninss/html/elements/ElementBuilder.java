@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.html.elements;
 
+import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.html.containers.ContainersFactory;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
@@ -23,18 +24,30 @@ import com.github.mishaninss.uidriver.LocatorType;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @SuppressWarnings("unchecked")
 public class ElementBuilder {
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private ContainersFactory containersFactory;
+    @Autowired
+    private UiCommonsProperties properties;
 
-    private boolean withListeners = true;
+    private boolean withListeners;
+
+    @PostConstruct
+    private void init(){
+        withListeners = properties.framework().areDefaultListenersEnabled;
+    }
 
     public ElementBuilder withListeners(){
         withListeners = true;
@@ -49,6 +62,10 @@ public class ElementBuilder {
     public ElementBuilder withoutListeners(){
         withListeners = false;
         return this;
+    }
+
+    public ElementBuilder raw(){
+        return withoutListeners();
     }
 
     public ArmaElement xpath(String xpath){

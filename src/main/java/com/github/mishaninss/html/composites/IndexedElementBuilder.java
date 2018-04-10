@@ -20,10 +20,13 @@ import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @SuppressWarnings("unchecked")
 public class IndexedElementBuilder {
     @Autowired
@@ -44,6 +47,10 @@ public class IndexedElementBuilder {
     public IndexedElementBuilder withoutListeners(){
         elementBuilder.withoutListeners();
         return this;
+    }
+
+    public IndexedElementBuilder raw(){
+        return withoutListeners();
     }
 
     public IndexedElement<ArmaElement> xpath(String xpath){

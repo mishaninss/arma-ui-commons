@@ -22,6 +22,7 @@ import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
+import com.github.mishaninss.html.readers.AttributeReader;
 
 @Element
 public class Link extends ArmaElement implements IReadable{
@@ -42,7 +43,7 @@ public class Link extends ArmaElement implements IReadable{
 
     @FiresEvent(ElementEvent.READ_VALUE)
     public String getHref(){
-        return read().attribute("href");
+        return read().attribute(AttributeReader.HREF);
     }
 
 }

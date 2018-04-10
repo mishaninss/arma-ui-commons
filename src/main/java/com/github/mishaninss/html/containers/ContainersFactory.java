@@ -24,6 +24,7 @@ import com.github.mishaninss.html.composites.TemplatedElement;
 import com.github.mishaninss.html.containers.annotations.*;
 import com.github.mishaninss.html.containers.annotations.Optional;
 import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
+import com.github.mishaninss.html.containers.interfaces.IDefaultEventHandlersProvider;
 import com.github.mishaninss.html.containers.interfaces.IHaveUrl;
 import com.github.mishaninss.html.containers.table.Column;
 import com.github.mishaninss.html.containers.table.Table;
@@ -34,8 +35,7 @@ import com.github.mishaninss.html.containers.table.annotations.ITable;
 import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.elements.NoopElement;
 import com.github.mishaninss.html.interfaces.*;
-import com.github.mishaninss.html.listeners.*;
-import com.github.mishaninss.html.readers.AbstractReader;
+import com.github.mishaninss.html.listeners.IFrameEventHandler;
 import com.github.mishaninss.html.readers.NoopReader;
 import com.github.mishaninss.uidriver.LocatorType;
 import com.github.mishaninss.uidriver.interfaces.IFrame;
@@ -62,6 +62,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +77,6 @@ public class ContainersFactory {
     private static final String EXCEPTION_LOCATORS_FILE_NOT_FOUND = "Cannot initialize container [%s]. Locators file [%s] was not found.";
     private static final String EXCEPTION_INIT_FAILURE = "Cannot initialize container [%s]";
     private static final String EXCEPTION_RESET_FAILURE = "Cannot reset container [%s]";
-    private final List<IElementEventHandler> defaultListeners = new ArrayList<>();
     private static final ThreadLocal<Map<Class<?>, Object>> CONTAINERS = ThreadLocal.withInitial(HashMap::new);
     private static final ThreadLocal<ContainersFactory> INSTANCES = new ThreadLocal<>();
 
@@ -88,15 +88,11 @@ public class ContainersFactory {
     private UrlUtils urlUtils;
     @Autowired
     private ApplicationContext applicationContext;
+    @DefaultEventHandlersProvider
+    private IDefaultEventHandlersProvider defaultEventHandlersProvider;
 
     @PostConstruct
     private void init(){
-        defaultListeners.add(applicationContext.getBean(WaitingEventHandler.class));
-        defaultListeners.add(applicationContext.getBean(LoggingEventHandler.class));
-        defaultListeners.add(applicationContext.getBean(ScrollingEventHandler.class));
-        if (uiCommonsProperties.framework().debugMode) {
-            defaultListeners.add(applicationContext.getBean(HighlightEventHandler.class));
-        }
         INSTANCES.set(this);
     }
 
@@ -619,14 +615,14 @@ public class ContainersFactory {
     }
 
     public void addDefaultListeners(IInteractiveElement element){
-        if (element instanceof IListenableElement) {
-            IListenableElement listenableElement = ((IListenableElement)element);
+        if (uiCommonsProperties.framework().areDefaultListenersEnabled && element instanceof IListenableElement) {
+            IListenableElement listenableElement = ((IListenableElement) element);
             ILocatable context = element.getContext();
-            if (context instanceof IFrame){
+            if (context instanceof IFrame) {
                 IFrameEventHandler iFrameEventHandler = applicationContext.getBean(IFrameEventHandler.class);
                 listenableElement.addEventListener(iFrameEventHandler);
             }
-            listenableElement.addEventListeners(defaultListeners);
+            listenableElement.addEventListeners(defaultEventHandlersProvider.getEventHandlers());
         }
     }
 
@@ -653,10 +649,10 @@ public class ContainersFactory {
             Element elementProps = getElementProps(controllerField);
             if (elementProps != null) {
                 Reader readerProps = elementProps.reader();
-                Class<? extends AbstractReader> type = readerProps.value();
+                Class<? extends Function<IInteractiveElement, String>> type = readerProps.value();
                 if (!Objects.equals(type, NoopReader.class)) {
                     String[] args = readerProps.args();
-                    AbstractReader reader = applicationContext.getBean(type, args);
+                    Function<IInteractiveElement, String> reader = applicationContext.getBean(type, args);
                     ((ArmaElement) element).setReader(reader);
                 }
             }

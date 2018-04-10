@@ -16,7 +16,6 @@
 
 package com.github.mishaninss.uidriver;
 
-import com.github.mishaninss.config.UiCommonsConfig;
 import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.html.composites.IndexedElementBuilder;
 import com.github.mishaninss.html.containers.ArmaContainer;
@@ -25,9 +24,6 @@ import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.*;
 import com.github.mishaninss.uidriver.interfaces.*;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,9 +35,9 @@ import javax.annotation.PreDestroy;
 
 @Component
 public class Arma {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Arma.class);
-
     private static final ThreadLocal<Arma> INSTANCES = new ThreadLocal<>();
+    private static AnnotationConfigApplicationContext staticContext;
+    private static ContextBuilder contextBuilder;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -59,6 +55,8 @@ public class Arma {
     private IBrowserDriver browserDriver;
     @Reporter
     private IReporter reporter;
+    @AlertHandler
+    private IAlertHandler alertHandler;
     @Autowired
     private ElementBuilder elementBuilder;
     @Autowired
@@ -143,6 +141,10 @@ public class Arma {
         return browserDriver;
     }
 
+    public IAlertHandler alert(){
+        return alertHandler;
+    }
+
     public IWaitingDriver waiting(){
         return waitingDriver;
     }
@@ -168,19 +170,19 @@ public class Arma {
     }
 
     public ElementBuilder by(){
-        return elementBuilder;
+        return applicationContext.getBean(ElementBuilder.class);
     }
 
     public ElementBuilder by(boolean withListeners){
-        return elementBuilder.withListeners(withListeners);
+        return by().withListeners(withListeners);
     }
 
     public IndexedElementBuilder bys(){
-        return indexedElementBuilder;
+        return applicationContext.getBean(IndexedElementBuilder.class);
     }
 
     public IndexedElementBuilder bys(boolean withListeners){
-        return indexedElementBuilder.withListeners(withListeners);
+        return bys().withListeners(withListeners);
     }
 
     public UiCommonsProperties config(){
@@ -191,27 +193,22 @@ public class Arma {
         return get("chrome");
     }
 
-    public static void withBaseConfig(Class<?> configClass){
-        System.setProperty(UiCommonsProperties.Framework.BASE_CONFIG, configClass.getCanonicalName());
+    public static ContextBuilder using(){
+        if (contextBuilder == null){
+            contextBuilder = new ContextBuilder();
+        }
+        return contextBuilder;
     }
 
     private static Arma up(String browserName){
-        String baseConfig = System.getProperty(UiCommonsProperties.Framework.BASE_CONFIG);
-        Class<?> configClass = UiCommonsConfig.class;
-        if (StringUtils.isNotBlank(baseConfig)){
-            try {
-                configClass = Class.forName(baseConfig);
-            } catch (ClassNotFoundException e) {
-                LOGGER.warn("Couldn't load config class", e);
-            }
+        if (staticContext != null){
+            using().profiles(browserName).build();
         }
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-        ctx.register(configClass);
+        staticContext.refresh();
+        return staticContext.getBean(Arma.class);
+    }
 
-        if (StringUtils.isNotBlank(browserName)) {
-            ctx.getEnvironment().setActiveProfiles(browserName);
-        }
-        ctx.refresh();
-        return ctx.getBean(Arma.class);
+    static void setApplicationContext(AnnotationConfigApplicationContext context){
+        staticContext = context;
     }
 }

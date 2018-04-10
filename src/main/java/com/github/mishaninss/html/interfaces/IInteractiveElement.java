@@ -43,8 +43,8 @@ public interface IInteractiveElement extends ILocatable {
     @FiresEvent(ElementEvent.READ_VALUE)
     String readValue();
 
-    default String readValue(AbstractReader reader, Object... args){
-        return reader.readProperty(this, args);
+    default String readValue(AbstractReader reader){
+        return reader.apply(this);
     }
 
     /**

@@ -25,8 +25,6 @@ import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
-import com.github.mishaninss.html.readers.AbstractReader;
-import com.github.mishaninss.html.readers.TextReader;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.ElementDriver;
@@ -38,8 +36,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 
-import javax.annotation.Resource;
-import java.util.*;
+import javax.annotation.PostConstruct;
+import java.util.EnumMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Controller for the abstract UI Element.
@@ -57,8 +59,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     protected ContainersFactory containersFactory;
     @Autowired
     protected ApplicationContext applicationContext;
-    @Resource(type = TextReader.class)
-    protected AbstractReader reader;
+    protected Function<IInteractiveElement, String> reader;
 
     static final String EXCEPTION_ILLEGAL_TYPE_OF_VALUE = "Illegal type of a value [%s]";
     private static final String EXCEPTION_ILLEGAL_LOCATOR = "Locator cannot be null or empty string";
@@ -113,6 +114,11 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
         }
     }
 
+    @PostConstruct
+    private void init(){
+        reader = elementDriver::getTextFromElement;
+    }
+
 // IInteractiveElement *************************************************************************************************
 
     @Override
@@ -124,7 +130,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     @Override
     @FiresEvent(ElementEvent.READ_VALUE)
     public String readValue(){
-        return reader.readProperty(this);
+        return reader.apply(this);
     }
 
     @Override
@@ -249,6 +255,11 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
         return applicationContext.getBean(IThisElementDriver.class, this);
     }
 
+    @FiresEvent(ElementEvent.ACTION)
+    public <R> R perform(Function<IInteractiveElement, R> function){
+        return function.apply(this);
+    }
+
     public IElementActionsChain action(){
         return applicationContext.getBean(IElementActionsChain.class, this, true);
     }
@@ -289,11 +300,11 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
         return Objects.hash(name, getLocatorDeque(), optional, contextLookup);
     }
 
-    public AbstractReader getReader() {
+    public Function<IInteractiveElement, String> getReader() {
         return reader;
     }
 
-    public void setReader(AbstractReader reader) {
+    public void setReader(Function<IInteractiveElement, String> reader) {
         this.reader = reader;
     }
 }

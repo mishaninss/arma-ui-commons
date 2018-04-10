@@ -108,12 +108,12 @@ public class Column<T extends IInteractiveElement> {
         return getCell(rowIndex).readValue();
     }
 
-    public String readValue(int rowIndex, AbstractReader reader, Object... args){
+    public String readValue(int rowIndex, AbstractReader reader){
         if (!IReadable.isReadable(cell)){
             return null;
         }
 
-        return getCell(rowIndex).readValue(reader, args);
+        return getCell(rowIndex).readValue(reader);
     }
 
     public void performAction(int rowIndex){
@@ -137,11 +137,11 @@ public class Column<T extends IInteractiveElement> {
         return values;
     }
 
-    public List<String> readValues(AbstractReader reader, Object... args){
+    public List<String> readValues(AbstractReader reader){
         int rowsCount = getRowsCount();
         List<String> values = new ArrayList<>(rowsCount);
         for (int rowIndex=1; rowIndex<= rowsCount; rowIndex++){
-            values.add(readValue(rowIndex, reader, args));
+            values.add(readValue(rowIndex, reader));
         }
         return values;
     }
@@ -173,9 +173,9 @@ public class Column<T extends IInteractiveElement> {
         return rows;
     }
 
-    public List<Integer> findRows(String searchValue, AbstractReader reader, Object... args){
+    public List<Integer> findRows(String searchValue, AbstractReader reader){
         List<Integer> rows = new ArrayList<>();
-        List<String> values = readValues(reader, args);
+        List<String> values = readValues(reader);
         for (int i=0; i<values.size(); i++){
             if (searchValue.equals(values.get(i))){
                 rows.add(i+1);
@@ -212,10 +212,10 @@ public class Column<T extends IInteractiveElement> {
         return 0;
     }
 
-    public int findRow(String searchValue, AbstractReader reader, Object... args){
+    public int findRow(String searchValue, AbstractReader reader){
         int rowsCount = getRowsCount();
         for (int i=1; i<=rowsCount; i++){
-            String value = readValue(i, reader, args);
+            String value = readValue(i, reader);
             if (searchValue.equals(value)){
                 return i;
             }
@@ -234,10 +234,10 @@ public class Column<T extends IInteractiveElement> {
         return 0;
     }
 
-    public int fuzzyFindRow(AbstractReader reader, String searchValue, Object... args){
+    public int fuzzyFindRow(AbstractReader reader, String searchValue){
         int rowsCount = getRowsCount();
         for (int i=1; i<=rowsCount; i++){
-            String value = StringUtils.normalizeSpace(getCell(i).readValue(reader, args)).trim();
+            String value = StringUtils.normalizeSpace(getCell(i).readValue(reader)).trim();
             if (searchValue.equalsIgnoreCase(StringUtils.normalizeSpace(value).trim())){
                 return i;
             }
@@ -248,7 +248,7 @@ public class Column<T extends IInteractiveElement> {
     public int findRow(AbstractReader reader, String searchValue, Object... args){
         int rowsCount = getRowsCount();
         for (int i=1; i<=rowsCount; i++){
-            String value = getCell(i).readValue(reader, args);
+            String value = getCell(i).readValue(reader);
             if (searchValue.equals(value)){
                 return i;
             }

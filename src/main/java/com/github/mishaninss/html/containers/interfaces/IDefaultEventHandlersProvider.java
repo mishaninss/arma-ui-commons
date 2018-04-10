@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.readers;
+package com.github.mishaninss.html.containers.interfaces;
 
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.html.listeners.IElementEventHandler;
 
-import java.util.function.Function;
+import java.util.List;
 
-/**
- * Created by Sergey_Mishanin
- */
-@FunctionalInterface
-public interface AbstractReader extends Function<IInteractiveElement, String> {
+public interface IDefaultEventHandlersProvider {
+    String QUALIFIER = "IDefaultEventHandlersProvider";
 
+    List<IElementEventHandler> getEventHandlers();
 }

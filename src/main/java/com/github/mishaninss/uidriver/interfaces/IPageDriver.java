@@ -24,16 +24,6 @@ public interface IPageDriver {
 	String QUALIFIER = "IPageDriver";
 
     IPageDriver goToUrl(String url);
-
-	boolean isAlertDisplayed();
-
-	boolean isAlertDisplayed(boolean waitForAlert);
-	
-	IPageDriver acceptAlert();
-	
-	IPageDriver dismissAlert();
-	
-	String getAlertMessage();
 	
 	IPageDriver refreshPage();
 

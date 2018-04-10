@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.html.readers;
+package com.github.mishaninss.uidriver.interfaces;
 
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
+public interface IAlertHandler {
+    String QUALIFIER = "IAlertHandler";
 
-import java.util.function.Function;
+    boolean isDisplayed();
 
-/**
- * Created by Sergey_Mishanin
- */
-@FunctionalInterface
-public interface AbstractReader extends Function<IInteractiveElement, String> {
+    boolean isDisplayed(boolean waitForAlert);
 
+    void accept();
+
+    void dismiss();
+
+    IAlertHandler sendKeys(String keys);
+
+    String getText();
 }
