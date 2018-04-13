@@ -115,7 +115,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     }
 
     @PostConstruct
-    private void init(){
+    protected void init(){
         reader = elementDriver::getTextFromElement;
     }
 

@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.mishaninss.exceptions;
+package com.github.mishaninss.uidriver.interfaces;
 
-/**
- * Created by Sergey_Mishanin
- */
-public class InteractionException extends RuntimeException {
-    public InteractionException(String message) {
-        super(message);
-    }
+import java.util.logging.Level;
 
-    public InteractionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+public interface ILogEntry {
 
+    /**
+     * Gets the logging entry's severity.
+     *
+     * @return severity of log statement
+     */
+    Level getLevel();
+
+    /**
+     * Gets the timestamp of the log statement in milliseconds since UNIX Epoch.
+     *
+     * @return timestamp as UNIX Epoch
+     */
+    long getTimestamp();
+
+    /**
+     * Gets the log entry's message.
+     *
+     * @return the log statement
+     */
+    String getMessage();
 }

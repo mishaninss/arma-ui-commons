@@ -63,6 +63,9 @@ public class DefaultEventHandlersProviderImpl implements IDefaultEventHandlersPr
         } else {
             defaultEventHandlers.add(applicationContext.getBean(WaitingEventHandler.class));
             defaultEventHandlers.add(applicationContext.getBean(LoggingEventHandler.class));
+            if (properties.driver().areConsoleLogsEnabled()){
+                defaultEventHandlers.add(applicationContext.getBean(BrowserConsoleLoggingEventHandler.class));
+            }
             defaultEventHandlers.add(applicationContext.getBean(ScrollingEventHandler.class));
             if (properties.framework().debugMode) {
                 defaultEventHandlers.add(applicationContext.getBean(HighlightEventHandler.class));

@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.aspects;
 
+import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.exceptions.InteractionException;
 import com.github.mishaninss.exceptions.SessionLostException;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
@@ -29,14 +30,17 @@ import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.BrowserDriver;
 import com.github.mishaninss.uidriver.annotations.PageDriver;
 import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
+import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import com.github.mishaninss.uidriver.interfaces.ILocatableWrapper;
 import com.github.mishaninss.uidriver.interfaces.IPageDriver;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -44,13 +48,17 @@ import java.util.*;
 @SuppressWarnings("unused")
 @Aspect
 public class InteractiveElementAspects {
+    private static final Map<Signature, String> ACTION_NAMES = new Hashtable<>(); //NOSONAR
+
     @PageDriver
     private IPageDriver pageDriver;
     @BrowserDriver
     private IBrowserDriver browserDriver;
     @Reporter
     private IReporter reporter;
-    private static final Map<Signature, String> ACTION_NAMES = new Hashtable<>(); //NOSONAR
+    @Autowired
+    private UiCommonsProperties properties;
+
 
     @Pointcut("call(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
 	public void firesEvent() {
@@ -124,9 +132,17 @@ public class InteractiveElementAspects {
     @AfterThrowing(value="firesEvent() && !withinCodeFiresEvent()", throwing="e")
     public void adviceAfterThrowingFromEventFiringMethod(Exception e, JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
+        IInteractiveElement element = null;
         if (target instanceof IInteractiveElement) {
-            IInteractiveElement element = (IInteractiveElement) target;
-            FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
+            element = (IInteractiveElement) target;
+        } else if (target instanceof ILocatableWrapper) {
+            ILocatable locatable = ((ILocatableWrapper) target).getElement();
+            if (locatable instanceof IInteractiveElement) {
+                element = (IInteractiveElement) locatable;
+            }
+        }
+        if (element != null) {
+            FiresEvent firesEvent = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
             ElementEvent event = firesEvent.value();
             rethrowException(element, event.getText(), e);
         }
@@ -154,15 +170,41 @@ public class InteractiveElementAspects {
         sb.append("\nLocator: ").append(element.getLocatorsPath());
 
         if (cause instanceof SessionLostException){
-            throw new SessionLostException(sb.toString(), cause);
+            throw clearStacktrace(new SessionLostException(sb.toString(), cause));
        } else {
         	if (browserDriver.isBrowserStarted()) {
 				reporter.attachScreenshot(pageDriver.takeScreenshot());
+				if (properties.driver().areConsoleLogsEnabled()){
+				    reporter.attachText(StringUtils.join(browserDriver.getLogEntries("browser"), "\n"), "Browser logs");
+                }
 				sb.append("\nURL: ").append(pageDriver.getCurrentUrl());
 				sb.append("\nPage title: ").append(pageDriver.getPageTitle());
 			}
 
-            throw new InteractionException(sb.toString(), cause);
+            throw clearStacktrace(new InteractionException(sb.toString(), cause));
         }
+    }
+
+    @SuppressWarnings("ThrowableNotThrown")
+    private <T extends Throwable> T clearStacktrace(T ex){
+        String[] stacktraceWhitelist = properties.framework().stackTraceWhiteList;
+        if (ArrayUtils.isNotEmpty(stacktraceWhitelist)) {
+            StackTraceElement[] trace = ex.getStackTrace();
+            List<StackTraceElement> clearTrace = new LinkedList<>();
+            for (StackTraceElement element : trace) {
+                String className = element.getClassName();
+                if ((StringUtils.startsWith(className ,"com.github.mishaninss") || StringUtils.startsWithAny(className, stacktraceWhitelist))
+                        && !StringUtils.startsWith(className,"com.github.mishaninss.aspects")
+                        && element.getLineNumber() > 1) {
+                    clearTrace.add(element);
+                }
+            }
+            ex.setStackTrace(clearTrace.toArray(new StackTraceElement[0]));
+            Throwable cause = ex.getCause();
+            if (cause != null) {
+                clearStacktrace(cause);
+            }
+        }
+        return ex;
     }
 }

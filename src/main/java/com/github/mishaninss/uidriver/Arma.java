@@ -201,8 +201,10 @@ public class Arma {
     }
 
     private static Arma up(String browserName){
-        if (staticContext != null){
+        if (staticContext == null){
             using().profiles(browserName).build();
+        } else {
+            staticContext.getEnvironment().addActiveProfile(browserName);
         }
         staticContext.refresh();
         return staticContext.getBean(Arma.class);

@@ -1,8 +1,8 @@
 package com.github.mishaninss.uidriver.interfaces;
 
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.logging.LogEntries;
 
+import java.util.List;
 import java.util.Set;
 
 public interface IBrowserDriver {
@@ -28,7 +28,7 @@ public interface IBrowserDriver {
 
     void maximizeWindow();
 
-    LogEntries getLogEntries(String logType);
+    List<ILogEntry> getLogEntries(String logType);
 
     boolean isBrowserStarted();
 

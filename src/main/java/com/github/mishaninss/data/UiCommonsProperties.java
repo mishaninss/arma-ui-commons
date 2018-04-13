@@ -16,16 +16,24 @@
 
 package com.github.mishaninss.data;
 
+import com.github.mishaninss.reporting.IReporter;
+import com.github.mishaninss.reporting.Reporter;
+import com.google.common.collect.Sets;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Provides an Application Context properties
@@ -82,6 +90,12 @@ public class UiCommonsProperties{
         public static final String TIMEOUTS_ELEMENT = "arma.driver.timeouts.element.presence";
         public static final String TIMEOUTS_PAGE_LOAD = "arma.driver.timeouts.page.load";
         public static final String TIMEOUTS_DRIVER_OPERATION = "arma.driver.timeouts.drivers.operation";
+        public static final String BROWSER_LOGS_LEVEL = "arma.driver.browser.logs.level";
+
+        @Autowired
+        private Environment environment;
+        @Reporter
+        private IReporter reporter;
 
         @Value("${" + TIMEOUTS_ELEMENT + ":20000}")
         public int timeoutsElement;
@@ -89,6 +103,29 @@ public class UiCommonsProperties{
         public int timeoutsPageLoad;
         @Value("${" + TIMEOUTS_DRIVER_OPERATION + ":60000}")
         public int timeoutsDriverOperation;
+
+        public Level browserLogsLevel;
+
+        public boolean areConsoleLogsEnabled(){
+            return !Objects.equals(browserLogsLevel, Level.OFF);
+        }
+
+        @PostConstruct
+        private void init(){
+            String logsLevel = environment.getProperty(BROWSER_LOGS_LEVEL, "ALL");
+            switch (logsLevel.toUpperCase()){
+                case "ALL": browserLogsLevel = Level.ALL; break;
+                case "INFO": browserLogsLevel = Level.INFO; break;
+                case "WARNING": browserLogsLevel = Level.WARNING; break;
+                case "CONFIG": browserLogsLevel = Level.CONFIG; break;
+                case "FINE": browserLogsLevel = Level.FINE; break;
+                case "FINER": browserLogsLevel = Level.FINER; break;
+                case "FINEST": browserLogsLevel = Level.FINEST; break;
+                case "SEVERE": browserLogsLevel = Level.SEVERE; break;
+                case "OFF": browserLogsLevel = Level.OFF; break;
+                default: reporter.warn("Unknown browser logs level: " + logsLevel);
+            }
+        }
     }
 
     @Component("uiCommonsFrameworkProps")
@@ -102,6 +139,7 @@ public class UiCommonsProperties{
         public static final String FORCE_CLOSE = "arma.force.close";
         public static final String DEBUG_MODE = "arma.framework.debug.mode";
         public static final String SCREENSHOTS_DIR = "arma.framework.screenshots.dir";
+        public static final String STACKTRACE_WHITE_LIST_PROPERTY = "arma.framework.stacktrace.whitelist";
 
         @Value("#{'${" + DEFAULT_EVENT_HANDLERS + ":}'.split(',')}")
         public Set<String> defaultEventHandlers;
@@ -117,6 +155,25 @@ public class UiCommonsProperties{
 
         @Value("${" + SCREENSHOTS_DIR + ":./target}")
         public String screenshotsDir;
+
+        public String[] stackTraceWhiteList;
+
+        public Framework addPackageToStacktraceWhiteList(String packageName){
+            stackTraceWhiteList = ArrayUtils.add(stackTraceWhiteList, packageName);
+            return this;
+        }
+
+        @PostConstruct
+        private void init(){
+            String whiteListValue = applicationContext.getEnvironment().getProperty(STACKTRACE_WHITE_LIST_PROPERTY, "");
+            Set<String> whiteList = Sets.newHashSet(StringUtils.split(whiteListValue,","));
+            whiteList.removeIf(StringUtils::isBlank);
+            if (!whiteList.isEmpty()){
+                stackTraceWhiteList = whiteList.toArray(new String[0]);
+            } else {
+                stackTraceWhiteList = new String[0];
+            }
+        }
 
         public Framework enableForcedClosing(){
             forceClose = true;

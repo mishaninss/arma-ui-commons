@@ -45,8 +45,9 @@ public class Button extends ArmaElement implements IReadable{
         super(element);
     }
 
+    @Override
     @PostConstruct
-    private void init(){
+    protected void init(){
         reader = applicationContext.getBean(AttributeReader.class, AttributeReader.VALUE);
     }
 

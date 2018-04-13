@@ -245,7 +245,7 @@ public class Column<T extends IInteractiveElement> {
         return 0;
     }
 
-    public int findRow(AbstractReader reader, String searchValue, Object... args){
+    public int findRow(AbstractReader reader, String searchValue){
         int rowsCount = getRowsCount();
         for (int i=1; i<=rowsCount; i++){
             String value = getCell(i).readValue(reader);

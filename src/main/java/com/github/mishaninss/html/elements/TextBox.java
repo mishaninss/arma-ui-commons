@@ -45,8 +45,9 @@ public class TextBox extends ArmaElement implements IEditable, IReadable{
         super(element);
     }
 
+    @Override
     @PostConstruct
-    private void init(){
+    protected void init(){
         reader = applicationContext.getBean(AttributeReader.class, AttributeReader.VALUE);
     }
 
