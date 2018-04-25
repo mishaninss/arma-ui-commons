@@ -17,6 +17,7 @@
 package com.github.mishaninss.uidriver;
 
 import com.github.mishaninss.data.UiCommonsProperties;
+import com.github.mishaninss.exceptions.FrameworkConfigurationException;
 import com.github.mishaninss.html.composites.IndexedElementBuilder;
 import com.github.mishaninss.html.containers.ArmaContainer;
 import com.github.mishaninss.html.elements.ElementBuilder;
@@ -24,6 +25,8 @@ import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.*;
 import com.github.mishaninss.uidriver.interfaces.*;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -122,12 +125,27 @@ public class Arma {
         return pageDriver;
     }
 
-    public <T> T page(Class<T> pageClass){
+    public <T extends ArmaContainer> T page(Class<T> pageClass){
         return applicationContext.getBean(pageClass);
     }
 
+    public ArmaContainer page(String pageName){
+        Preconditions.checkArgument(StringUtils.isNotBlank(pageName), "Page name cannot be blank");
+        String[] words = StringUtils.normalizeSpace(pageName.trim()).split(" ");
+        StringBuilder sb = new StringBuilder(words[0].toLowerCase());
+        for (int i=1; i<words.length; i++){
+            sb.append(StringUtils.capitalize(words[i].toLowerCase()));
+        }
+        String pageClassName = sb.toString();
+        try {
+            return (ArmaContainer) applicationContext.getBean(pageClassName);
+        } catch (Exception ex){
+            throw new FrameworkConfigurationException("There is no container with name " + pageClassName, ex);
+        }
+    }
+
     public <T extends ArmaContainer> T open(Class<T> pageClass){
-        T page = applicationContext.getBean(pageClass);
+        T page = page(pageClass);
         page.goToUrl();
         return page;
     }
