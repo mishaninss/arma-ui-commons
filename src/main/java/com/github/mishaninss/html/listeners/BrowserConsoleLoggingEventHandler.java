@@ -16,75 +16,17 @@
 
 package com.github.mishaninss.html.listeners;
 
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
-import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.uidriver.annotations.PageDriver;
-import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import com.github.mishaninss.uidriver.interfaces.IPageDriver;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Component
-public class BrowserConsoleLoggingEventHandler implements IElementEventHandler {
-    private static final String MESSAGE_PERFORM_ACTION = "%s -> Perform %s";
-    private static final String MESSAGE_SET_VALUE = "%s -> %s: %s";
-    private static final String MESSAGE_GET_VALUE = "%s -> Read %s: %s";
-    private static final String MESSAGE_IS_DISPLAYED = "%s -> Check if displayed: %s";
-
+public class BrowserConsoleLoggingEventHandler extends BaseLoggingEventHandler {
     @PageDriver
     private IPageDriver pageDriver;
 
     @Override
-    public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment,  Object... args) {
-        String message;
-        String actionName;
-        switch (event){
-            case CHANGE_VALUE:
-                actionName = StringUtils.isNoneBlank(comment) ? comment: "Change value";
-                message = getLogMessage(MESSAGE_SET_VALUE, element, actionName, args);
-                logToBrowserConsole(message);
-                break;
-            case ACTION:
-                actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "perform").trim(): "action";
-                message = getLogMessage(MESSAGE_PERFORM_ACTION, element, actionName);
-                logToBrowserConsole(message);
-                break;
-            default:
-        }
-    }
-
-    @Override
-    public void afterEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
-        String message;
-        switch (event){
-            case READ_VALUE:
-                String actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim(): "value";
-                message = getLogMessage(MESSAGE_GET_VALUE, element, actionName, args);
-                logToBrowserConsole(message);
-                break;
-            case IS_DISPLAYED:
-                message = getLogMessage(MESSAGE_IS_DISPLAYED, element, args);
-                logToBrowserConsole(message);
-                break;
-            default:
-        }
-    }
-
-    private String getLogMessage(String format, Object... args){
-        for (int i=0; i<args.length; i++){
-            Object arg = args[i];
-            if (arg instanceof ILocatable){
-                args[i] = INamed.getLoggableNameIfApplicable(arg);
-            } else if (arg.getClass().isArray()){
-                args[i] = Arrays.deepToString((Object[])arg);
-            }
-        }
-        return String.format(format, args);
-    }
-
-    private void logToBrowserConsole(String message){
+    protected void logMessage(String message){
         pageDriver.executeJS("console.log('" + message.replace("'", "\\'") + "')");
     }
 }
