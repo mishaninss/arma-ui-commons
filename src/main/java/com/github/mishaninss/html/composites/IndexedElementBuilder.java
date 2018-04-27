@@ -19,6 +19,7 @@ package com.github.mishaninss.html.composites;
 import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -46,6 +47,11 @@ public class IndexedElementBuilder {
 
     public IndexedElementBuilder withoutListeners(){
         elementBuilder.withoutListeners();
+        return this;
+    }
+
+    public IndexedElementBuilder withContext(ILocatable context){
+        elementBuilder.withContext(context);
         return this;
     }
 

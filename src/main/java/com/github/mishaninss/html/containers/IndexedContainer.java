@@ -60,7 +60,7 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     public T index(int index){
         return indexedContainers.computeIfAbsent(index,
             i -> {
-                T clone = applicationContext.getBean((Class<T>) wrappedContainer.getClass());
+                T clone = arma.applicationContext().getBean((Class<T>) wrappedContainer.getClass());
                 String locator = clone.getLocator();
                 if (StringUtils.isNoneBlank(locator)) {
                     clone.setLocator(getIndexedLocator(locator, i));

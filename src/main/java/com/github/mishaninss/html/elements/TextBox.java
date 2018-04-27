@@ -48,23 +48,23 @@ public class TextBox extends ArmaElement implements IEditable, IReadable{
     @Override
     @PostConstruct
     protected void init(){
-        reader = applicationContext.getBean(AttributeReader.class, AttributeReader.VALUE);
+        reader = arma.applicationContext().getBean(AttributeReader.class, AttributeReader.VALUE);
     }
 
     @Override
     @FiresEvent(ElementEvent.CHANGE_VALUE)
     public void changeValue(Object value) {
-        elementDriver.clearElement(this);
-        elementDriver.sendKeysToElement(this, value.toString());
+        arma.element().clearElement(this);
+        arma.element().sendKeysToElement(this, value.toString());
     }
 
     @FiresEvent(ElementEvent.CHANGE_VALUE)
     public void addText(Object value) {
-        elementDriver.sendKeysToElement(this, value.toString());
+        arma.element().sendKeysToElement(this, value.toString());
     }
 
     public void pressEnter() {
-        elementDriver.sendKeysToElement(this, Keys.ENTER);
+        arma.element().sendKeysToElement(this, Keys.ENTER);
     }
 
 }

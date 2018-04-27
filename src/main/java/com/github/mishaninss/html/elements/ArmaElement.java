@@ -16,7 +16,7 @@
 
 package com.github.mishaninss.html.elements;
 
-import com.github.mishaninss.html.containers.ContainersFactory;
+import com.github.mishaninss.html.composites.IndexedElementBuilder;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
@@ -25,15 +25,12 @@ import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
-import com.github.mishaninss.reporting.IReporter;
-import com.github.mishaninss.reporting.Reporter;
-import com.github.mishaninss.uidriver.annotations.ElementDriver;
+import com.github.mishaninss.uidriver.Arma;
 import com.github.mishaninss.uidriver.interfaces.*;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 
 import javax.annotation.PostConstruct;
@@ -51,14 +48,8 @@ import java.util.function.Function;
 @Element
 @Primary
 public class ArmaElement implements IInteractiveElement, IListenableElement, INamed{
-    @Reporter
-    protected IReporter reporter;
-    @ElementDriver
-    protected IElementDriver elementDriver;
     @Autowired
-    protected ContainersFactory containersFactory;
-    @Autowired
-    protected ApplicationContext applicationContext;
+    protected Arma arma;
     protected Function<IInteractiveElement, String> reader;
 
     static final String EXCEPTION_ILLEGAL_TYPE_OF_VALUE = "Illegal type of a value [%s]";
@@ -116,7 +107,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     @PostConstruct
     protected void init(){
-        reader = elementDriver::getTextFromElement;
+        reader = arma.element()::getTextFromElement;
     }
 
 // IInteractiveElement *************************************************************************************************
@@ -124,7 +115,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     @Override
     @FiresEvent(ElementEvent.CHANGE_VALUE)
     public void changeValue(final Object value){
-        elementDriver.sendKeysToElement(this, value.toString());
+        arma.element().sendKeysToElement(this, value.toString());
     }
 
     @Override
@@ -136,24 +127,24 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     @Override
     @FiresEvent(ElementEvent.ACTION)
     public void performAction(){
-        elementDriver.clickOnElement(this);
+        arma.element().clickOnElement(this);
     }
 
     @Override
     @FiresEvent(ElementEvent.IS_DISPLAYED)
     public boolean isDisplayed(){
-        return elementDriver.isElementDisplayed(this);
+        return arma.element().isElementDisplayed(this);
     }
 
     @Override
     @FiresEvent(ElementEvent.IS_DISPLAYED)
     public boolean isDisplayed(boolean shouldWait){
-        return elementDriver.isElementDisplayed(this, shouldWait);
+        return arma.element().isElementDisplayed(this, shouldWait);
     }
 
     @Override
     public boolean isEnabled(){
-        return elementDriver.isElementEnabled(this);
+        return arma.element().isElementEnabled(this);
     }
 
     @Override
@@ -207,7 +198,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     @Override
     public void setNextPage(Class<? extends IInteractiveContainer> nextPage) {
-        this.nextPage = containersFactory.initContainer(nextPage);
+        this.nextPage = arma.containersFactory().initContainer(nextPage);
     }
 
     @Override
@@ -252,7 +243,7 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 // Other stuff *********************************************************************************************************
 
     public IThisElementDriver perform(){
-        return applicationContext.getBean(IThisElementDriver.class, this);
+        return arma.applicationContext().getBean(IThisElementDriver.class, this);
     }
 
     @FiresEvent(ElementEvent.ACTION)
@@ -261,19 +252,27 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     }
 
     public IElementActionsChain action(){
-        return applicationContext.getBean(IElementActionsChain.class, this, true);
+        return arma.applicationContext().getBean(IElementActionsChain.class, this, true);
     }
 
     public IElementActionsChain actions(){
-        return applicationContext.getBean(IElementActionsChain.class, this);
+        return arma.applicationContext().getBean(IElementActionsChain.class, this);
     }
 
     public IElementReadActionDriver read(){
-        return applicationContext.getBean(IElementReadActionDriver.class, this);
+        return arma.applicationContext().getBean(IElementReadActionDriver.class, this);
     }
 
     public IElementWaitingDriver waitUntil(){
-        return applicationContext.getBean(IElementWaitingDriver.class, this);
+        return arma.applicationContext().getBean(IElementWaitingDriver.class, this);
+    }
+
+    public ElementBuilder elementBy(){
+        return arma.elementBy(this);
+    }
+
+    public IndexedElementBuilder elementsBy(){
+        return arma.elementsBy(this);
     }
 
     @Override

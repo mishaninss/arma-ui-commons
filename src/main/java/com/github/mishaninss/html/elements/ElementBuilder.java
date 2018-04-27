@@ -21,6 +21,7 @@ import com.github.mishaninss.html.containers.ContainersFactory;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.uidriver.LocatorType;
+import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class ElementBuilder {
     private UiCommonsProperties properties;
 
     private boolean withListeners;
+    private ILocatable context;
 
     @PostConstruct
     private void init(){
@@ -56,6 +58,11 @@ public class ElementBuilder {
 
     public ElementBuilder withListeners(boolean withListeners){
         this.withListeners = withListeners;
+        return this;
+    }
+
+    public ElementBuilder withContext(ILocatable context){
+        this.context = context;
         return this;
     }
 
@@ -158,6 +165,9 @@ public class ElementBuilder {
         if (withListeners) {
             containersFactory.addDefaultListeners(element);
             INamed.setLoggableNameIfApplicable(element);
+        }
+        if (context != null){
+            element.setContext(context);
         }
         return element;
     }

@@ -20,6 +20,7 @@ import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.exceptions.FrameworkConfigurationException;
 import com.github.mishaninss.html.composites.IndexedElementBuilder;
 import com.github.mishaninss.html.containers.ArmaContainer;
+import com.github.mishaninss.html.containers.ContainersFactory;
 import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
@@ -66,6 +67,10 @@ public class Arma {
     private IndexedElementBuilder indexedElementBuilder;
     @Autowired
     private UiCommonsProperties properties;
+    @Autowired
+    private ContainersFactory containersFactory;
+
+    private ArmaContainer currentPage;
 
     private Arma(){}
 
@@ -109,6 +114,10 @@ public class Arma {
         ((ConfigurableApplicationContext)applicationContext).close();
     }
 
+    public ContainersFactory containersFactory(){
+        return containersFactory;
+    }
+
     public IElementDriver element(){
         return elementDriver;
     }
@@ -119,6 +128,22 @@ public class Arma {
     
     public IElementsDriver elements(){
         return elementsDriver;
+    }
+
+    public void setCurrentPage(ArmaContainer currentPage){
+        this.currentPage = currentPage;
+    }
+
+    public void setCurrentPage(Class<? extends ArmaContainer> currentPageClass){
+        this.currentPage = page(currentPageClass);
+    }
+
+    public void setCurrentPage(String currentPageName){
+        this.currentPage = page(currentPageName);
+    }
+
+    public ArmaContainer currentPage(){
+        return currentPage;
     }
     
     public IPageDriver page(){
@@ -155,6 +180,10 @@ public class Arma {
         return applicationContext.getBean(pageClass);
     }
 
+    public ApplicationContext applicationContext(){
+        return applicationContext;
+    }
+
     public IBrowserDriver browser(){
         return browserDriver;
     }
@@ -187,20 +216,28 @@ public class Arma {
         return reporter;
     }
 
-    public ElementBuilder by(){
+    public ElementBuilder elementBy(){
         return applicationContext.getBean(ElementBuilder.class);
     }
 
-    public ElementBuilder by(boolean withListeners){
-        return by().withListeners(withListeners);
+    public ElementBuilder elementBy(boolean withListeners){
+        return elementBy().withListeners(withListeners);
     }
 
-    public IndexedElementBuilder bys(){
+    public ElementBuilder elementBy(ILocatable context){
+        return elementBy().withContext(context);
+    }
+
+    public IndexedElementBuilder elementsBy(){
         return applicationContext.getBean(IndexedElementBuilder.class);
     }
 
-    public IndexedElementBuilder bys(boolean withListeners){
-        return bys().withListeners(withListeners);
+    public IndexedElementBuilder elementsBy(boolean withListeners){
+        return elementsBy().withListeners(withListeners);
+    }
+
+    public IndexedElementBuilder elementsBy(ILocatable context){
+        return elementsBy().withContext(context);
     }
 
     public UiCommonsProperties config(){

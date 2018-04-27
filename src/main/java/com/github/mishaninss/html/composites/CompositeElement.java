@@ -39,7 +39,7 @@ public abstract class CompositeElement extends ArmaContainer implements IInterac
 
     @Override
     public boolean isEnabled() {
-        return elementDriver.isElementEnabled(this);
+        return arma.element().isElementEnabled(this);
     }
 
     @Override
@@ -62,7 +62,7 @@ public abstract class CompositeElement extends ArmaContainer implements IInterac
 
     @Override
     public void setNextPage(Class<? extends IInteractiveContainer> nextPage) {
-        this.nextPage = applicationContext.getBean(nextPage);
+        this.nextPage = arma.applicationContext().getBean(nextPage);
     }
 
     @Override

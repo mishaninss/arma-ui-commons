@@ -71,7 +71,7 @@ public class CheckBox extends ArmaElement implements ISelectable, IEditable, IRe
 
     @Override
     public boolean isSelected() {
-        return elementDriver.isElementSelected(this);
+        return arma.element().isElementSelected(this);
     }
 
     @Override

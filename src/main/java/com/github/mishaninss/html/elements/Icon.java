@@ -48,7 +48,7 @@ public class Icon extends ArmaElement implements IReadable {
     @Override
     @PostConstruct
     protected void init(){
-        reader = applicationContext.getBean(AttributeReader.class, AttributeReader.ALT);
+        reader = arma.applicationContext().getBean(AttributeReader.class, AttributeReader.ALT);
     }
 
     @FiresEvent(ElementEvent.READ_VALUE)

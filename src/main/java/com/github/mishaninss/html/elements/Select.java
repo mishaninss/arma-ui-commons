@@ -115,7 +115,7 @@ public class Select extends ArmaElement implements IEditable, IReadable{
      */
     public void deselectAll(){
         if (multiple == null){
-            String multi = elementDriver.getAttributeOfElement(this, "multiple");
+            String multi = arma.element().getAttributeOfElement(this, "multiple");
             multiple = multi != null;
         }
         if (multiple) {

@@ -85,6 +85,6 @@ public class BrowserConsoleLoggingEventHandler implements IElementEventHandler {
     }
 
     private void logToBrowserConsole(String message){
-        pageDriver.executeJS("console.log('" + message + "')");
+        pageDriver.executeJS("console.log('" + message.replace("'", "\\'") + "')");
     }
 }

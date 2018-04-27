@@ -72,7 +72,7 @@ public class RadioButton extends ArmaElement implements ISelectable, IEditable, 
 
     @Override
     public boolean isSelected() {
-        return elementDriver.isElementSelected(this);
+        return arma.element().isElementSelected(this);
     }
 
     @Override

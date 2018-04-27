@@ -17,25 +17,21 @@
 package com.github.mishaninss.html.containers;
 
 import com.github.mishaninss.data.DataObjectUtils;
+import com.github.mishaninss.html.composites.IndexedElementBuilder;
 import com.github.mishaninss.html.containers.annotations.Container;
 import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
 import com.github.mishaninss.html.containers.interfaces.IHaveUrl;
+import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.html.elements.interfaces.IEditable;
 import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
-import com.github.mishaninss.reporting.IReporter;
-import com.github.mishaninss.reporting.Reporter;
-import com.github.mishaninss.uidriver.annotations.ElementDriver;
-import com.github.mishaninss.uidriver.annotations.WaitingDriver;
-import com.github.mishaninss.uidriver.interfaces.IElementDriver;
+import com.github.mishaninss.uidriver.Arma;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
-import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -49,19 +45,11 @@ import java.util.*;
 public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     @Autowired
-    protected ContainersFactory containersFactory;
-    @Autowired
-    protected ApplicationContext applicationContext;
-    @ElementDriver
-    protected IElementDriver elementDriver;
-    @WaitingDriver
-    protected IWaitingDriver waitingDriver;
-    @Reporter
-    private IReporter reporter;
+    protected Arma arma;
 
     @PostConstruct
     protected void init(){
-        containersFactory.initContainer(this);
+        arma.containersFactory().initContainer(this);
     }
 
     private Map<String, IInteractiveElement> elements = new LinkedHashMap<>();
@@ -262,9 +250,9 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      */
     @Override
     public boolean isDisplayed(){
-        waitingDriver.waitForPageUpdate();
+        arma.waiting().waitForPageUpdate();
         if (StringUtils.isNoneBlank(locator)){
-            return elementDriver.isElementDisplayed(this);
+            return arma.element().isElementDisplayed(this);
         } else {
             for (IInteractiveElement element : elements.values()) {
                 if (!element.isOptional() && !element.isDisplayed()) {
@@ -282,9 +270,9 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      */
     @Override
     public boolean isDisplayed(boolean shouldWait){
-        waitingDriver.waitForPageUpdate();
+        arma.waiting().waitForPageUpdate();
         if (StringUtils.isNoneBlank(locator)){
-            return elementDriver.isElementDisplayed(this, shouldWait);
+            return arma.element().isElementDisplayed(this, shouldWait);
         } else {
             for (IInteractiveElement element : elements.values()) {
                 if (!element.isOptional() && !element.isDisplayed(shouldWait)) {
@@ -471,5 +459,13 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     @Override
     public String getUrl() {
         return url;
+    }
+
+    public ElementBuilder elementBy(){
+        return arma.elementBy(this);
+    }
+
+    public IndexedElementBuilder elementsBy(){
+        return arma.elementsBy(this);
     }
 }
