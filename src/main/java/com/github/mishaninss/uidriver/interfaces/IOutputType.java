@@ -16,9 +16,21 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
-public interface IScreenshoter {
+import com.google.common.reflect.TypeToken;
 
-    byte[] takeScreenshot();
+import java.io.File;
 
-    <X> X takeScreenshotAs(IOutputType<X> outputType);
+/**
+ * Defines the output type for a screenshot.
+ *
+ */
+public interface IOutputType<T> {
+    IOutputType<String> BASE64 = new IOutputType<String>() {};
+    IOutputType<byte[]> BYTES = new IOutputType<byte[]>() {};
+    IOutputType<File> FILE = new IOutputType<File>() {};
+
+    default Class<?> getMyType() {
+        return new TypeToken<T>(getClass()){}.getRawType();
+    }
+
 }

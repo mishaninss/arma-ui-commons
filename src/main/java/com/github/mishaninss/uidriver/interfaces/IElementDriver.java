@@ -16,10 +16,6 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebElement;
-
 /**
  * 
  * @author Sergey Mishanin
@@ -57,7 +53,7 @@ public interface IElementDriver {
      * @param element - locator of the element
      * @param key - pressed key
      */
-    IElementDriver clickOnElementWithKeyPressed(ILocatable element, Keys key);
+    IElementDriver clickOnElementWithKeyPressed(ILocatable element, CharSequence key);
     
     /**
      * Get the value of a the given attribute of the element.
@@ -124,9 +120,6 @@ public interface IElementDriver {
      */
     IElementDriver scrollToElement(ILocatable element);
 
-
-    WebElement findElement(ILocatable element);
-
     byte[] takeElementScreenshot(ILocatable element);
 
     void clearCache();
@@ -137,7 +130,7 @@ public interface IElementDriver {
 
     String getTagName(ILocatable element);
 
-    Point getLocation(ILocatable element);
+    IPoint getLocation(ILocatable element);
 
     IElementDriver hoverElement(ILocatable element);
 

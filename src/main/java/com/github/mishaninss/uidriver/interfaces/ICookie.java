@@ -16,9 +16,23 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
-public interface IScreenshoter {
+import java.util.Date;
 
-    byte[] takeScreenshot();
+public interface ICookie {
 
-    <X> X takeScreenshotAs(IOutputType<X> outputType);
+    String getName();
+
+    String getValue();
+
+    String getDomain();
+
+    String getPath();
+
+    boolean isSecure();
+
+    boolean isHttpOnly();
+
+    Date getExpiry();
+
+    void validate();
 }

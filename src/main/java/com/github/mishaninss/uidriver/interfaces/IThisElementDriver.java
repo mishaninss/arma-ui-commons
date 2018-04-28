@@ -18,8 +18,6 @@ package com.github.mishaninss.uidriver.interfaces;
 
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.Point;
 
 public interface IThisElementDriver extends ILocatableWrapper {
     IThisElementDriver scrollTo();
@@ -42,7 +40,7 @@ public interface IThisElementDriver extends ILocatableWrapper {
     IThisElementDriver simpleClick();
 
     @FiresEvent(ElementEvent.ACTION)
-    IThisElementDriver clickWithKeyPressed(Keys key);
+    IThisElementDriver clickWithKeyPressed(CharSequence key);
 
     @FiresEvent(ElementEvent.CHANGE_VALUE)
     IThisElementDriver sendKeys(CharSequence... keysToSend);
@@ -60,7 +58,7 @@ public interface IThisElementDriver extends ILocatableWrapper {
 
     IThisElementDriver removeDebugInfo();
 
-    Point getLocation();
+    IPoint getLocation();
 
     @FiresEvent(ElementEvent.ACTION)
     IThisElementDriver hover();

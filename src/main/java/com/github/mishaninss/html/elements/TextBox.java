@@ -24,7 +24,7 @@ import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.readers.AttributeReader;
-import org.openqa.selenium.Keys;
+import com.github.mishaninss.utils.Keys;
 
 import javax.annotation.PostConstruct;
 

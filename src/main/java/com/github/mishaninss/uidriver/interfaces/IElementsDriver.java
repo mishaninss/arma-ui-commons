@@ -16,8 +16,6 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
-import org.openqa.selenium.Keys;
-
 import java.util.Map;
 
 /**
@@ -45,7 +43,7 @@ public interface IElementsDriver {
      * @param locator - locator of elements
      * @param key - pressed key
      */
-    IElementsDriver clickOnElementsWithKeyPressed(String locator, Keys key);
+    IElementsDriver clickOnElementsWithKeyPressed(String locator, CharSequence key);
     
     /**
      * Get the value of a the given attribute of elements.

@@ -16,9 +16,7 @@
 
 package com.github.mishaninss.config;
 
-import com.github.mishaninss.aspects.IElementWaitingDriverAspects;
 import com.github.mishaninss.aspects.InteractiveElementAspects;
-import com.github.mishaninss.aspects.UiDriverAspects;
 import com.github.mishaninss.html.containers.DefaultEventHandlersProviderImpl;
 import com.github.mishaninss.html.containers.annotations.DefaultEventHandlersProvider;
 import com.github.mishaninss.html.containers.interfaces.IDefaultEventHandlersProvider;
@@ -34,16 +32,6 @@ public class UiCommonsConfig {
     @Bean
     public InteractiveElementAspects interactiveElementAspects() {
         return Aspects.aspectOf(InteractiveElementAspects.class);
-    }
-
-    @Bean
-    public UiDriverAspects uiDriverAspects() {
-        return Aspects.aspectOf(UiDriverAspects.class);
-    }
-
-    @Bean
-    public IElementWaitingDriverAspects iElementWaitingDriverAspects() {
-        return Aspects.aspectOf(IElementWaitingDriverAspects.class);
     }
 
     @Bean(IDefaultEventHandlersProvider.QUALIFIER) @DefaultEventHandlersProvider

@@ -16,9 +16,12 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
-public interface IScreenshoter {
+public interface IPoint {
+  int getX();
 
-    byte[] takeScreenshot();
+  int getY();
 
-    <X> X takeScreenshotAs(IOutputType<X> outputType);
+  IPoint moveBy(int xOffset, int yOffset);
+
+  void move(int newX, int newY);
 }

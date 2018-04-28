@@ -1,7 +1,5 @@
 package com.github.mishaninss.uidriver.interfaces;
 
-import org.openqa.selenium.Cookie;
-
 import java.util.List;
 import java.util.Set;
 
@@ -12,11 +10,11 @@ public interface IBrowserDriver {
 
     void deleteCookieNamed(String cookieName);
 
-    Set<Cookie> getAllCookies();
+    Set<ICookie> getAllCookies();
 
-    void addCookie(Cookie cookie);
+    void addCookie(ICookie cookie);
 
-    Cookie getCookieNamed(String cookieName);
+    ICookie getCookieNamed(String cookieName);
 
     Set<String> getWindowHandles();
 
