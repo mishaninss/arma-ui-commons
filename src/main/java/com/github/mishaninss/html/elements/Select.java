@@ -26,6 +26,7 @@ import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.uidriver.annotations.SelectElementDriver;
 import com.github.mishaninss.uidriver.interfaces.ISelectElementDriver;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Primary;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.List;
  * @author Sergey Mishanin
  */
 @Element
+@Primary
 public class Select extends ArmaElement implements IEditable, IReadable{
     @SelectElementDriver
     protected ISelectElementDriver selectElementDriver;

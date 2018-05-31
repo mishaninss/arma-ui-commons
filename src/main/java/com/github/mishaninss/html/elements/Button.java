@@ -21,6 +21,7 @@ import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.readers.AttributeReader;
+import org.springframework.context.annotation.Primary;
 
 import javax.annotation.PostConstruct;
 
@@ -29,6 +30,7 @@ import javax.annotation.PostConstruct;
  * @author Sergey Mishanin
  */
 @Element
+@Primary
 public class Button extends ArmaElement implements IReadable{
 
     public Button(){}

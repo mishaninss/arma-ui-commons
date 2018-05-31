@@ -60,6 +60,7 @@
 	<properties>
         <selenium.version>3.10.0</selenium.version>
         <aspectj.version>1.8.13</aspectj.version>
+        <arma.commons.version>1.0-SNAPSHOT</arma.commons.version>
     </properties>
 
     <dependencies>
@@ -71,7 +72,6 @@
         <dependency>
             <groupId>com.github.mishaninss</groupId>
             <artifactId>arma-commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -82,11 +82,10 @@
                 <artifactId>aspectjrt</artifactId>
                 <version>${aspectj.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-java</artifactId>
-                <version>${selenium.version}</version>
+                <groupId>com.github.mishaninss</groupId>
+                <artifactId>arma-commons</artifactId>
+                <version>${arma.commons.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

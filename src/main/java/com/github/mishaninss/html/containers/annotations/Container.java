@@ -61,4 +61,6 @@ public @interface Container {
 
     /** Specifies partialLinkText locator of an element */
     String byPatrialLink() default "";
+
+    String byArg() default "";
 }

@@ -27,6 +27,7 @@ import com.github.mishaninss.reporting.Reporter;
 import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,12 +53,16 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
 	
 	@SuppressWarnings("unchecked")
 	public T index(int index){
+        Preconditions.checkArgument(index != 0, "Element's index mast not be 0");
+        if (index < 0){
+            index = count() + 1 + index;
+        }
         return indexedElements.computeIfAbsent(index,
             i -> {
                 T clone = elementBuilder.clone(wrappedElement);
                 clone.setLocator(IndexedContainer.getIndexedLocator(clone.getLocator(), i));
                 INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
-                indexedElements.put(index, clone);
+                indexedElements.put(i, clone);
                 return clone;
             });
 	}

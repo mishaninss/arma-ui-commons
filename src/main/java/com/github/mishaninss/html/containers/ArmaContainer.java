@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Controller for abstract set of elements
@@ -97,13 +98,21 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     @Override
     public ArmaContainer changeValues(Map<String, ?> inputData){
         final Map<String, IInteractiveElement> editableElements = getEditableElements();
-        inputData.forEach((elementId, value) -> {
-            IInteractiveElement element = editableElements.get(ContainersFactory.sanitizeElementId(elementId));
-            if (element != null){
+        final Map<String, ?> adjustedInputData = adjustDataKeys(inputData);
+        editableElements.forEach((elementId, element) -> {
+            Object value = adjustedInputData.get(elementId);
+            if (value != null){
                 element.changeValue(value);
             }
         });
         return this;
+    }
+
+    private Map<String, ?> adjustDataKeys(Map<String, ?> inputData){
+        return inputData.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> ContainersFactory.sanitizeElementId(entry.getKey()),
+                        Map.Entry::getValue));
     }
 
     /**

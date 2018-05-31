@@ -23,8 +23,10 @@ import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.readers.AttributeReader;
+import org.springframework.context.annotation.Primary;
 
 @Element
+@Primary
 public class Link extends ArmaElement implements IReadable{
 
     public Link(){}

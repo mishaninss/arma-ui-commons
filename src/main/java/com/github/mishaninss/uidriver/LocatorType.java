@@ -16,17 +16,21 @@
 
 package com.github.mishaninss.uidriver;
 
+import com.github.mishaninss.exceptions.ContainerInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Locator types
  */
 public final class LocatorType {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocatorType.class);
+    private static final Pattern ARG_LOCATOR_PATTERN = Pattern.compile("(\\s*)(.+[^\\s])(\\s*)(=)(\\s*)(['\"]?)(\\s*)(.+[^'\"\\s])(\\s*)(['\"]?)");
 
     public static final String ID = "id";
     public static final String NAME = "name";
@@ -37,59 +41,71 @@ public final class LocatorType {
     public static final String CSS = "css";
     public static final String CLASS = "class";
 
-    /** Hidden constructor */
-    private LocatorType() {}
+    /**
+     * Hidden constructor
+     */
+    private LocatorType() {
+    }
 
-    public static String buildXpath(String locator){
+    public static String buildXpath(String locator) {
         try {
             XPathFactory.newInstance().newXPath().compile(locator);
-        } catch (XPathExpressionException ex){
+        } catch (XPathExpressionException ex) {
             LOGGER.warn("Invalid XPath locator provided: {}", locator);
         }
         return buildLocator(locator, XPATH);
     }
 
-    public static String buildCss(String locator){
+    public static String buildCss(String locator) {
         return buildLocator(locator, CSS);
     }
 
-    public static String buildId(String locator){
+    public static String buildId(String locator) {
         return buildLocator(locator, ID);
     }
 
-    public static String buildName(String locator){
+    public static String buildName(String locator) {
         return buildLocator(locator, NAME);
     }
 
-    public static String buildClass(String locator){
+    public static String buildClass(String locator) {
         return buildLocator(locator, CLASS);
     }
 
-    public static String buildTag(String locator){
+    public static String buildTag(String locator) {
         return buildLocator(locator, TAG);
     }
 
-    public static String buildLink(String locator){
+    public static String buildLink(String locator) {
         return buildLocator(locator, LINK);
     }
 
-    public static String buildPartialLink(String locator){
+    public static String buildPartialLink(String locator) {
         return buildLocator(locator, PARTIAL_LINK);
     }
 
-    public static String buildText(String locator){
-        return buildLocator(String.format(".//*[.='%s']", locator), XPATH);
+    public static String buildText(String locator) {
+        return buildLocator(String.format(".//*[normalize-space(./text()[normalize-space(.)!=''])='%s']", locator), XPATH);
     }
 
-    public static String buildPartialText(String locator){
+    public static String buildArg(String locator) {
+        Matcher m = ARG_LOCATOR_PATTERN.matcher(locator);
+        if (m.matches()){
+            return buildLocator(String.format("*[%s='%s']", m.group(2), m.group(8)), CSS);
+        } else {
+            throw new ContainerInitException("Incorrect format of locator " + locator);
+        }
+    }
+
+    public static String buildPartialText(String locator) {
         return buildLocator(String.format(".//*[contains(., '%s')]", locator), XPATH);
     }
 
-    private static String buildLocator(final String locator, final String type){
-        if (locator == null){
+    private static String buildLocator(final String locator, final String type) {
+        if (locator == null) {
             return locator;
         }
-        if (!locator.trim().startsWith(type)){
+        if (!locator.trim().startsWith(type)) {
             return type + "=" + locator.trim();
         } else {
             return locator.trim();

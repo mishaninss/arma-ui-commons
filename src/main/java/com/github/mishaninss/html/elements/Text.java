@@ -20,8 +20,10 @@ import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
+import org.springframework.context.annotation.Primary;
 
 @Element
+@Primary
 public class Text extends ArmaElement implements IReadable {
 
     public Text() {}

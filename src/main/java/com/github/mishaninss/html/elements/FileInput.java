@@ -19,79 +19,58 @@ package com.github.mishaninss.html.elements;
 import com.github.mishaninss.html.containers.annotations.Element;
 import com.github.mishaninss.html.elements.interfaces.IEditable;
 import com.github.mishaninss.html.elements.interfaces.IReadable;
-import com.github.mishaninss.html.elements.interfaces.ISelectable;
 import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
+import com.github.mishaninss.html.readers.AttributeReader;
 import org.springframework.context.annotation.Primary;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
 
 @Element
 @Primary
-public class CheckBox extends ArmaElement implements ISelectable, IEditable, IReadable {
+public class FileInput extends ArmaElement implements IEditable, IReadable{
 
-    public CheckBox(){}
-    
-    public CheckBox(final String locator) {
+    public FileInput(){}
+
+    public FileInput(String locator) {
         super(locator);
     }
 
-    public CheckBox(String locator, IInteractiveContainer context) {
+    public FileInput(String locator, IInteractiveContainer context) {
         super(locator, context);
     }
 
-    public CheckBox(IInteractiveElement element){
+    public FileInput(IInteractiveElement element){
         super(element);
+    }
+
+    @Override
+    @PostConstruct
+    protected void init(){
+        reader = arma.applicationContext().getBean(AttributeReader.class, AttributeReader.VALUE);
     }
 
     @Override
     @FiresEvent(ElementEvent.CHANGE_VALUE)
     public void changeValue(Object value) {
-        if (value instanceof Boolean){
-            changeValue((boolean)value);
-        } else if (value instanceof String){
-            changeValue(Boolean.parseBoolean(value.toString()));
+        if (value instanceof File){
+            changeValue((File) value);
         } else {
-            throw new IllegalArgumentException(String.format(EXCEPTION_ILLEGAL_TYPE_OF_VALUE, value.getClass().getSimpleName()));
+            changeValue(value.toString());
         }
     }
 
     @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public void changeValue(boolean value) {
-        if (value){
-            select();
-        } else {
-            deselect();
-        }
+    public void changeValue(String pathToFile) {
+        arma.element().sendKeysToElement(this, pathToFile);
     }
 
-    @Override
-    @FiresEvent(ElementEvent.READ_VALUE)
-    public String readValue() {
-        return String.valueOf(isSelected());
-    }
-
-    @Override
-    public boolean isSelected() {
-        return arma.element().isElementSelected(this);
-    }
-
-    @Override
     @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public CheckBox select() {
-        if (!isSelected()){
-            performAction();
-        }
-        return this;
-    }
-
-    @Override
-    @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public CheckBox deselect() {
-        if (isSelected()){
-            performAction();
-        }
-        return this;
+    public void changeValue(File file) {
+        changeValue(file.getAbsolutePath());
     }
 
 }

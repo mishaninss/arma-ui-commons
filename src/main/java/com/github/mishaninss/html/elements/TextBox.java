@@ -25,10 +25,12 @@ import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.readers.AttributeReader;
 import com.github.mishaninss.utils.Keys;
+import org.springframework.context.annotation.Primary;
 
 import javax.annotation.PostConstruct;
 
 @Element
+@Primary
 public class TextBox extends ArmaElement implements IEditable, IReadable{
 
     public TextBox(){}

@@ -85,6 +85,10 @@ public @interface Element {
     /** Specifies partialLinkText locator of an element */
     String byPatrialLink() default "";
 
+    String byText() default "";
+
+    String byArg() default "";
+
     /** Specifies if this element is optional */
     boolean optional() default false;
     boolean contextLookup() default true;

@@ -20,6 +20,7 @@ import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -38,50 +39,58 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     @ElementsDriver
     protected IElementsDriver elementsDriver;
 
-    public IndexedContainer(){}
+    public IndexedContainer() {
+    }
 
     @PostConstruct
     @Override
     @SuppressWarnings("unchecked")
-    public void init(){
+    public void init() {
         super.init();
         wrap((T) this);
     }
 
-    void wrap(T wrappedContainer){
+    void wrap(T wrappedContainer) {
         this.wrappedContainer = wrappedContainer;
     }
 
-    public IndexedContainer(T wrappedContainer){
+    public IndexedContainer(T wrappedContainer) {
         wrap(wrappedContainer);
     }
 
     @SuppressWarnings("unchecked")
-    public T index(int index){
+    public T index(int index) {
+        Preconditions.checkArgument(index != 0, "Container's index mast not be 0");
+        if (index < 0){
+            index = count() + 1 + index;
+        }
         return indexedContainers.computeIfAbsent(index,
-            i -> {
-                T clone = arma.applicationContext().getBean((Class<T>) wrappedContainer.getClass());
-                String locator = clone.getLocator();
-                if (StringUtils.isNoneBlank(locator)) {
-                    clone.setLocator(getIndexedLocator(locator, i));
-                } else {
-                    clone.getElements()
-                        .forEach((elementId, element) -> element.setLocator(getIndexedLocator(wrappedContainer.getElement(elementId).getLocator(), i)));
-                }
-                INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
-                return clone;
-            });
+                i -> {
+                    T clone = arma.applicationContext().getBean((Class<T>) wrappedContainer.getClass());
+                    String locator = clone.getLocator();
+                    if (StringUtils.isNoneBlank(locator)) {
+                        clone.setLocator(getIndexedLocator(locator, i));
+                        clone.getElements().entrySet().stream()
+                                .filter(entry -> !entry.getValue().useContextLookup())
+                                .forEach(entry -> entry.getValue().setLocator(getIndexedLocator(wrappedContainer.getElement(entry.getKey()).getLocator(), i)));
+                    } else {
+                        clone.getElements()
+                                .forEach((elementId, element) -> element.setLocator(getIndexedLocator(wrappedContainer.getElement(elementId).getLocator(), i)));
+                    }
+                    INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
+                    return clone;
+                });
     }
 
-    public static String getIndexedLocator(String locator, int index){
+    public static String getIndexedLocator(String locator, int index) {
         return locator.contains("%d")
                 ? String.format(locator, index)
                 : "#" + index + "#" + locator;
     }
 
-    public int count(){
+    public int count() {
         String originalLocator = wrappedContainer.getLocator();
-        if (StringUtils.isNoneBlank(originalLocator)){
+        if (StringUtils.isNoneBlank(originalLocator)) {
             return elementsDriver.getElementsCount(getLocatorForCounting(originalLocator));
         } else {
             String locator = wrappedContainer.getElements().values().iterator().next().getLocator();
@@ -89,10 +98,10 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
         }
     }
 
-    public List<Map<String,String>> readAll(){
+    public List<Map<String, String>> readAll() {
         List<Map<String, String>> values = new ArrayList<>();
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             values.add(index(index).readValues());
         }
         return values;
@@ -101,7 +110,7 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     public <C> List<C> readAll(Class<C> clazz) throws IllegalAccessException, InstantiationException {
         List<C> values = new ArrayList<>();
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             values.add(index(index).readValues(clazz));
         }
         return values;
@@ -110,34 +119,34 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     public <C> List<C> readAll(Class<C> clazz, Iterable<String> elemendIds) throws IllegalAccessException, InstantiationException {
         List<C> values = new ArrayList<>();
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             values.add(index(index).readValues(clazz, elemendIds));
         }
         return values;
     }
 
-    public List<Map<String,String>> readAll(Iterable<String> elementIds){
+    public List<Map<String, String>> readAll(Iterable<String> elementIds) {
         List<Map<String, String>> values = new ArrayList<>();
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             values.add(index(index).readValues(elementIds));
         }
         return values;
     }
 
-    public List<String> readAll(String elementId){
+    public List<String> readAll(String elementId) {
         List<String> values = new ArrayList<>();
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             values.add(index(index).readValue(elementId));
         }
         return values;
     }
 
-    public Optional<T> findContainer(Map<String, String> expectedValues){
+    public Optional<T> findContainer(Map<String, String> expectedValues) {
         return findContainer(container -> {
-            for (Map.Entry<String, String> entry: expectedValues.entrySet()){
-                if (!StringUtils.equals(container.readValue(entry.getKey()), entry.getValue())){
+            for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
+                if (!StringUtils.equals(container.readValue(entry.getKey()), entry.getValue())) {
                     return false;
                 }
             }
@@ -145,25 +154,25 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
         });
     }
 
-    public Optional<T> findContainer(String elementId, String expectedValue){
+    public Optional<T> findContainer(String elementId, String expectedValue) {
         return findContainer(container -> StringUtils.equals(container.readValue(elementId), expectedValue));
     }
 
-    public Optional<T> findContainer(Function<T, Boolean> checker){
+    public Optional<T> findContainer(Function<T, Boolean> checker) {
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             T container = index(index);
-            if (checker.apply(container)){
+            if (checker.apply(container)) {
                 return Optional.of(container);
             }
         }
         return Optional.empty();
     }
 
-    public List<T> findContainers(Map<String, String> expectedValues){
+    public List<T> findContainers(Map<String, String> expectedValues) {
         return findContainers(container -> {
-            for (Map.Entry<String, String> entry: expectedValues.entrySet()){
-                if (!StringUtils.equals(container.readValue(entry.getKey()), entry.getValue())){
+            for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
+                if (!StringUtils.equals(container.readValue(entry.getKey()), entry.getValue())) {
                     return false;
                 }
             }
@@ -171,23 +180,31 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
         });
     }
 
-    public List<T> findContainers(String elementId, String expectedValue){
+    public List<T> findContainers(String elementId, String expectedValue) {
         return findContainers(container -> StringUtils.equals(container.readValue(elementId), expectedValue));
     }
 
-    public List<T> findContainers(Function<T, Boolean> checker){
+    public List<T> findContainers(Function<T, Boolean> checker) {
         List<T> containers = new LinkedList<>();
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             T container = index(index);
-            if (checker.apply(container)){
+            if (checker.apply(container)) {
                 containers.add(container);
             }
         }
         return containers;
     }
 
-    public static String getLocatorForCounting(String locator){
+    public T first() {
+        return index(1);
+    }
+
+    public T last() {
+        return index(count());
+    }
+
+    public static String getLocatorForCounting(String locator) {
         return locator.contains("%d")
                 ? StringUtils.replace(locator, "%d", "*")
                 : locator;

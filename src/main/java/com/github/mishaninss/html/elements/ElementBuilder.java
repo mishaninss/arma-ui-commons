@@ -47,132 +47,140 @@ public class ElementBuilder {
     private ILocatable context;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         withListeners = properties.framework().areDefaultListenersEnabled;
     }
 
-    public ElementBuilder withListeners(){
+    public ElementBuilder withListeners() {
         withListeners = true;
         return this;
     }
 
-    public ElementBuilder withListeners(boolean withListeners){
+    public ElementBuilder withListeners(boolean withListeners) {
         this.withListeners = withListeners;
         return this;
     }
 
-    public ElementBuilder withContext(ILocatable context){
+    public ElementBuilder withContext(ILocatable context) {
         this.context = context;
         return this;
     }
 
-    public ElementBuilder withoutListeners(){
+    public ElementBuilder withoutListeners() {
         withListeners = false;
         return this;
     }
 
-    public ElementBuilder raw(){
+    public ElementBuilder raw() {
         return withoutListeners();
     }
 
-    public ArmaElement xpath(String xpath){
+    public ArmaElement xpath(String xpath) {
         return xpath(xpath, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T xpath(String xpath, Class<T> elementType){
+    public <T extends IInteractiveElement> T xpath(String xpath, Class<T> elementType) {
         return buildElement(LocatorType.buildXpath(xpath), elementType);
     }
 
-    public ArmaElement css(String css){
+    public ArmaElement css(String css) {
         return css(css, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T css(String css, Class<T> elementType){
+    public <T extends IInteractiveElement> T css(String css, Class<T> elementType) {
         return buildElement(LocatorType.buildCss(css), elementType);
     }
 
-    public ArmaElement id(String id){
+    public ArmaElement id(String id) {
         return id(id, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T id(String id, Class<T> elementType){
+    public <T extends IInteractiveElement> T id(String id, Class<T> elementType) {
         return buildElement(LocatorType.buildId(id), elementType);
     }
 
-    public ArmaElement name(String name){
+    public ArmaElement name(String name) {
         return name(name, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T name(String name, Class<T> elementType){
+    public <T extends IInteractiveElement> T name(String name, Class<T> elementType) {
         return buildElement(LocatorType.buildName(name), elementType);
     }
 
-    public ArmaElement link(String linkText){
+    public ArmaElement link(String linkText) {
         return link(linkText, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T link(String linkText, Class<T> elementType){
+    public <T extends IInteractiveElement> T link(String linkText, Class<T> elementType) {
         return buildElement(LocatorType.buildLink(linkText), elementType);
     }
 
-    public ArmaElement partialLink(String partialLinkText){
+    public ArmaElement arg(String argLocator) {
+        return arg(argLocator, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T arg(String argLocator, Class<T> elementType) {
+        return buildElement(LocatorType.buildArg(argLocator), elementType);
+    }
+
+    public ArmaElement partialLink(String partialLinkText) {
         return partialLink(partialLinkText, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T partialLink(String partialLinkText, Class<T> elementType){
+    public <T extends IInteractiveElement> T partialLink(String partialLinkText, Class<T> elementType) {
         return buildElement(LocatorType.buildPartialLink(partialLinkText), elementType);
     }
 
-    public ArmaElement tag(String tag){
+    public ArmaElement tag(String tag) {
         return tag(tag, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T tag(String tag, Class<T> elementType){
+    public <T extends IInteractiveElement> T tag(String tag, Class<T> elementType) {
         return buildElement(LocatorType.buildTag(tag), elementType);
     }
 
-    public ArmaElement className(String className){
+    public ArmaElement className(String className) {
         return className(className, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T className(String className, Class<T> elementType){
+    public <T extends IInteractiveElement> T className(String className, Class<T> elementType) {
         return buildElement(LocatorType.buildClass(className), elementType);
     }
 
-    public ArmaElement text(String text){
+    public ArmaElement text(String text) {
         return text(text, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T text(String text, Class<T> elementType){
+    public <T extends IInteractiveElement> T text(String text, Class<T> elementType) {
         return buildElement(LocatorType.buildText(text), elementType);
     }
 
-    public ArmaElement partialText(String text){
+    public ArmaElement partialText(String text) {
         return partialText(text, ArmaElement.class);
     }
 
-    public <T extends IInteractiveElement> T partialText(String text, Class<T> elementType){
+    public <T extends IInteractiveElement> T partialText(String text, Class<T> elementType) {
         return buildElement(LocatorType.buildPartialText(text), elementType);
     }
 
-    public <T extends IInteractiveElement> T clone(IInteractiveElement elementToClone){
+    public <T extends IInteractiveElement> T clone(IInteractiveElement elementToClone) {
         Preconditions.checkArgument(elementToClone != null, "element to clone cannot be null");
-        return  (T) applicationContext.getBean(getBeanName(elementToClone.getClass()), elementToClone);
+        return (T) applicationContext.getBean(getBeanName(elementToClone.getClass()), elementToClone);
     }
 
-    private <T extends IInteractiveElement> T buildElement(String locator, Class<T> elementType){
+    private <T extends IInteractiveElement> T buildElement(String locator, Class<T> elementType) {
         T element = (T) applicationContext.getBean(getBeanName(elementType), locator);
         if (withListeners) {
             containersFactory.addDefaultListeners(element);
             INamed.setLoggableNameIfApplicable(element);
         }
-        if (context != null){
+        if (context != null) {
             element.setContext(context);
         }
         return element;
     }
-    
-    private static String getBeanName(Class<?> elementType){
+
+    private static String getBeanName(Class<?> elementType) {
         return StringUtils.uncapitalize(elementType.getSimpleName());
     }
 }

@@ -92,26 +92,27 @@ public class ContainersFactory {
     private IDefaultEventHandlersProvider defaultEventHandlersProvider;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         INSTANCES.set(this);
     }
 
     @PreDestroy
-    private void destroy(){
+    private void destroy() {
         INSTANCES.remove();
     }
 
-    private ContainersFactory(){}
+    private ContainersFactory() {
+    }
 
-    public static ContainersFactory get(){
+    public static ContainersFactory get() {
         return INSTANCES.get();
     }
 
-    public void resetAll(){
+    public void resetAll() {
         CONTAINERS.get().keySet().forEach(clazz -> {
-            try{
+            try {
                 resetContainer(clazz);
-            } catch(Exception ex){
+            } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
                 String message = String.format(EXCEPTION_RESET_FAILURE, clazz.getName());
                 throw new ContainerInitException(message, ex);
@@ -121,7 +122,7 @@ public class ContainersFactory {
 
     private void resetContainer(Class<?> clazz) {
         Object container = CONTAINERS.get().get(clazz);
-        if (container == null){
+        if (container == null) {
             initContainer(clazz);
         } else {
             if (Table.class.isAssignableFrom(clazz)) {
@@ -132,7 +133,7 @@ public class ContainersFactory {
         }
     }
 
-    private void resetTable(Table currentInstance){
+    private void resetTable(Table currentInstance) {
         Class<? extends Table> clazz = currentInstance.getClass();
         try {
             Table cleanInstance = clazz.getConstructor().newInstance();
@@ -147,12 +148,12 @@ public class ContainersFactory {
                 }
             }
             initTable(currentInstance);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw getException(ex, EXCEPTION_RESET_FAILURE, clazz.getName());
         }
     }
 
-    private void resetContainer(IElementsContainer currentInstance){
+    private void resetContainer(IElementsContainer currentInstance) {
         Class<? extends IElementsContainer> clazz = currentInstance.getClass();
         try {
             IElementsContainer cleanInstance = clazz.getConstructor().newInstance();
@@ -168,7 +169,7 @@ public class ContainersFactory {
                 }
             }
             initContainer(currentInstance);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw getException(ex, EXCEPTION_RESET_FAILURE, clazz.getName());
         }
     }
@@ -177,15 +178,16 @@ public class ContainersFactory {
      * Provides an instance of container of a given class.
      * If an instance of a given class has been already created, method will return it.
      * Otherwise a new instance will be created and initialized.
+     *
      * @param clazz a Page Object class
      * @return an instance of Page Object class
      */
     @SuppressWarnings("unchecked")
-    public synchronized <T> T initContainer(Class clazz){
+    public synchronized <T> T initContainer(Class clazz) {
         Preconditions.checkNotNull(clazz, "clazz value cannot be null");
         try {
             T instance = (T) CONTAINERS.get().get(clazz);
-            if (instance == null){
+            if (instance == null) {
                 instance = (T) clazz.getConstructor().newInstance();
                 CONTAINERS.get().put(clazz, instance);
                 if (Table.class.isAssignableFrom(clazz)) {
@@ -193,8 +195,8 @@ public class ContainersFactory {
                 } else {
                     initContainer((IElementsContainer) instance);
                 }
-                if (instance instanceof IndexedContainer){
-                    ((IndexedContainer)instance).wrap((IBatchElementsContainer) instance);
+                if (instance instanceof IndexedContainer) {
+                    ((IndexedContainer) instance).wrap((IBatchElementsContainer) instance);
                 }
             }
             return instance;
@@ -208,10 +210,11 @@ public class ContainersFactory {
      * Provides an instance of container by a given class name.
      * If an instance of a given class has been already created, method will return it.
      * Otherwise a new instance will be created and initialized.
+     *
      * @param className the canonical name of a Page Object class
      * @return an instance of Page Object class
      */
-    public synchronized <T> T initContainer(String className){
+    public synchronized <T> T initContainer(String className) {
         Class clazz;
         try {
             clazz = Class.forName(className);
@@ -225,6 +228,7 @@ public class ContainersFactory {
      * Performs initializing of a given container instance.
      * Initializing includes mapping of element controllers and element instances,
      * resolving element parameters, specified by annotations.
+     *
      * @param instance - an instance of Page Object class
      */
     public void initContainer(IElementsContainer instance) {
@@ -243,13 +247,13 @@ public class ContainersFactory {
         }
     }
 
-    private Container getContainerProps(IElementsContainer instance){
+    private Container getContainerProps(IElementsContainer instance) {
         Class<? extends IElementsContainer> clazz = instance.getClass();
-        if (clazz.isAnnotationPresent(ContextualContainer.class)){
+        if (clazz.isAnnotationPresent(ContextualContainer.class)) {
             ContextualContainer contextualContainer = clazz.getAnnotation(ContextualContainer.class);
             Container[] containers = contextualContainer.value();
             Container defaultParameters = null;
-            for (Container container: containers){
+            for (Container container : containers) {
                 String property = container.prop();
                 String expectedValue = container.val();
                 if (Element.PROFILE_PROPERTY.equals(property)
@@ -257,46 +261,46 @@ public class ContainersFactory {
                     return container;
                 } else if (StringUtils.equals(env.getProperty(property), expectedValue)) {
                     return container;
-                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
+                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)) {
                     defaultParameters = container;
                 }
             }
             return defaultParameters;
-        } else if (clazz.isAnnotationPresent(Container.class)){
+        } else if (clazz.isAnnotationPresent(Container.class)) {
             return clazz.getAnnotation(Container.class);
         }
         return null;
     }
 
-    private Url getUrlProps(IElementsContainer instance){
+    private Url getUrlProps(IElementsContainer instance) {
         Class<? extends IElementsContainer> clazz = instance.getClass();
-        if (clazz.isAnnotationPresent(ContextualUrl.class)){
+        if (clazz.isAnnotationPresent(ContextualUrl.class)) {
             ContextualUrl contextualUrl = clazz.getAnnotation(ContextualUrl.class);
             Url[] urls = contextualUrl.value();
             Url defaultParameters = null;
-            for (Url url: urls){
+            for (Url url : urls) {
                 String property = url.prop();
                 String expectedValue = url.val();
                 String actualValue = env.getProperty(property, "");
-                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)){
+                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)) {
                     return url;
-                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
+                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)) {
                     defaultParameters = url;
                 }
             }
             return defaultParameters;
-        } else if (clazz.isAnnotationPresent(Url.class)){
+        } else if (clazz.isAnnotationPresent(Url.class)) {
             return clazz.getAnnotation(Url.class);
         }
         return null;
     }
 
-    private Element getElementProps(Field elementField){
-        if (elementField.isAnnotationPresent(ContextualElement.class)){
+    private Element getElementProps(Field elementField) {
+        if (elementField.isAnnotationPresent(ContextualElement.class)) {
             ContextualElement contextualElement = elementField.getAnnotation(ContextualElement.class);
             Element[] elements = contextualElement.value();
             Element defaultParameters = null;
-            for (Element element: elements){
+            for (Element element : elements) {
                 String property = element.prop();
                 String expectedValue = element.val();
                 if (Element.PROFILE_PROPERTY.equals(property)
@@ -304,18 +308,18 @@ public class ContainersFactory {
                     return element;
                 } else if (StringUtils.equals(env.getProperty(property), expectedValue)) {
                     return element;
-                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
+                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)) {
                     defaultParameters = element;
                 }
             }
             return defaultParameters;
-        } else if (elementField.isAnnotationPresent(Element.class)){
+        } else if (elementField.isAnnotationPresent(Element.class)) {
             return elementField.getAnnotation(Element.class);
         }
         return null;
     }
 
-    private void setContainerName(IElementsContainer instance){
+    private void setContainerName(IElementsContainer instance) {
         Class<? extends IElementsContainer> clazz = instance.getClass();
         if (instance instanceof INamed) {
             String name = null;
@@ -326,25 +330,25 @@ public class ContainersFactory {
             if (StringUtils.isBlank(name)) {
                 name = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(clazz.getSimpleName()), " ");
             }
-            ((INamed)instance).setName(name);
+            ((INamed) instance).setName(name);
         }
     }
 
-    private void setContainerLocator(IElementsContainer instance){
+    private void setContainerLocator(IElementsContainer instance) {
         Container containerProps = getContainerProps(instance);
-        if (containerProps != null){
+        if (containerProps != null) {
             String locator = getTypedContainerLocator(containerProps);
-            if (StringUtils.isNotBlank(locator)){
+            if (StringUtils.isNotBlank(locator)) {
                 instance.setLocator(locator);
                 return;
             }
             locator = containerProps.value();
-            if (StringUtils.isNotBlank(locator)){
+            if (StringUtils.isNotBlank(locator)) {
                 instance.setLocator(locator);
                 return;
             }
             locator = containerProps.locator();
-            if (StringUtils.isNotBlank(locator)){
+            if (StringUtils.isNotBlank(locator)) {
                 instance.setLocator(locator);
             }
         }
@@ -354,12 +358,12 @@ public class ContainersFactory {
         if (instance instanceof IHaveUrl) {
             String url = null;
             Url urlProps = getUrlProps(instance);
-            if (urlProps != null){
+            if (urlProps != null) {
                 url = urlProps.value().trim();
             }
-            if (!StringUtils.isBlank(url)){
+            if (!StringUtils.isBlank(url)) {
                 url = urlUtils.resolveUrl(url);
-                ((IHaveUrl)instance).setUrl(url);
+                ((IHaveUrl) instance).setUrl(url);
             }
         }
     }
@@ -368,10 +372,10 @@ public class ContainersFactory {
         Class<?> clazz = instance.getClass();
         if (clazz.isAnnotationPresent(Nested.class)) {
             Class<?> declaringClass = clazz.getDeclaringClass();
-            if (declaringClass != null && ArmaContainer.class.isAssignableFrom(declaringClass)){
+            if (declaringClass != null && ArmaContainer.class.isAssignableFrom(declaringClass)) {
                 ILocatable context = initContainer(declaringClass);
                 instance.setContext(context);
-                if (context instanceof IFrame){
+                if (context instanceof IFrame) {
                     instance.setContextLookup(false);
                 }
             }
@@ -384,46 +388,46 @@ public class ContainersFactory {
         Container containerProps = getContainerProps(instance);
         if (containerProps != null) {
             String locatorsFilePath = containerProps.locators();
-            if (StringUtils.isNoneBlank(locatorsFilePath)){
+            if (StringUtils.isNoneBlank(locatorsFilePath)) {
                 try {
                     loadedLocators = CsvDataExtractor.extractData(locatorsFilePath);
-                } catch (IOException ex){
+                } catch (IOException ex) {
                     String message = String.format(EXCEPTION_LOCATORS_FILE_NOT_FOUND, ((INamed) instance).getName(), locatorsFilePath);
                     throw new ContainerInitException(message, ex);
                 }
             } else {
                 locatorsFilePath = clazz.getName().replace(".", "/") + ".csv";
                 URL locatorsUrl = clazz.getClassLoader().getResource(locatorsFilePath);
-                if (locatorsUrl != null){
+                if (locatorsUrl != null) {
                     loadedLocators = CsvDataExtractor.extractData(locatorsUrl);
                 }
             }
         }
         return loadedLocators;
     }
-    
+
     private void resolveElementsMapping(IElementsContainer container, Map<String, List<String>> loadedLocators) throws IllegalAccessException {
         Class<?> clazz = container.getClass();
-        
+
         Map<String, IInteractiveElement> elements = new LinkedHashMap<>();
-        
+
         List<Class> elementIdsClasses = ReflectionUtils.getInnerClassesWithAnnotation(clazz, ElementIds.class);
         List<Field> controllerFields = FieldUtils.getFieldsListWithAnnotation(clazz, Element.class);
         controllerFields.addAll(FieldUtils.getFieldsListWithAnnotation(clazz, ContextualElement.class));
 
         //Map element controllers with explicitly provided IDs
-        for(Class<?> elementIdsClass: elementIdsClasses){
+        for (Class<?> elementIdsClass : elementIdsClasses) {
             elements.putAll(resolveElementIdsClassMapping(elementIdsClass, controllerFields, container, loadedLocators));
         }
 
         //Map element controllers without explicitly provided IDs
         elements.putAll(mapElementsWithoutExplicitId(controllerFields, container, loadedLocators));
-        
+
         if (MapUtils.isNotEmpty(elements)) {
             container.addElements(elements);
         }
     }
-    
+
     private Map<String, IInteractiveElement> resolveElementIdsClassMapping(Class<?> elementIdsClass, List<Field> controllerFields, IElementsContainer container, Map<String, List<String>> loadedLocators) throws IllegalAccessException {
         Map<String, IInteractiveElement> elements = new LinkedHashMap<>();
 
@@ -474,7 +478,7 @@ public class ContainersFactory {
             if (elementProps != null) {
                 elementId = elementProps.id();
             }
-            if (StringUtils.isBlank(elementId)){
+            if (StringUtils.isBlank(elementId)) {
                 elementId = controllerField.getName();
             }
 
@@ -492,10 +496,11 @@ public class ContainersFactory {
      * - sets name of element;
      * - sets dynamic mark;
      * - sets context lookup mark.
-     * @param elementId - internal ID of an element
+     *
+     * @param elementId       - internal ID of an element
      * @param controllerField - field of an element controller
-     * @param container - instance of an element's container
-     * @param locators - locators, loaded from an external source;
+     * @param container       - instance of an element's container
+     * @param locators        - locators, loaded from an external source;
      * @return and instance of Interactive Element
      */
     private IInteractiveElement initElement(String elementId, Field controllerField, IElementsContainer container, List<String> locators) {
@@ -503,27 +508,27 @@ public class ContainersFactory {
         IInteractiveElement element = readElementInstance(controllerField, container);
 
         //If element controller was not explicitly instantiated try to create an instance
-        if (element == null){
+        if (element == null) {
             List<String> elementLocators = locators;
-            if (CollectionUtils.isEmpty(elementLocators)){
+            if (CollectionUtils.isEmpty(elementLocators)) {
                 elementLocators = getElementLocators(controllerField);
-                if (CollectionUtils.isEmpty(elementLocators)){
-                    throw getException(EXCEPTION_NO_LOCATORS, ((INamed)container).getName(), elementId);
+                if (CollectionUtils.isEmpty(elementLocators)) {
+                    throw getException(EXCEPTION_NO_LOCATORS, ((INamed) container).getName(), elementId);
                 }
             }
 
             Class<? extends IInteractiveElement> controllerClass = getControllerClass(controllerField);
             element = createElementController(controllerClass, elementLocators);
-        } else if (StringUtils.isBlank(element.getLocator())){
+        } else if (StringUtils.isBlank(element.getLocator())) {
             //If controller was instantiated, but has no assigned locator (e.g. explicitly created without provided locator)
             List<String> elementLocators = locators;
-            if (CollectionUtils.isEmpty(elementLocators)){
+            if (CollectionUtils.isEmpty(elementLocators)) {
                 elementLocators = getElementLocators(controllerField);
             }
             if (CollectionUtils.isNotEmpty(elementLocators)) {
                 element.setLocator(elementLocators.get(0));
             } else {
-                throw getException(EXCEPTION_NO_LOCATORS, ((INamed)container).getName(), elementId);
+                throw getException(EXCEPTION_NO_LOCATORS, ((INamed) container).getName(), elementId);
             }
         }
 
@@ -539,9 +544,9 @@ public class ContainersFactory {
         setNextPage(element, controllerField, container);
         setReader(element, controllerField);
 
-        if (controllerField.getType().equals(IndexedElement.class) && !(element instanceof IndexedElement)){
+        if (controllerField.getType().equals(IndexedElement.class) && !(element instanceof IndexedElement)) {
             element = applicationContext.getBean(IndexedElement.class, element);
-        } else if (controllerField.getType().equals(TemplatedElement.class) && !(element instanceof TemplatedElement)){
+        } else if (controllerField.getType().equals(TemplatedElement.class) && !(element instanceof TemplatedElement)) {
             element = applicationContext.getBean(TemplatedElement.class, element);
         }
 
@@ -550,7 +555,7 @@ public class ContainersFactory {
         return element;
     }
 
-    private static IInteractiveElement readElementInstance(Field controllerField, IElementsContainer container){
+    private static IInteractiveElement readElementInstance(Field controllerField, IElementsContainer container) {
         Preconditions.checkNotNull(controllerField, "controllerField value cannot be null");
         Preconditions.checkNotNull(container, "container value cannot be null");
         try {
@@ -562,48 +567,47 @@ public class ContainersFactory {
         }
     }
 
-    private static void writeElementInstance(Field controllerField, IElementsContainer container, IInteractiveElement element){
+    private static void writeElementInstance(Field controllerField, IElementsContainer container, IInteractiveElement element) {
         Preconditions.checkNotNull(controllerField, "controllerField value cannot be null");
         Preconditions.checkNotNull(container, "container value cannot be null");
         Preconditions.checkNotNull(element, "element value cannot be null");
         try {
             if (Modifier.isStatic(controllerField.getModifiers())) {
                 FieldUtils.writeStaticField(controllerField, element, true);
-            }
-            else {
+            } else {
                 FieldUtils.writeField(controllerField, container, element, true);
             }
         } catch (IllegalAccessException e) {
-            throw getException(e, "Couldn't write %s controller field of the %s container", controllerField.getName(), ((INamed)container).getName());
+            throw getException(e, "Couldn't write %s controller field of the %s container", controllerField.getName(), ((INamed) container).getName());
         }
     }
 
     @SuppressWarnings("unchecked")
-    private Class<? extends IInteractiveElement> getControllerClass(Field controllerField){
+    private Class<? extends IInteractiveElement> getControllerClass(Field controllerField) {
         Class<?> fieldType = controllerField.getType();
         Element elementProps = getElementProps(controllerField);
         Class<?> elementType = elementProps != null ? elementProps.type() : NoopElement.class;
-        if (ReflectionUtils.isGenericType(fieldType)){
+        if (ReflectionUtils.isGenericType(fieldType)) {
             Class<?> genericType = ReflectionUtils.getGenericClass(controllerField.getGenericType(), 0);
-            if (genericType != null){
+            if (genericType != null) {
                 elementType = genericType;
-            } else if (elementType.equals(NoopElement.class)){
+            } else if (elementType.equals(NoopElement.class)) {
                 throw getException("Type of an element field [%s] is a generic type [%s], but type parameter was not provided. Add generic parameter of a field type or use @Element(type = <element type>)", controllerField.getName(), fieldType.getName());
             }
-        } else if (!elementType.equals(NoopElement.class)){
-            if (!fieldType.isAssignableFrom(elementType)){
+        } else if (!elementType.equals(NoopElement.class)) {
+            if (!fieldType.isAssignableFrom(elementType)) {
                 throw getException("Element type, specified for field [%s], is [%s], and it's not compatible with field type [%s]", controllerField.getName(), elementType.getName(), fieldType.getName());
             }
-        } else if (!fieldType.isInterface()){
+        } else if (!fieldType.isInterface()) {
             elementType = fieldType;
         } else {
             throw getException("Type of an element field [%s] is an interface [%s], but implementation type was not provided. Provide concrete element type using @Element(type = <element type>)", controllerField.getName(), fieldType.getName());
         }
 
-        if (!IInteractiveElement.class.isAssignableFrom(elementType)){
+        if (!IInteractiveElement.class.isAssignableFrom(elementType)) {
             throw getException("Element type, specified for field [%s], is [%s], and it's not compatible with IInteractiveElement type", controllerField.getName(), elementType.getName());
         }
-        return (Class<? extends IInteractiveElement>)elementType;
+        return (Class<? extends IInteractiveElement>) elementType;
     }
 
     private IInteractiveElement createElementController(Class<? extends IInteractiveElement> clazz, List<String> locators) {
@@ -614,7 +618,7 @@ public class ContainersFactory {
         return applicationContext.getBean(clazz, locators);
     }
 
-    public void addDefaultListeners(IInteractiveElement element){
+    public void addDefaultListeners(IInteractiveElement element) {
         if (uiCommonsProperties.framework().areDefaultListenersEnabled && element instanceof IListenableElement) {
             IListenableElement listenableElement = ((IListenableElement) element);
             ILocatable context = element.getContext();
@@ -626,7 +630,7 @@ public class ContainersFactory {
         }
     }
 
-    private void setElementName(IInteractiveElement element, Field controllerField){
+    private void setElementName(IInteractiveElement element, Field controllerField) {
         if (element instanceof INamed) {
             String name = null;
             Element elementProps = getElementProps(controllerField);
@@ -644,7 +648,7 @@ public class ContainersFactory {
         }
     }
 
-    private void setReader(IInteractiveElement element, Field controllerField){
+    private void setReader(IInteractiveElement element, Field controllerField) {
         if (element instanceof ArmaElement) {
             Element elementProps = getElementProps(controllerField);
             if (elementProps != null) {
@@ -659,7 +663,7 @@ public class ContainersFactory {
         }
     }
 
-    private List<String> getElementLocators(Field controllerField){
+    private List<String> getElementLocators(Field controllerField) {
         Element elementProps = getElementProps(controllerField);
         if (elementProps != null) {
             List<String> locators = Arrays.asList(elementProps.locators());
@@ -678,7 +682,7 @@ public class ContainersFactory {
                 return resolvePlaceholders(locators);
             }
             locator = elementProps.locator();
-            if (StringUtils.isNotBlank(locator)){
+            if (StringUtils.isNotBlank(locator)) {
                 locators.add(locator);
             }
             return resolvePlaceholders(locators);
@@ -686,82 +690,95 @@ public class ContainersFactory {
         return new ArrayList<>();
     }
 
-    private String getTypedElementLocator(Element elementProps){
+    private String getTypedElementLocator(Element elementProps) {
         String locator = elementProps.byId();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildId(locator);
         }
         locator = elementProps.byName();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildName(locator);
         }
         locator = elementProps.byXpath();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return (locator);
         }
         locator = elementProps.byCss();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildCss(locator);
         }
         locator = elementProps.byClass();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildClass(locator);
         }
         locator = elementProps.byTag();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildTag(locator);
         }
         locator = elementProps.byLink();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildLink(locator);
         }
         locator = elementProps.byPatrialLink();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildPartialLink(locator);
+        }
+        locator = elementProps.byText();
+        if (StringUtils.isNotBlank(locator)) {
+            return LocatorType.buildText(locator);
+        }
+        locator = elementProps.byArg();
+        if (StringUtils.isNotBlank(locator)) {
+            return LocatorType.buildArg(locator);
         }
 
         return null;
     }
 
-    private String getTypedContainerLocator(Container containerProps){
+    private String getTypedContainerLocator(Container containerProps) {
         String locator = containerProps.byId();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildId(locator);
         }
         locator = containerProps.byName();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildName(locator);
         }
         locator = containerProps.byXpath();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildXpath(locator);
         }
         locator = containerProps.byCss();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildCss(locator);
         }
         locator = containerProps.byClass();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildClass(locator);
         }
         locator = containerProps.byTag();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildTag(locator);
         }
         locator = containerProps.byLink();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildLink(locator);
         }
         locator = containerProps.byPatrialLink();
-        if (StringUtils.isNotBlank(locator)){
+        if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildPartialLink(locator);
+        }
+
+        locator = containerProps.byArg();
+        if (StringUtils.isNotBlank(locator)) {
+            return LocatorType.buildArg(locator);
         }
 
         return null;
     }
 
-    private void setElementOptionalMark(IInteractiveElement element, Field controllerField){
-        if (controllerField.isAnnotationPresent(Optional.class)){
+    private void setElementOptionalMark(IInteractiveElement element, Field controllerField) {
+        if (controllerField.isAnnotationPresent(Optional.class)) {
             element.setOptional(true);
         } else {
             Element elementProps = getElementProps(controllerField);
@@ -771,16 +788,16 @@ public class ContainersFactory {
         }
     }
 
-    private void setElementContextLookup(IInteractiveElement element, Field controllerField){
+    private void setElementContextLookup(IInteractiveElement element, Field controllerField) {
         boolean useContextLookup = true;
         Element elementProps = getElementProps(controllerField);
-        if (elementProps != null){
+        if (elementProps != null) {
             useContextLookup = elementProps.contextLookup();
         }
         element.setContextLookup(useContextLookup);
     }
 
-    private void setNextPage(IInteractiveElement element, Field controllerField, IElementsContainer container){
+    private void setNextPage(IInteractiveElement element, Field controllerField, IElementsContainer container) {
         Element elementProps = getElementProps(controllerField);
         if (elementProps != null) {
             Class<? extends IInteractiveContainer> nextPageClass = elementProps.nextPage();
@@ -792,7 +809,7 @@ public class ContainersFactory {
         element.setNextPage((IInteractiveContainer) container);
     }
 
-    static String sanitizeElementId(String elementId){
+    public static String sanitizeElementId(String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         return elementId.toLowerCase().replace(" ", "");
     }
@@ -810,13 +827,13 @@ public class ContainersFactory {
         //Set container's name for logging
         setTableName(instance);
 
-        for (int i=0; i<columnFields.size(); i++){
+        for (int i = 0; i < columnFields.size(); i++) {
             Field columnField = columnFields.get(i);
             Column<? extends IInteractiveElement> column =
-            Modifier.isStatic(columnField.getModifiers()) ?
-                    (Column<? extends IInteractiveElement>) FieldUtils.readStaticField(columnField, true) :
-                    (Column<? extends IInteractiveElement>) FieldUtils.readField(columnField, instance, true);
-            if (column == null){
+                    Modifier.isStatic(columnField.getModifiers()) ?
+                            (Column<? extends IInteractiveElement>) FieldUtils.readStaticField(columnField, true) :
+                            (Column<? extends IInteractiveElement>) FieldUtils.readField(columnField, instance, true);
+            if (column == null) {
                 IInteractiveElement cell = createCellInstance(columnField);
                 cell.setContext(instance);
                 column = applicationContext.getBean(Column.class, cell);
@@ -835,7 +852,7 @@ public class ContainersFactory {
             indexedColumns.put(column.getColIndex(), column);
 
             int startRowIndex = getStartRowIndex(columnField);
-            if (startRowIndex > 0){
+            if (startRowIndex > 0) {
                 column.setStartRowIndex(startRowIndex);
             }
 
@@ -846,20 +863,20 @@ public class ContainersFactory {
         instance.setIndexedColumns(indexedColumns);
     }
 
-    private void setTableLocator(Table instance){
+    private void setTableLocator(Table instance) {
         ITable tableProps = getTableProps(instance.getClass());
-        if (tableProps != null){
+        if (tableProps != null) {
             String locator = tableProps.locator();
-            if (StringUtils.isNoneBlank(locator)){
+            if (StringUtils.isNoneBlank(locator)) {
                 instance.setLocator(locator);
             }
         }
     }
 
-    private void setTableName(Table instance){
+    private void setTableName(Table instance) {
         String name = null;
         ITable tableProps = getTableProps(instance.getClass());
-        if (tableProps != null){
+        if (tableProps != null) {
             name = tableProps.name();
         }
         if (StringUtils.isBlank(name)) {
@@ -868,60 +885,60 @@ public class ContainersFactory {
         instance.setName(name);
     }
 
-    private ITable getTableProps(Class<? extends Table> clazz){
-        if (clazz.isAnnotationPresent(IContextualTable.class)){
+    private ITable getTableProps(Class<? extends Table> clazz) {
+        if (clazz.isAnnotationPresent(IContextualTable.class)) {
             IContextualTable contextualTable = clazz.getAnnotation(IContextualTable.class);
             ITable[] tablesProps = contextualTable.value();
             ITable defaultParameters = null;
-            for (ITable tableProps: tablesProps){
+            for (ITable tableProps : tablesProps) {
                 String property = tableProps.prop();
                 String expectedValue = tableProps.val();
                 String actualValue = env.getProperty(property, "");
-                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)){
+                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)) {
                     return tableProps;
-                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
+                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)) {
                     defaultParameters = tableProps;
                 }
             }
             return defaultParameters;
-        } else if (clazz.isAnnotationPresent(ITable.class)){
+        } else if (clazz.isAnnotationPresent(ITable.class)) {
             return clazz.getAnnotation(ITable.class);
         }
         return null;
     }
 
-    private IColumn getColumnProps(Field columnField){
-        if (columnField.isAnnotationPresent(IContextualColumn.class)){
+    private IColumn getColumnProps(Field columnField) {
+        if (columnField.isAnnotationPresent(IContextualColumn.class)) {
             IContextualColumn contextualColumn = columnField.getAnnotation(IContextualColumn.class);
             IColumn[] columns = contextualColumn.value();
             IColumn defaultParameters = null;
-            for (IColumn column: columns){
+            for (IColumn column : columns) {
                 String property = column.prop();
                 String expectedValue = column.val();
                 String actualValue = env.getProperty(property, "");
-                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)){
+                if (StringUtils.isNoneBlank(actualValue) && actualValue.equals(expectedValue)) {
                     return column;
-                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)){
+                } else if (defaultParameters == null && StringUtils.isBlank(expectedValue)) {
                     defaultParameters = column;
                 }
             }
             return defaultParameters;
-        } else if (columnField.isAnnotationPresent(IColumn.class)){
+        } else if (columnField.isAnnotationPresent(IColumn.class)) {
             return columnField.getAnnotation(IColumn.class);
         }
         return null;
     }
 
-    private IInteractiveElement createCellInstance(Field field){
+    private IInteractiveElement createCellInstance(Field field) {
         Class<? extends IInteractiveElement> cellClass = getControllerClass(field);
         List<String> locators = getColumnLocators(field);
         return createElementController(cellClass, locators);
     }
 
-    private String getColumnName(Field columnField){
+    private String getColumnName(Field columnField) {
         String name = null;
         IColumn columnProps = getColumnProps(columnField);
-        if (columnProps != null){
+        if (columnProps != null) {
             name = columnProps.name();
         }
         if (StringUtils.isBlank(name)) {
@@ -930,25 +947,25 @@ public class ContainersFactory {
         return name;
     }
 
-    private int getColumnIndex(Field columnField){
+    private int getColumnIndex(Field columnField) {
         int index = 0;
         IColumn columnProps = getColumnProps(columnField);
-        if (columnProps != null){
+        if (columnProps != null) {
             index = columnProps.index();
         }
         return index;
     }
 
-    private int getStartRowIndex(Field columnField){
+    private int getStartRowIndex(Field columnField) {
         int startRowIndex = 0;
         IColumn columnProps = getColumnProps(columnField);
-        if (columnProps != null){
+        if (columnProps != null) {
             startRowIndex = columnProps.startIndex();
         }
         return startRowIndex;
     }
 
-    private List<String> getColumnLocators(Field columnField){
+    private List<String> getColumnLocators(Field columnField) {
         IColumn columnProps = getColumnProps(columnField);
         if (columnProps != null) {
             List<String> locators = Arrays.asList(columnProps.locators());
@@ -957,7 +974,7 @@ public class ContainersFactory {
             }
             locators = new ArrayList<>();
             String locator = columnProps.locator();
-            if (StringUtils.isNoneBlank(locator)){
+            if (StringUtils.isNoneBlank(locator)) {
                 locators.add(locator);
             }
             return locators;
@@ -965,19 +982,19 @@ public class ContainersFactory {
         return new ArrayList<>();
     }
 
-    private static ContainerInitException getException(String message, Object... args){
+    private static ContainerInitException getException(String message, Object... args) {
         return new ContainerInitException(String.format(message, args));
     }
 
-    private static ContainerInitException getException(Throwable cause, String message, Object... args){
+    private static ContainerInitException getException(Throwable cause, String message, Object... args) {
         return new ContainerInitException(String.format(message, args), cause);
     }
 
-    private String resolvePlaceholders(String value){
+    private String resolvePlaceholders(String value) {
         return env.resolvePlaceholders(value);
     }
 
-    private List<String> resolvePlaceholders(List<String> values){
+    private List<String> resolvePlaceholders(List<String> values) {
         return values.stream().map(this::resolvePlaceholders).collect(Collectors.toList());
     }
 }

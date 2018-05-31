@@ -30,10 +30,16 @@ public interface IPageDriver {
 	IPageDriver navigateBack();
 
 	Object executeJS(String javaScript);
-	
-	Object executeJS(String javaScript, String locator);
-	
-	String getCurrentUrl();
+
+    Object executeAsyncJS(String javaScript);
+
+    Object executeAsyncJS(String javaScript, Object... args);
+
+    Object executeAsyncJS(String javaScript, ILocatable element, Object... args);
+
+    Object executeJS(String javaScript, String locator, Object... args);
+
+    String getCurrentUrl();
 
 	String getPageTitle();
 

@@ -68,12 +68,19 @@ public interface ILocatable{
     default Deque<ILocatable> getRealLocatableObjectDeque(){
         Deque<ILocatable> path = new ArrayDeque<>();
         path.push(this);
-        ILocatable context = this.getContext();
-        while (context != null){
-            if (StringUtils.isNoneBlank(context.getLocator())) {
-                path.push(context);
+        if (useContextLookup()) {
+            ILocatable context = this.getContext();
+            while (context != null) {
+                if (StringUtils.isNoneBlank(context.getLocator())) {
+                    path.push(context);
+                }
+                if (context.useContextLookup()) {
+                    context = context.getContext();
+                } else {
+                    break;
+                }
+
             }
-            context = context.getContext();
         }
         return path;
     }

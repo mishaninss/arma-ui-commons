@@ -16,6 +16,7 @@
 
 package com.github.mishaninss.data;
 
+import com.github.mishaninss.html.containers.ContainersFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -24,26 +25,36 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataObjectUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectUtils.class);
 
-    private DataObjectUtils(){}
+    private DataObjectUtils() {
+    }
 
-    public static Map<String, Object> readDataFromObject(Iterable<String> desiredProperties, Object object){
-        Map<String, Object> data = new HashMap<>();
+    public static Map<String, String> normalizeKeys(Map<String, String> data){
+        return data.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> StringUtils.normalizeSpace(entry.getKey().trim().toLowerCase()).replaceAll("\\s", "_"),
+                        Map.Entry::getValue
+                ));
+    }
+
+    public static Map<String, Object> readDataFromObject(Iterable<String> desiredProperties, Object object) {
+        Map<String, Object> data = new LinkedHashMap<>();
         desiredProperties.forEach(property -> {
             Object value = readProperty(object, property);
-            if (value != null){
+            if (value != null) {
                 data.put(property, value);
             }
         });
         return data;
     }
 
-    public static <T> T putDataToObject(Map<String, String> data, T object){
+    public static <T> T putDataToObject(Map<String, String> data, T object) {
         data.forEach((property, value) -> setProperty(object, property, value));
         return object;
     }
@@ -53,7 +64,7 @@ public class DataObjectUtils {
         return putDataToObject(data, object);
     }
 
-    private static <T> void setProperty(T object, String property, String value){
+    private static <T> void setProperty(T object, String property, String value) {
         Class<?> clazz = object.getClass();
         try {
             Method setter = findSetter(clazz, property);
@@ -65,12 +76,12 @@ public class DataObjectUtils {
                     FieldUtils.writeField(field, object, value, true);
                 }
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             LOGGER.trace("Could not set {} property to {} data object", property, object.getClass());
         }
     }
 
-    private static Object readProperty(Object object, String property){
+    private static Object readProperty(Object object, String property) {
         Class<?> clazz = object.getClass();
         try {
             Method getter = findGetter(clazz, property);
@@ -82,24 +93,44 @@ public class DataObjectUtils {
                     return FieldUtils.readField(field, object, true);
                 }
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             return null;
         }
         return null;
     }
 
-    private static Method findSetter(Class<?> clazz, String property){
-        String setterName = "set" + StringUtils.capitalize(property);
-        return MethodUtils.getMatchingAccessibleMethod(clazz, setterName, String.class);
+    private static Method findSetter(Class<?> clazz, String property) {
+        Method[] methods = clazz.getMethods();
+        String getterName = ContainersFactory.sanitizeElementId("set" + property);
+        for (Method method : methods) {
+            if (StringUtils.equals(getterName, ContainersFactory.sanitizeElementId(method.getName()))) {
+                return method;
+            }
+        }
+        return null;
     }
 
-    private static Method findGetter(Class<?> clazz, String property){
-        String getterName = "get" + StringUtils.capitalize(property);
-        return MethodUtils.getMatchingAccessibleMethod(clazz, getterName);
+    private static Method findGetter(Class<?> clazz, String property) {
+        Method[] methods = clazz.getMethods();
+        String getterName = ContainersFactory.sanitizeElementId("get" + property);
+        for (Method method : methods) {
+            if (StringUtils.equals(getterName, ContainersFactory.sanitizeElementId(method.getName()))) {
+                return method;
+            }
+        }
+        return null;
     }
 
-    private static Field findPropertyField(Class<?> clazz, String property){
-        Field field = FieldUtils.getField(clazz, property, true);
+    private static Field findPropertyField(Class<?> clazz, String property) {
+        String propertyName = ContainersFactory.sanitizeElementId(property);
+        Field[] fields = FieldUtils.getAllFields(clazz);
+        Field field = null;
+        for (Field f : fields) {
+            if (StringUtils.equals(propertyName, ContainersFactory.sanitizeElementId(f.getName()))) {
+                field = f;
+                break;
+            }
+        }
         return field != null && field.getType().equals(String.class) ? field : null;
     }
 }

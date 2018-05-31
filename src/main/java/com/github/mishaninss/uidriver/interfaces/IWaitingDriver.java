@@ -17,9 +17,12 @@
 package com.github.mishaninss.uidriver.interfaces;
 
 import java.time.temporal.TemporalUnit;
+import java.util.function.BiConsumer;
 
 public interface IWaitingDriver {
     String QUALIFIER = "IWaitingDriver";
+
+    void setWaitForPageUpdateMethod(BiConsumer<Long, TemporalUnit> method);
 
     void waitForElementIsVisible(ILocatable element);
 
