@@ -54,6 +54,12 @@ public interface IWaitingDriver {
 
     void waitForElementToBeNotSelected(ILocatable element, long timeout, TemporalUnit unit);
 
+    void waitForUrlToBe(String url);
+
+    void waitForUrlToBe(String url, long timeoutInSeconds);
+
+    void waitForUrlToBe(String url, long timeout, TemporalUnit unit);
+
     void waitForAlertIsPresent();
 
     void waitForAlertIsPresent(long timeoutInSeconds);
