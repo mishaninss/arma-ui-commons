@@ -16,12 +16,18 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
+import com.github.mishaninss.uidriver.Arma;
+
+import java.util.function.BiConsumer;
+
 /**
  * Provides methods to interact with a page in browser.
  * @author Sergey Mishanin
  */
 public interface IPageDriver {
 	String QUALIFIER = "IPageDriver";
+
+    void setPostPageOpenMethod(BiConsumer<String, Arma> postPageOpenMethod);
 
     IPageDriver goToUrl(String url);
 	

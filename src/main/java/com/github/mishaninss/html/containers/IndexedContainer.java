@@ -25,8 +25,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Created by Sergey_Mishanin on 9/21/17.
@@ -158,11 +163,11 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
         return findContainer(container -> StringUtils.equals(container.readValue(elementId), expectedValue));
     }
 
-    public Optional<T> findContainer(Function<T, Boolean> checker) {
+    public Optional<T> findContainer(Predicate<T> checker) {
         int count = count();
         for (int index = 1; index <= count; index++) {
             T container = index(index);
-            if (checker.apply(container)) {
+            if (checker.test(container)) {
                 return Optional.of(container);
             }
         }
@@ -184,12 +189,12 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
         return findContainers(container -> StringUtils.equals(container.readValue(elementId), expectedValue));
     }
 
-    public List<T> findContainers(Function<T, Boolean> checker) {
+    public List<T> findContainers(Predicate<T> checker) {
         List<T> containers = new LinkedList<>();
         int count = count();
         for (int index = 1; index <= count; index++) {
             T container = index(index);
-            if (checker.apply(container)) {
+            if (checker.test(container)) {
                 containers.add(container);
             }
         }
