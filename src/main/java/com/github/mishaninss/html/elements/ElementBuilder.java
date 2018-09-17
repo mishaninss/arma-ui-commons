@@ -83,6 +83,14 @@ public class ElementBuilder {
         return buildElement(LocatorType.buildXpath(xpath), elementType);
     }
 
+    public ArmaElement xpath(String xpath, Object... args) {
+        return buildElement(LocatorType.buildXpath(String.format(xpath, args)), ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T xpath(Class<T> elementType, String xpath, Object... args) {
+        return buildElement(LocatorType.buildXpath(String.format(xpath, args)), elementType);
+    }
+
     public ArmaElement css(String css) {
         return css(css, ArmaElement.class);
     }

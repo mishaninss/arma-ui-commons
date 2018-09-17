@@ -63,6 +63,7 @@ public class DataObject {
 
     private void setProperty(String property, String value) {
         value = resolveString(value);
+
         Class<?> clazz = this.getClass();
         try {
             Field field = findPropertyField(clazz, property);

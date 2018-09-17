@@ -39,17 +39,18 @@ import java.util.stream.Collectors;
 
 /**
  * Controller for abstract set of elements
+ *
  * @author Sergey Mishanin
  */
 @SuppressWarnings("unused")
 @Container
-public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
+public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl {
 
     @Autowired
     protected Arma arma;
 
     @PostConstruct
-    protected void init(){
+    protected void init() {
         arma.containersFactory().initContainer(this);
     }
 
@@ -68,47 +69,49 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
 // Constructors ********************************************************************************************************
 
-    protected ArmaContainer(){}
-    
-    protected ArmaContainer(String locator){
+    protected ArmaContainer() {
+    }
+
+    protected ArmaContainer(String locator) {
         this.locator = locator;
     }
-    
-    protected ArmaContainer(String locator, ArmaContainer context){
+
+    protected ArmaContainer(String locator, ArmaContainer context) {
         this.locator = locator;
         this.context = context;
     }
 
-    protected <T extends IBatchElementsContainer> ArmaContainer(T container){
+    protected <T extends IBatchElementsContainer> ArmaContainer(T container) {
         setLocator(container.getLocator());
         setContextLookup(container.useContextLookup());
         setContext(container.getContext());
         addElements(container.getElements());
         setName(INamed.getNameIfApplicable(container));
         setUrl(IHaveUrl.getUrlIfApplicable(container));
-}
+    }
 
 // IBatchElementsContainer *********************************************************************************************
 
     /**
      * Performs actions to change values of elements with given IDs
+     *
      * @param inputData - a key-value map, where a key is and ID of an element, and value is a desired value
      * @return this container
      */
     @Override
-    public ArmaContainer changeValues(Map<String, ?> inputData){
+    public ArmaContainer changeValues(Map<String, ?> inputData) {
         final Map<String, IInteractiveElement> editableElements = getEditableElements();
         final Map<String, ?> adjustedInputData = adjustDataKeys(inputData);
         editableElements.forEach((elementId, element) -> {
             Object value = adjustedInputData.get(elementId);
-            if (value != null){
+            if (value != null) {
                 element.changeValue(value);
             }
         });
         return this;
     }
 
-    private Map<String, ?> adjustDataKeys(Map<String, ?> inputData){
+    private Map<String, ?> adjustDataKeys(Map<String, ?> inputData) {
         return inputData.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> ContainersFactory.sanitizeElementId(entry.getKey()),
@@ -117,10 +120,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Performs actions to change values of elements based on the given data object
+     *
      * @param dataObject - data object
      * @return this container
      */
-    public ArmaContainer changeValues(Object dataObject){
+    public ArmaContainer changeValues(Object dataObject) {
         Map<String, Object> inputData = DataObjectUtils.readDataFromObject(elements.keySet(), dataObject);
         changeValues(inputData);
         return this;
@@ -129,10 +133,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     /**
      * Performs actions to read values of all readable elements in this container.
      * Elements, marked as Optional and not displayed on a page will be skipped.
+     *
      * @return a key-value map, where a key is an ID of an element, and value is a value of an element
      */
     @Override
-    public Map<String, String> readValues(){
+    public Map<String, String> readValues() {
         Map<String, String> values = new LinkedHashMap<>();
         getReadableElements().forEach((elementId, element) -> {
             String value = readValueOrDefault(element, null);
@@ -146,11 +151,12 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     /**
      * Performs actions to read values of elements of this container with given IDs
      * Elements, marked as Optional and not displayed on a page will be skipped.
+     *
      * @param elementIds - IDs of elements to read values
      * @return a key-value map, where a key is an ID of an element, and value is a value of this element
      */
     @Override
-    public Map<String, String> readValues(Iterable<String> elementIds){
+    public Map<String, String> readValues(Iterable<String> elementIds) {
         Map<String, String> values = new LinkedHashMap<>();
         getReadableElements(Lists.newArrayList(elementIds))
                 .forEach((elementId, element) -> {
@@ -164,31 +170,30 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Reads values of all elements in this container
+     *
      * @param object - data object to store values
      * @return given data object filled with values
      */
     @Override
-    public <T> T readValues(T object){
+    public <T> T readValues(T object) {
         return DataObjectUtils.putDataToObject(readValues(), object);
     }
 
     /**
      * Reads values of all elements in this container
+     *
      * @param clazz - class of a data object to store values
      * @return given data object filled with values
      */
     @Override
     public <T> T readValues(Class<T> clazz) throws InstantiationException, IllegalAccessException {
-        Map<String, String> values = new LinkedHashMap<>();
-        getReadableElements().forEach((key, value) -> {
-            String val = value.readValue();
-            values.put(key, val);
-        });
+        Map<String, String> values = readValues();
         return DataObjectUtils.putDataToObject(values, clazz);
     }
 
     /**
      * Reads values of all elements in this container
+     *
      * @param clazz - class of a data object to store values
      * @return given data object filled with values
      */
@@ -201,38 +206,45 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Performs actions to change value of an element with given ID
+     *
      * @param elementId - ID of an element
-     * @param value - desired value
+     * @param value     - desired value
      */
     @Override
-    public void changeValue(final String elementId, final Object value){
+    public void changeValue(final String elementId, final Object value) {
         IInteractiveElement element = getEditableElement(elementId);
         element.changeValue(value);
     }
 
     /**
      * Performs actions to read value from an element with given ID
+     *
      * @param elementId - ID of an element
      * @return vaue of an element
      */
     @Override
-    public String readValue(final String elementId){
+    public String readValue(final String elementId) {
         IInteractiveElement element = getReadableElement(elementId);
         return element.readValue();
     }
 
     /**
      * Performs actions to read value from an element with given ID
-     * @param element - element to read value
+     *
+     * @param element      - element to read value
      * @param defaultValue - default value of an element
      * @return value of an element, if this element is displayed. Default value if this element is Optional
      * and not displayed on a page.
      */
-    private String readValueOrDefault(final IInteractiveElement element, final String defaultValue){
-        if (element.isOptional()){
-            try {
-                return element.readValue();
-            } catch (Exception ex){
+    private String readValueOrDefault(final IInteractiveElement element, final String defaultValue) {
+        if (element.isOptional()) {
+            if (element.isDisplayed(false)) {
+                try {
+                    return element.readValue();
+                } catch (Exception ex) {
+                    return defaultValue;
+                }
+            } else {
                 return defaultValue;
             }
         } else {
@@ -242,10 +254,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Performs an action on element with given ID
+     *
      * @param elementId - ID of an element
      */
     @Override
-    public void performAction(final String elementId){
+    public void performAction(final String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = getElement(elementId);
         element.performAction();
@@ -255,12 +268,13 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Determines if this container is displayed
+     *
      * @return true if all non-dynamic elements from this container are displayed; false otherwise
      */
     @Override
-    public boolean isDisplayed(){
+    public boolean isDisplayed() {
         arma.waiting().waitForPageUpdate();
-        if (StringUtils.isNoneBlank(locator)){
+        if (StringUtils.isNoneBlank(locator)) {
             return arma.element().isElementDisplayed(this);
         } else {
             for (IInteractiveElement element : elements.values()) {
@@ -274,13 +288,14 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Determines if this container is displayed
+     *
      * @param shouldWait - indicates if waiting for elements are displayed is required
      * @return true if all non-dynamic elements from this container are displayed; false otherwise
      */
     @Override
-    public boolean isDisplayed(boolean shouldWait){
+    public boolean isDisplayed(boolean shouldWait) {
         arma.waiting().waitForPageUpdate();
-        if (StringUtils.isNoneBlank(locator)){
+        if (StringUtils.isNoneBlank(locator)) {
             return arma.element().isElementDisplayed(this, shouldWait);
         } else {
             for (IInteractiveElement element : elements.values()) {
@@ -294,12 +309,13 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Adds an element controller with given ID to the collection of elements of this container
+     *
      * @param elementId - ID of an element
-     * @param element - controller of an element
+     * @param element   - controller of an element
      * @return this container
      */
     @Override
-    public ArmaContainer addElement(String elementId, IInteractiveElement element){
+    public ArmaContainer addElement(String elementId, IInteractiveElement element) {
         element.setContext(this);
         elements.put(ContainersFactory.sanitizeElementId(elementId), element);
         return this;
@@ -307,10 +323,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Adds given collection of elements to the current collection
+     *
      * @param elements - a map, where a key is an element ID and a value is an element controller
      */
     @Override
-    public ArmaContainer addElements(Map<String, IInteractiveElement> elements){
+    public ArmaContainer addElements(Map<String, IInteractiveElement> elements) {
         elements.values().parallelStream().forEach(element -> element.setContext(this));
         this.elements.putAll(elements);
         return this;
@@ -318,11 +335,12 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Returns controller with a given ID from the collection of input or action elements.
+     *
      * @param elementId - the ID of action element
      * @return controller of the element
      */
     @Override
-    public IInteractiveElement getElement(final String elementId){
+    public IInteractiveElement getElement(final String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = elements.get(ContainersFactory.sanitizeElementId(elementId));
         Preconditions.checkArgument(element != null, EXCEPTION_UNKNOWN_ELEMENT_ID, elementId, getName(), elements.keySet());
@@ -333,7 +351,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
      * Returns current collection of element controllers of this container
      */
     @Override
-    public Map<String, IInteractiveElement> getElements(){
+    public Map<String, IInteractiveElement> getElements() {
         return elements;
     }
 
@@ -387,10 +405,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Returns controller with a given ID from the collection of elements.
+     *
      * @param elementId - the ID of action element
      * @return controller of the element
      */
-    private IInteractiveElement getEditableElement(String elementId){
+    private IInteractiveElement getEditableElement(String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = getElement(elementId);
         Preconditions.checkArgument(element instanceof IEditable, EXCEPTION_ELEMENT_IS_NOT_EDITABLE, element.getClass().getSimpleName(), elementId);
@@ -400,7 +419,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     /**
      * Returns collection of editable elements
      */
-    private Map<String, IInteractiveElement> getEditableElements(){
+    private Map<String, IInteractiveElement> getEditableElements() {
         return elements.entrySet().stream().
                 filter(map -> map.getValue() instanceof IEditable).
                 collect(LinkedHashMap::new,
@@ -410,10 +429,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Returns controller with a given ID from the collection of input elements.
+     *
      * @param elementId - the ID of action element
      * @return controller of the element
      */
-    private IInteractiveElement getReadableElement(String elementId){
+    private IInteractiveElement getReadableElement(String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = getElement(elementId);
         Preconditions.checkArgument(element instanceof IReadable, EXCEPTION_ELEMENT_IS_NOT_READABLE, element.getClass().getSimpleName(), elementId);
@@ -423,7 +443,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
     /**
      * Returns collection of readable elements
      */
-    private Map<String, IInteractiveElement> getReadableElements(){
+    private Map<String, IInteractiveElement> getReadableElements() {
         return elements.entrySet().stream().
                 filter(map -> map.getValue() instanceof IReadable).
                 collect(LinkedHashMap::new,
@@ -433,9 +453,10 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
 
     /**
      * Returns collection of readable elements based on the given collection of element IDs
+     *
      * @param elementIds - required Element IDs
      */
-    private Map<String, IInteractiveElement> getReadableElements(Collection<String> elementIds){
+    private Map<String, IInteractiveElement> getReadableElements(Collection<String> elementIds) {
         return elements.entrySet().stream().
                 filter(entry -> elementIds.contains(entry.getKey()) && entry.getValue() instanceof IReadable).
                 collect(LinkedHashMap::new,
@@ -470,11 +491,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl{
         return url;
     }
 
-    public ElementBuilder elementBy(){
+    public ElementBuilder elementBy() {
         return arma.elementBy(this);
     }
 
-    public IndexedElementBuilder elementsBy(){
+    public IndexedElementBuilder elementsBy() {
         return arma.elementsBy(this);
     }
 }
