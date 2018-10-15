@@ -22,6 +22,12 @@ import java.util.function.BiConsumer;
 public interface IWaitingDriver {
     String QUALIFIER = "IWaitingDriver";
 
+    /**
+     * Use this method to specify Java Script to check if page is updated
+     * @param script - Java Script must return true, if page is updated or false otherwise
+     */
+    void setWaitForPageUpdateScript(String script);
+
     void setWaitForPageUpdateMethod(BiConsumer<Long, TemporalUnit> method);
 
     void waitForElementIsVisible(ILocatable element);
