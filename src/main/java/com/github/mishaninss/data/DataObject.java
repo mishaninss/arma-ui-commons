@@ -30,14 +30,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DataObject {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObject.class);
-    private static final Map<String, ValueGenerator> valueGenerators = new HashMap<>();
+    private static final Map<String, Supplier<String>> valueGenerators = new HashMap<>();
     private Map<String, String> valuesMap;
 
-    public static void addValueGenerator(String key, ValueGenerator generator) {
+    public static void addValueGenerator(String key, Supplier<String> generator) {
         valueGenerators.put(key, generator);
     }
 
@@ -50,7 +51,7 @@ public class DataObject {
 
     private void generateValuesMap() {
         valuesMap = new HashMap<>();
-        valueGenerators.forEach((key, generator) -> valuesMap.put(key, generator.generate()));
+        valueGenerators.forEach((key, generator) -> valuesMap.put(key, generator.get()));
     }
 
     public String resolveString(String value) {

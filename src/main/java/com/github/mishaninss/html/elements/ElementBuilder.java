@@ -75,68 +75,128 @@ public class ElementBuilder {
         return withoutListeners();
     }
 
+    //  XPATH
     public ArmaElement xpath(String xpath) {
         return xpath(xpath, ArmaElement.class);
+    }
+
+    public ArmaElement xpath(String xpath, Object... args) {
+        return xpath(String.format(xpath, args));
+    }
+
+    public <T extends IInteractiveElement> T xpath(Class<T> elementType, String xpath, Object... args) {
+        return xpath(String.format(xpath, args), elementType);
     }
 
     public <T extends IInteractiveElement> T xpath(String xpath, Class<T> elementType) {
         return buildElement(LocatorType.buildXpath(xpath), elementType);
     }
 
-    public ArmaElement xpath(String xpath, Object... args) {
-        return buildElement(LocatorType.buildXpath(String.format(xpath, args)), ArmaElement.class);
-    }
-
-    public <T extends IInteractiveElement> T xpath(Class<T> elementType, String xpath, Object... args) {
-        return buildElement(LocatorType.buildXpath(String.format(xpath, args)), elementType);
+    //  CSS
+    public ArmaElement css(String css, Object... args) {
+        return css(String.format(css, args));
     }
 
     public ArmaElement css(String css) {
         return css(css, ArmaElement.class);
     }
 
+    public <T extends IInteractiveElement> T css(Class<T> elementType, String css, Object... args) {
+        return css(String.format(css, args), elementType);
+    }
+
     public <T extends IInteractiveElement> T css(String css, Class<T> elementType) {
         return buildElement(LocatorType.buildCss(css), elementType);
+    }
+
+    //    ID
+    public ArmaElement id(String id, Object... args) {
+        return id(String.format(id, args));
     }
 
     public ArmaElement id(String id) {
         return id(id, ArmaElement.class);
     }
 
+    public <T extends IInteractiveElement> T id(Class<T> elementType, String id, Object... args) {
+        return id(String.format(id, args), elementType);
+    }
+
     public <T extends IInteractiveElement> T id(String id, Class<T> elementType) {
         return buildElement(LocatorType.buildId(id), elementType);
+    }
+
+    //    NAME
+    public ArmaElement name(String name, Object... args) {
+        return name(String.format(name, args));
     }
 
     public ArmaElement name(String name) {
         return name(name, ArmaElement.class);
     }
 
+    public <T extends IInteractiveElement> T name(Class<T> elementType, String name, Object... args) {
+        return name(String.format(name, args), elementType);
+    }
+
     public <T extends IInteractiveElement> T name(String name, Class<T> elementType) {
         return buildElement(LocatorType.buildName(name), elementType);
+    }
+
+    //    LINK
+    public ArmaElement link(String linkText, Object... args) {
+        return link(String.format(linkText, args));
     }
 
     public ArmaElement link(String linkText) {
         return link(linkText, ArmaElement.class);
     }
 
+    public <T extends IInteractiveElement> T link(Class<T> elementType, String linkText, Object... args) {
+        return link(String.format(linkText, args), elementType);
+    }
+
     public <T extends IInteractiveElement> T link(String linkText, Class<T> elementType) {
         return buildElement(LocatorType.buildLink(linkText), elementType);
+    }
+
+    //    ARG
+    public ArmaElement arg(String argLocator, Object... args) {
+        return arg(String.format(argLocator, args));
     }
 
     public ArmaElement arg(String argLocator) {
         return arg(argLocator, ArmaElement.class);
     }
 
+    public <T extends IInteractiveElement> T arg(Class<T> elementType, String argLocator, Object... args) {
+        return arg(String.format(argLocator, args), elementType);
+    }
+
     public <T extends IInteractiveElement> T arg(String argLocator, Class<T> elementType) {
         return buildElement(LocatorType.buildArg(argLocator), elementType);
+    }
+
+    //    PARTIAL LINK
+    public ArmaElement partialLink(String partialLinkText, Object... args) {
+        return partialLink(String.format(partialLinkText, args));
     }
 
     public ArmaElement partialLink(String partialLinkText) {
         return partialLink(partialLinkText, ArmaElement.class);
     }
 
+    public <T extends IInteractiveElement> T partialLink(Class<T> elementType, String partialLinkText, Object... args) {
+        return partialLink(String.format(partialLinkText, args), elementType);
+    }
+
     public <T extends IInteractiveElement> T partialLink(String partialLinkText, Class<T> elementType) {
         return buildElement(LocatorType.buildPartialLink(partialLinkText), elementType);
+    }
+
+    //    TAG
+    public ArmaElement tag(String tag, Object... args) {
+        return tag(String.format(tag, args));
     }
 
     public ArmaElement tag(String tag) {
@@ -147,24 +207,51 @@ public class ElementBuilder {
         return buildElement(LocatorType.buildTag(tag), elementType);
     }
 
+    //    CLASS NAME
+    public ArmaElement className(String className, Object... args) {
+        return className(String.format(className, args));
+    }
+
     public ArmaElement className(String className) {
         return className(className, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T className(Class<T> elementType, String className, Object... args) {
+        return className(String.format(className, args), elementType);
     }
 
     public <T extends IInteractiveElement> T className(String className, Class<T> elementType) {
         return buildElement(LocatorType.buildClass(className), elementType);
     }
 
+    //    TEXT
+    public ArmaElement text(String text, Object... args) {
+        return text(String.format(text, args));
+    }
+
     public ArmaElement text(String text) {
         return text(text, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T text(Class<T> elementType, String text, Object... args) {
+        return text(String.format(text, args), elementType);
     }
 
     public <T extends IInteractiveElement> T text(String text, Class<T> elementType) {
         return buildElement(LocatorType.buildText(text), elementType);
     }
 
+    //    PARTIAL TEXT
+    public ArmaElement partialText(String text, Object... args) {
+        return partialText(String.format(text));
+    }
+
     public ArmaElement partialText(String text) {
         return partialText(text, ArmaElement.class);
+    }
+
+    public <T extends IInteractiveElement> T partialText(Class<T> elementType, String text, Object... args) {
+        return partialText(String.format(text, args), elementType);
     }
 
     public <T extends IInteractiveElement> T partialText(String text, Class<T> elementType) {
