@@ -24,27 +24,25 @@ import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.readers.AttributeReader;
-import com.github.mishaninss.utils.Keys;
 import org.springframework.context.annotation.Primary;
-import org.springframework.lang.Nullable;
 
 import javax.annotation.PostConstruct;
 
 @Element
 @Primary
-public class TextBox extends ArmaElement implements IEditable, IReadable{
+public class HiddenField extends ArmaElement implements IEditable, IReadable{
 
-    public TextBox(){}
-    
-    public TextBox(String locator) {
+    public HiddenField(){}
+
+    public HiddenField(String locator) {
         super(locator);
     }
 
-    public TextBox(String locator, IInteractiveContainer context) {
+    public HiddenField(String locator, IInteractiveContainer context) {
         super(locator, context);
     }
 
-    public TextBox(IInteractiveElement element){
+    public HiddenField(IInteractiveElement element){
         super(element);
     }
 
@@ -56,18 +54,8 @@ public class TextBox extends ArmaElement implements IEditable, IReadable{
 
     @Override
     @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public void changeValue(@Nullable Object value) {
-        arma.element().clearElement(this);
-        arma.element().sendKeysToElement(this, String.valueOf(value));
-    }
-
-    @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public void addText(Object value) {
-        arma.element().sendKeysToElement(this, String.valueOf(value));
-    }
-
-    public void pressEnter() {
-        arma.element().sendKeysToElement(this, Keys.ENTER);
+    public void changeValue(Object value) {
+        arma.element().setValueToElement(this, String.valueOf(value));
     }
 
 }

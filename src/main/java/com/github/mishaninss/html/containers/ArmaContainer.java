@@ -27,6 +27,7 @@ import com.github.mishaninss.html.elements.interfaces.IReadable;
 import com.github.mishaninss.html.interfaces.IInteractiveElement;
 import com.github.mishaninss.html.interfaces.INamed;
 import com.github.mishaninss.uidriver.Arma;
+import com.github.mishaninss.uidriver.interfaces.IContainerWaitingDriver;
 import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -34,7 +35,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -88,6 +93,10 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
         addElements(container.getElements());
         setName(INamed.getNameIfApplicable(container));
         setUrl(IHaveUrl.getUrlIfApplicable(container));
+    }
+
+    public IContainerWaitingDriver waitUntil() {
+        return arma.applicationContext().getBean(IContainerWaitingDriver.class, this);
     }
 
 // IBatchElementsContainer *********************************************************************************************

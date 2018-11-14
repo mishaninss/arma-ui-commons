@@ -27,8 +27,11 @@ import com.github.mishaninss.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Element
 public class TemplatedElement<T extends IInteractiveElement> implements IInteractiveElement, INamed {
@@ -37,23 +40,36 @@ public class TemplatedElement<T extends IInteractiveElement> implements IInterac
     @Autowired
     private ElementBuilder elementBuilder;
 
-	private T element;
-    private Map<String[], T> resolvedElements = new HashMap<>();
+    private T element;
+    private Map<Object[], T> resolvedElements = new HashMap<>();
 
-	public TemplatedElement(T element){
-		this.element = element;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public T resolveTemplate(String... args){
+    public TemplatedElement(T element) {
+        this.element = element;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T resolveTemplate(Object... args) {
         return resolvedElements.computeIfAbsent(args, key -> {
             T clone = elementBuilder.clone(element);
             clone.setLocator(String.format(clone.getLocator(), key));
             INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + StringUtils.join(key, "; ") + "]");
             resolvedElements.put(key, clone);
-            return  clone;
+            return clone;
         });
-	}
+    }
+
+    public List<T> resolveTemplates(Collection<?> args) {
+        return
+                args.stream()
+                        .map(argsItem -> {
+                            if (argsItem.getClass().isArray()) {
+                                return resolveTemplate((Object[]) argsItem);
+                            } else {
+                                return resolveTemplate(argsItem);
+                            }
+                        })
+                        .collect(Collectors.toList());
+    }
 
     @Override
     public void changeValue(Object value) {

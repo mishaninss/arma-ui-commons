@@ -74,4 +74,9 @@ public interface IThisElementDriver extends ILocatableWrapper {
 
     @FiresEvent(ElementEvent.CHANGE_VALUE)
     IThisElementDriver setValue(String value);
+
+    @FiresEvent(ElementEvent.CHANGE_VALUE)
+    IThisElementDriver setAttribute(String attribute, String value);
+
+    IThisElementDriver removeAttribute(String attribute);
 }

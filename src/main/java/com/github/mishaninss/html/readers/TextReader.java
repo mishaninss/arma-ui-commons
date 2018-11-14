@@ -21,6 +21,7 @@ import com.github.mishaninss.uidriver.annotations.ElementDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementDriver;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
@@ -35,7 +36,7 @@ public class TextReader implements Function<IInteractiveElement, String> {
     private IElementDriver elementDriver;
 
     @Override
-    public String apply(IInteractiveElement element) {
+    public String apply(@NonNull IInteractiveElement element) {
         return elementDriver.getTextFromElement(element);
     }
 }

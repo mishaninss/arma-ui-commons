@@ -20,6 +20,10 @@ public interface IBrowserDriver {
 
     void switchToWindow(String windowHandle);
 
+    void switchToWindow(int windowIndex);
+
+    void switchToLastWindow();
+
     void closeCurrentWindow();
 
     void closeWindow(String windowHandle);

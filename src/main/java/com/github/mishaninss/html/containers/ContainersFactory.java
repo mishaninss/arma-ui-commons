@@ -48,6 +48,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -534,7 +535,7 @@ public class ContainersFactory {
 
         element.setContext(container);
         addDefaultListeners(element);
-        setElementName(element, controllerField);
+        setElementName(element, controllerField, elementId);
         setElementOptionalMark(element, controllerField);
         if (container instanceof IFrame) {
             element.setContextLookup(false);
@@ -630,7 +631,7 @@ public class ContainersFactory {
         }
     }
 
-    private void setElementName(IInteractiveElement element, Field controllerField) {
+    private void setElementName(IInteractiveElement element, Field controllerField, String elementId) {
         if (element instanceof INamed) {
             String name = null;
             Element elementProps = getElementProps(controllerField);
@@ -638,11 +639,15 @@ public class ContainersFactory {
                 name = elementProps.name().trim();
             }
             if (StringUtils.isBlank(name)) {
-                name = StringUtils.capitalize(
-                        StringUtils.join(
-                                StringUtils.splitByCharacterTypeCamelCase(controllerField.getName()),
-                                " ")
-                );
+                if (StringUtils.isNotBlank(elementId)){
+                    name = WordUtils.capitalize(elementId.replaceAll("_", " "));
+                } else {
+                    name = StringUtils.capitalize(
+                            StringUtils.join(
+                                    StringUtils.splitByCharacterTypeCamelCase(controllerField.getName()),
+                                    " ")
+                    );
+                }
             }
             ((INamed) element).setName(name);
         }
@@ -811,7 +816,7 @@ public class ContainersFactory {
 
     public static String sanitizeElementId(String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
-        return elementId.toLowerCase().replace(" ", "");
+        return StringUtils.normalizeSpace(elementId.toLowerCase()).replace(" ", "_");
     }
 
     private void initTable(Table instance) throws IllegalAccessException {

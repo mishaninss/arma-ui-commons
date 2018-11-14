@@ -31,9 +31,16 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Element
 public class IndexedElement<T extends IInteractiveElement> implements IInteractiveElement, INamed, Iterable<T> {
@@ -44,88 +51,81 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
     @Autowired
     private ElementBuilder elementBuilder;
 
-	private T wrappedElement;
+    private T wrappedElement;
     private Map<Integer, T> indexedElements = new HashMap<>();
-	
-	public IndexedElement(T element){
-		this.wrappedElement = element;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public T index(int index){
+
+    public IndexedElement(T element) {
+        this.wrappedElement = element;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T index(int index) {
         Preconditions.checkArgument(index != 0, "Element's index mast not be 0");
-        if (index < 0){
+        if (index < 0) {
             index = count() + 1 + index;
         }
         return indexedElements.computeIfAbsent(index,
-            i -> {
-                T clone = elementBuilder.clone(wrappedElement);
-                clone.setLocator(IndexedContainer.getIndexedLocator(clone.getLocator(), i));
-                INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
-                indexedElements.put(i, clone);
-                return clone;
-            });
-	}
+                i -> {
+                    T clone = elementBuilder.clone(wrappedElement);
+                    clone.setLocator(IndexedContainer.getIndexedLocator(clone.getLocator(), i));
+                    INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
+                    indexedElements.put(i, clone);
+                    return clone;
+                });
+    }
 
-	public int count(){
+    public int count() {
         return elementsDriver.getElementsCount(IndexedContainer.getLocatorForCounting(wrappedElement.getLocator()));
     }
 
-    public List<T> getElements(){
-        int count = count();
-        List<T> elements = new ArrayList<>();
-        for (int index = 1; index<=count; index++){
-            elements.add(index(index));
-        }
-        return elements;
+    public List<T> getElements() {
+        return IntStream.rangeClosed(1, count())
+                .mapToObj(this::index)
+                .collect(Collectors.toList());
     }
 
-    public List<String> readValues(){
+    public List<String> readValues() {
         List<String> values = new ArrayList<>();
         forEach(item -> values.add(item.readValue()));
         return values;
     }
 
-    public void performActions(){
+    public void performActions() {
         forEach(IInteractiveElement::performAction);
     }
 
-    public void changeValues(Object value){
-	    forEach(item -> item.changeValue(value));
+    public void changeValues(Object value) {
+        forEach(item -> item.changeValue(value));
     }
 
-    public Optional<T> findElement(String expectedValue){
-	    return findElement(actualValue -> StringUtils.equals(actualValue, expectedValue));
+    public void changeValues(Iterable<Object> values) {
+        AtomicInteger index = new AtomicInteger(0);
+        values.forEach(value -> index(index.incrementAndGet()).changeValue(value));
     }
 
-    public Optional<T> findElement(Function<String, Boolean> checker){
+    public Optional<T> findElement(String expectedValue) {
+        return findElement(actualValue -> StringUtils.equals(actualValue, expectedValue));
+    }
+
+    public Optional<T> findElement(Predicate<String> checker) {
         int count = count();
-        for (int index = 1; index<=count; index++){
+        for (int index = 1; index <= count; index++) {
             T element = index(index);
-            if (checker.apply(element.readValue())){
+            if (checker.test(element.readValue())) {
                 return Optional.of(element);
             }
         }
         return Optional.empty();
     }
 
-    public List<T> findElements(String expectedValue){
-	    return findElements(actualValue -> StringUtils.equals(actualValue, expectedValue));
+    public List<T> findElements(String expectedValue) {
+        return findElements(actualValue -> StringUtils.equals(actualValue, expectedValue));
     }
 
-    public List<T> findElements(Function<String, Boolean> checker){
-        List<T> elements = new LinkedList<>();
-        forEach(item -> {
-            if (checker.apply(item.readValue())){
-                elements.add(item);
-            }
-        });
-        return elements;
-    }
-
-    public void changeValues(Iterable<Object> values){
-        AtomicInteger index = new AtomicInteger(0);
-        values.forEach(value -> index(index.incrementAndGet()).changeValue(value));
+    public List<T> findElements(Predicate<String> checker) {
+        return getElements().stream()
+                .filter(element -> checker.test(element.readValue()))
+                .collect(Collectors.toList());
     }
 
     @Override

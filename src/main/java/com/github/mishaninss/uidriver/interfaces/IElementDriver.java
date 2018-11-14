@@ -16,6 +16,8 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
+import org.springframework.lang.NonNull;
+
 /**
  * 
  * @author Sergey Mishanin
@@ -28,32 +30,32 @@ public interface IElementDriver {
      * Can be used for text inputs to clear the current value
      * @param element - locator of the element
      */
-    IElementDriver clearElement(ILocatable element);
+    IElementDriver clearElement(@NonNull ILocatable element);
     
     /**
      * Simulates left click on the element
      * @param element - locator of the element
      */
-    IElementDriver clickOnElement(ILocatable element);
+    IElementDriver clickOnElement(@NonNull ILocatable element);
 
     /**
      * Simulates left click on the element without waiting for element is clickable
      * @param element - locator of the element
      */
-    IElementDriver simpleClickOnElement(ILocatable element);
+    IElementDriver simpleClickOnElement(@NonNull ILocatable element);
     
     /**
      * Simulates right click on the element
      * @param element - locator of the element
      */
-    IElementDriver contextClickOnElement(ILocatable element);
+    IElementDriver contextClickOnElement(@NonNull ILocatable element);
     
     /**
      * Simulates left click with a pressed key (eg. CTRL, SHIFT, ALT)
      * @param element - locator of the element
      * @param key - pressed key
      */
-    IElementDriver clickOnElementWithKeyPressed(ILocatable element, CharSequence key);
+    IElementDriver clickOnElementWithKeyPressed(@NonNull ILocatable element, CharSequence key);
     
     /**
      * Get the value of a the given attribute of the element.
@@ -61,21 +63,21 @@ public interface IElementDriver {
      * @param attribute - name of the attribute
      * @return the value of a the given attribute
      */
-    String getAttributeOfElement(ILocatable element, String attribute);
+    String getAttributeOfElement(@NonNull ILocatable element, String attribute);
     
     /**
      * Get the visible inner text of this element, including sub-elements, without any leading or trailing whitespace.
      * @param element - locator of the element
      * @return The visible inner text of this element.
      */
-    String getTextFromElement(ILocatable element);
+    String getTextFromElement(@NonNull ILocatable element);
     
     /**
      * Get the full inner text of this element, including hidden text and text from sub-elements, without any leading or trailing whitespace.
      * @param element - locator of the element
      * @return The full inner text of this element.
      */
-    String getFullTextFromElement(ILocatable element);
+    String getFullTextFromElement(@NonNull ILocatable element);
     
     /**
      * Checks if element with specified locator is displayed on the page or not.
@@ -84,63 +86,67 @@ public interface IElementDriver {
      * false otherwise.
      * @return true if element exists on the page and displayed; false otherwise.
      */
-    boolean isElementDisplayed(ILocatable element, boolean waitForElement);
+    boolean isElementDisplayed(@NonNull ILocatable element, boolean waitForElement);
     
     /**
      * Checks if the element is displayed on the page or not.
      * @param element - locator of the element.
      * @return true if the element exists on the page and displayed; false otherwise.
      */
-    boolean isElementDisplayed(ILocatable element);
+    boolean isElementDisplayed(@NonNull ILocatable element);
     
     /**
      * Checks if the element is enabled or not.
      * @param element - locator of the element.
      * @return true if the element is enabled; false otherwise.
      */
-    boolean isElementEnabled(ILocatable element);
+    boolean isElementEnabled(@NonNull ILocatable element);
     
     /**
      * Checks if the element is selected or not.
      * @param element - locator of the element.
      * @return true if the element is selected; false otherwise.
      */
-    boolean isElementSelected(ILocatable element);
+    boolean isElementSelected(@NonNull ILocatable element);
 
     /**
      * Simulates typing into an element
      * @param element - locator of the element
      * @param keysToSend - keys to send
      */
-    IElementDriver sendKeysToElement(ILocatable element, CharSequence... keysToSend);
+    IElementDriver sendKeysToElement(@NonNull ILocatable element, CharSequence... keysToSend);
     
     /**
      * Performs scrolling to make the element visible on screen 
      * @param element - locator of the element
      */
-    IElementDriver scrollToElement(ILocatable element);
+    IElementDriver scrollToElement(@NonNull ILocatable element);
 
-    byte[] takeElementScreenshot(ILocatable element);
+    byte[] takeElementScreenshot(@NonNull ILocatable element);
 
     void clearCache();
 
-    void highlightElement(ILocatable element);
+    void highlightElement(@NonNull ILocatable element);
 
-    void unhighlightElement(ILocatable element);
+    void unhighlightElement(@NonNull ILocatable element);
 
-    String getTagName(ILocatable element);
+    String getTagName(@NonNull ILocatable element);
 
-    IPoint getLocation(ILocatable element);
+    IPoint getLocation(@NonNull ILocatable element);
 
-    IElementDriver hoverElement(ILocatable element);
+    IElementDriver hoverElement(@NonNull ILocatable element);
 
-    IElementDriver clickWithDelayElement(ILocatable element);
+    IElementDriver clickWithDelayElement(@NonNull ILocatable element);
 
-    void addElementDebugInfo(ILocatable element, final String info, final String tooltip);
+    void addElementDebugInfo(@NonNull ILocatable element, final String info, final String tooltip);
 
     void removeElementDebugInfo();
 
-    Object executeJsOnElement(String javaScript, ILocatable element);
+    Object executeJsOnElement(@NonNull String javaScript, @NonNull ILocatable element);
 
-    IElementDriver setValueToElement(ILocatable element, String value);
+    IElementDriver setValueToElement(@NonNull ILocatable element, String value);
+
+    IElementDriver setAttributeOfElement(@NonNull ILocatable element, @NonNull String attribute, String value);
+
+    void removeAttributeOfElement(ILocatable element, String attribute);
 }

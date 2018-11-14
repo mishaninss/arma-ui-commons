@@ -18,6 +18,7 @@ package com.github.mishaninss.uidriver.interfaces;
 
 import java.time.temporal.TemporalUnit;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public interface IWaitingDriver {
     String QUALIFIER = "IWaitingDriver";
@@ -60,6 +61,14 @@ public interface IWaitingDriver {
 
     void waitForElementToBeNotSelected(ILocatable element, long timeout, TemporalUnit unit);
 
+    void waitForElementAttributeToBeNotEmpty(ILocatable element, String attribute);
+
+    void waitForElementAttributeToBe(ILocatable element, String attribute, String value);
+
+    void waitForElementAttributeToBeNotEmpty(ILocatable element, String attribute, long timeoutInSeconds);
+
+    void waitForElementAttributeToBeNotEmpty(ILocatable element, String attribute, long timeout, TemporalUnit unit);
+
     void waitForUrlToBe(String url);
 
     void waitForUrlToBe(String url, long timeoutInSeconds);
@@ -71,6 +80,28 @@ public interface IWaitingDriver {
     void waitForAlertIsPresent(long timeoutInSeconds);
 
     void waitForAlertIsPresent(long timeout, TemporalUnit unit);
+
+    void waitForElementAttributeToBe(ILocatable element, String attribute, String value, long timeoutInSeconds);
+
+    void waitForElementAttributeToBe(ILocatable element, String attribute, String value, long timeout, TemporalUnit unit);
+
+    void waitForElementAttributeContains(ILocatable element, String attribute, String value);
+
+    void waitForElementAttributeContains(ILocatable element, String attribute, String value, long timeoutInSeconds);
+
+    void waitForElementAttributeContains(ILocatable element, String attribute, String value, long timeout, TemporalUnit unit);
+
+    <T> T waitForCondition(Supplier<T> condition);
+
+    <T> T waitForCondition(Supplier<T> condition, String message);
+
+    <T> T waitForCondition(Supplier<T> condition, long timeoutInSeconds);
+
+    <T> T waitForCondition(Supplier<T> condition, long timeoutInSeconds, String message);
+
+    <T> T waitForCondition(Supplier<T> condition, long timeout, TemporalUnit unit);
+
+    <T> T waitForCondition(Supplier<T> condition, long timeout, TemporalUnit unit, String message);
 
     void waitForPageUpdate();
 

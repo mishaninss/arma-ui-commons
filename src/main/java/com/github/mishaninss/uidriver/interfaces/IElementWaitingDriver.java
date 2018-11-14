@@ -16,12 +16,13 @@
 
 package com.github.mishaninss.uidriver.interfaces;
 
+import com.github.mishaninss.html.interfaces.IInteractiveElement;
+
 import java.time.temporal.TemporalUnit;
+import java.util.function.Function;
 
 public interface IElementWaitingDriver {
-    IElementWaitingDriver quietly();
-
-    boolean isQuietly();
+    IElementQuietWaitingDriver quietly();
 
     void isVisible();
 
@@ -40,4 +41,34 @@ public interface IElementWaitingDriver {
     void isClickable(long timeoutInSeconds);
 
     void isClickable(long timeout, TemporalUnit unit);
+
+    void attributeToBeNotEmpty(String attribute);
+
+    void attributeToBeNotEmpty(String attribute, long timeoutInSeconds);
+
+    void attributeToBeNotEmpty(String attribute, long timeout, TemporalUnit unit);
+
+    void attributeToBe(String attribute, String value);
+
+    void attributeToBe(String attribute, String value, long timeoutInSeconds);
+
+    void attributeToBe(String attribute, String value, long timeout, TemporalUnit unit);
+
+    void attributeContains(String attribute, String value);
+
+    void attributeContains(String attribute, String value, long timeoutInSeconds);
+
+    void attributeContains(String attribute, String value, long timeout, TemporalUnit unit);
+
+    <T> T condition(Function<IInteractiveElement, T> condition);
+
+    <T> T condition(Function<IInteractiveElement, T> condition, String message);
+
+    <T> T condition(Function<IInteractiveElement, T> condition, long timeoutInSeconds);
+
+    <T> T condition(Function<IInteractiveElement, T> condition, long timeoutInSeconds, String message);
+
+    <T> T condition(Function<IInteractiveElement, T> condition, long timeout, TemporalUnit unit);
+
+    <T> T condition(Function<IInteractiveElement, T> condition, long timeout, TemporalUnit unit, String message);
 }

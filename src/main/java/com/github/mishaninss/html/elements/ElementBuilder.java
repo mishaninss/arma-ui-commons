@@ -243,7 +243,7 @@ public class ElementBuilder {
 
     //    PARTIAL TEXT
     public ArmaElement partialText(String text, Object... args) {
-        return partialText(String.format(text));
+        return partialText(String.format(text, args));
     }
 
     public ArmaElement partialText(String text) {
