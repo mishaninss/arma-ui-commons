@@ -22,22 +22,29 @@ import com.github.mishaninss.uidriver.annotations.ElementsDriver;
 import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- * Created by Sergey_Mishanin on 9/21/17.
+ * @author  Sergey Mishanin
  */
 @Component
-public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaContainer {
+@Primary
+public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaContainer implements Iterable<T> {
     private T wrappedContainer;
     private Map<Integer, T> indexedContainers = new HashMap<>();
 
@@ -66,7 +73,7 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     @SuppressWarnings("unchecked")
     public T index(int index) {
         Preconditions.checkArgument(index != 0, "Container's index mast not be 0");
-        if (index < 0){
+        if (index < 0) {
             index = count() + 1 + index;
         }
         return indexedContainers.computeIfAbsent(index,
@@ -85,6 +92,13 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
                     INamed.setNameIfApplicable(clone, INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
                     return clone;
                 });
+    }
+
+    public List<T> getContainers() {
+        int count = count();
+        return IntStream.rangeClosed(1, count)
+                .mapToObj(this::index)
+                .collect(Collectors.toList());
     }
 
     public static String getIndexedLocator(String locator, int index) {
@@ -223,5 +237,20 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return getContainers().iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        getContainers().forEach(action);
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return getContainers().spliterator();
     }
 }

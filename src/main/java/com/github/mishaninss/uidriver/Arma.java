@@ -24,14 +24,32 @@ import com.github.mishaninss.html.containers.ContainersFactory;
 import com.github.mishaninss.html.elements.ElementBuilder;
 import com.github.mishaninss.reporting.IReporter;
 import com.github.mishaninss.reporting.Reporter;
-import com.github.mishaninss.uidriver.annotations.*;
-import com.github.mishaninss.uidriver.interfaces.*;
+import com.github.mishaninss.uidriver.annotations.AlertHandler;
+import com.github.mishaninss.uidriver.annotations.BrowserDriver;
+import com.github.mishaninss.uidriver.annotations.ElementDriver;
+import com.github.mishaninss.uidriver.annotations.ElementsDriver;
+import com.github.mishaninss.uidriver.annotations.PageDriver;
+import com.github.mishaninss.uidriver.annotations.SelectElementDriver;
+import com.github.mishaninss.uidriver.annotations.WaitingDriver;
+import com.github.mishaninss.uidriver.interfaces.IActionsChain;
+import com.github.mishaninss.uidriver.interfaces.IAlertHandler;
+import com.github.mishaninss.uidriver.interfaces.IBrowserDriver;
+import com.github.mishaninss.uidriver.interfaces.IElementActionsChain;
+import com.github.mishaninss.uidriver.interfaces.IElementDriver;
+import com.github.mishaninss.uidriver.interfaces.IElementWaitingDriver;
+import com.github.mishaninss.uidriver.interfaces.IElementsDriver;
+import com.github.mishaninss.uidriver.interfaces.ILocatable;
+import com.github.mishaninss.uidriver.interfaces.IPageDriver;
+import com.github.mishaninss.uidriver.interfaces.ISelectElementDriver;
+import com.github.mishaninss.uidriver.interfaces.IThisElementDriver;
+import com.github.mishaninss.uidriver.interfaces.IWaitingDriver;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -45,6 +63,8 @@ public class Arma {
 
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private Environment environment;
     @ElementDriver
     private IElementDriver elementDriver;
     @ElementsDriver
@@ -72,21 +92,22 @@ public class Arma {
 
     private ArmaContainer currentPage;
 
-    private Arma(){}
+    private Arma() {
+    }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         INSTANCES.set(this);
     }
 
     @PreDestroy
-    private void destroy(){
+    private void destroy() {
         INSTANCES.remove();
     }
 
-    public static Arma get(){
+    public static Arma get() {
         Arma arma = INSTANCES.get();
-        if (arma == null){
+        if (arma == null) {
             return up(null);
         } else {
             return arma;
@@ -94,169 +115,173 @@ public class Arma {
 
     }
 
-    public static Arma get(String browserName){
+    public static Arma get(String browserName) {
         Arma arma = INSTANCES.get();
-        if (arma == null){
+        if (arma == null) {
             return up(browserName);
         } else {
             return arma;
         }
     }
 
-    public static void kill(){
+    public static void kill() {
         Arma arma = INSTANCES.get();
         if (arma != null) {
             arma.close();
         }
     }
 
-    public void close(){
-        ((ConfigurableApplicationContext)applicationContext).close();
+    public void close() {
+        ((ConfigurableApplicationContext) applicationContext).close();
     }
 
-    public ContainersFactory containersFactory(){
+    public ContainersFactory containersFactory() {
         return containersFactory;
     }
 
-    public IElementDriver element(){
+    public IElementDriver element() {
         return elementDriver;
     }
-    
-    public ISelectElementDriver selectElement(){
+
+    public ISelectElementDriver selectElement() {
         return selectElementDriver;
     }
-    
-    public IElementsDriver elements(){
+
+    public IElementsDriver elements() {
         return elementsDriver;
     }
 
-    public void setCurrentPage(ArmaContainer currentPage){
+    public void setCurrentPage(ArmaContainer currentPage) {
         this.currentPage = currentPage;
     }
 
-    public void setCurrentPage(Class<? extends ArmaContainer> currentPageClass){
+    public void setCurrentPage(Class<? extends ArmaContainer> currentPageClass) {
         this.currentPage = page(currentPageClass);
     }
 
-    public void setCurrentPage(String currentPageName){
+    public void setCurrentPage(String currentPageName) {
         this.currentPage = page(currentPageName);
     }
 
-    public ArmaContainer currentPage(){
+    public ArmaContainer currentPage() {
         return currentPage;
     }
-    
-    public IPageDriver page(){
+
+    public IPageDriver page() {
         return pageDriver;
     }
 
-    public <T extends ArmaContainer> T page(Class<T> pageClass){
+    public <T extends ArmaContainer> T page(Class<T> pageClass) {
         return applicationContext.getBean(pageClass);
     }
 
-    public ArmaContainer page(String pageName){
+    public ArmaContainer page(String pageName) {
         Preconditions.checkArgument(StringUtils.isNotBlank(pageName), "Page name cannot be blank");
         String[] words = StringUtils.normalizeSpace(pageName.trim()).split(" ");
         StringBuilder sb = new StringBuilder(words[0].toLowerCase());
-        for (int i=1; i<words.length; i++){
+        for (int i = 1; i < words.length; i++) {
             sb.append(StringUtils.capitalize(words[i].toLowerCase()));
         }
         String pageClassName = sb.toString();
         try {
             return (ArmaContainer) applicationContext.getBean(pageClassName);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new FrameworkConfigurationException("There is no container with name " + pageClassName, ex);
         }
     }
 
-    public <T extends ArmaContainer> T open(Class<T> pageClass){
+    public <T extends ArmaContainer> T open(Class<T> pageClass) {
         T page = page(pageClass);
         page.goToUrl();
         return page;
     }
 
-    public <T extends ArmaContainer> T open(String url, Class<T> pageClass){
+    public <T extends ArmaContainer> T open(String url, Class<T> pageClass) {
         pageDriver.goToUrl(url);
         return applicationContext.getBean(pageClass);
     }
 
-    public ApplicationContext applicationContext(){
+    public ApplicationContext applicationContext() {
         return applicationContext;
     }
 
-    public IBrowserDriver browser(){
+    public Environment env() {
+        return environment;
+    }
+
+    public IBrowserDriver browser() {
         return browserDriver;
     }
 
-    public IAlertHandler alert(){
+    public IAlertHandler alert() {
         return alertHandler;
     }
 
-    public IWaitingDriver waiting(){
+    public IWaitingDriver waiting() {
         return waitingDriver;
     }
 
-    public IElementWaitingDriver waiting(ILocatable element){
+    public IElementWaitingDriver waiting(ILocatable element) {
         return applicationContext.getBean(IElementWaitingDriver.class, element);
     }
 
-    public IActionsChain actionsChain(){
+    public IActionsChain actionsChain() {
         return applicationContext.getBean(IActionsChain.class);
     }
 
-    public IElementActionsChain actionsChain(ILocatable element){
+    public IElementActionsChain actionsChain(ILocatable element) {
         return applicationContext.getBean(IElementActionsChain.class, element);
     }
 
-    public IThisElementDriver element(ILocatable element){
+    public IThisElementDriver element(ILocatable element) {
         return applicationContext.getBean(IThisElementDriver.class, element);
     }
 
-    public IReporter reporter(){
+    public IReporter reporter() {
         return reporter;
     }
 
-    public ElementBuilder elementBy(){
+    public ElementBuilder elementBy() {
         return applicationContext.getBean(ElementBuilder.class);
     }
 
-    public ElementBuilder elementBy(boolean withListeners){
+    public ElementBuilder elementBy(boolean withListeners) {
         return elementBy().withListeners(withListeners);
     }
 
-    public ElementBuilder elementBy(ILocatable context){
+    public ElementBuilder elementBy(ILocatable context) {
         return elementBy().withContext(context);
     }
 
-    public IndexedElementBuilder elementsBy(){
+    public IndexedElementBuilder elementsBy() {
         return applicationContext.getBean(IndexedElementBuilder.class);
     }
 
-    public IndexedElementBuilder elementsBy(boolean withListeners){
+    public IndexedElementBuilder elementsBy(boolean withListeners) {
         return elementsBy().withListeners(withListeners);
     }
 
-    public IndexedElementBuilder elementsBy(ILocatable context){
+    public IndexedElementBuilder elementsBy(ILocatable context) {
         return elementsBy().withContext(context);
     }
 
-    public UiCommonsProperties config(){
+    public UiCommonsProperties config() {
         return properties;
     }
 
-    public static Arma chrome(){
+    public static Arma chrome() {
         return get("chrome");
     }
 
-    public static ContextBuilder using(){
-        if (contextBuilder == null){
+    public static ContextBuilder using() {
+        if (contextBuilder == null) {
             contextBuilder = new ContextBuilder();
         }
         return contextBuilder;
     }
 
-    private static Arma up(String browserName){
-        if (staticContext == null){
+    private static Arma up(String browserName) {
+        if (staticContext == null) {
             using().profiles(browserName).build();
         } else {
             staticContext.getEnvironment().addActiveProfile(browserName);
@@ -265,7 +290,7 @@ public class Arma {
         return staticContext.getBean(Arma.class);
     }
 
-    static void setApplicationContext(AnnotationConfigApplicationContext context){
+    static void setApplicationContext(AnnotationConfigApplicationContext context) {
         staticContext = context;
     }
 }
