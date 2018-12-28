@@ -33,6 +33,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -108,7 +110,8 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @return this container
      */
     @Override
-    public ArmaContainer changeValues(Map<String, ?> inputData) {
+    public @NonNull
+    ArmaContainer changeValues(@NonNull Map<String, ?> inputData) {
         final Map<String, IInteractiveElement> editableElements = getEditableElements();
         final Map<String, ?> adjustedInputData = adjustDataKeys(inputData);
         editableElements.forEach((elementId, element) -> {
@@ -120,7 +123,8 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
         return this;
     }
 
-    private Map<String, ?> adjustDataKeys(Map<String, ?> inputData) {
+    private @NonNull
+    Map<String, ?> adjustDataKeys(@NonNull Map<String, ?> inputData) {
         return inputData.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> ContainersFactory.sanitizeElementId(entry.getKey()),
@@ -133,7 +137,8 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @param dataObject - data object
      * @return this container
      */
-    public ArmaContainer changeValues(Object dataObject) {
+    public @NonNull
+    ArmaContainer changeValues(@NonNull Object dataObject) {
         Map<String, Object> inputData = DataObjectUtils.readDataFromObject(elements.keySet(), dataObject);
         changeValues(inputData);
         return this;
@@ -146,7 +151,8 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @return a key-value map, where a key is an ID of an element, and value is a value of an element
      */
     @Override
-    public Map<String, String> readValues() {
+    public @NonNull
+    Map<String, String> readValues() {
         Map<String, String> values = new LinkedHashMap<>();
         getReadableElements().forEach((elementId, element) -> {
             String value = readValueOrDefault(element, null);
@@ -165,7 +171,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @return a key-value map, where a key is an ID of an element, and value is a value of this element
      */
     @Override
-    public Map<String, String> readValues(Iterable<String> elementIds) {
+    public @NonNull Map<String, String> readValues(@NonNull Iterable<String> elementIds) {
         Map<String, String> values = new LinkedHashMap<>();
         getReadableElements(Lists.newArrayList(elementIds))
                 .forEach((elementId, element) -> {
@@ -245,7 +251,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @return value of an element, if this element is displayed. Default value if this element is Optional
      * and not displayed on a page.
      */
-    private String readValueOrDefault(final IInteractiveElement element, final String defaultValue) {
+    private @javax.annotation.Nullable String readValueOrDefault(@NonNull final IInteractiveElement element, @Nullable final String defaultValue) {
         if (element.isOptional()) {
             if (element.isDisplayed(false)) {
                 try {
@@ -349,9 +355,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @return controller of the element
      */
     @Override
-    public IInteractiveElement getElement(final String elementId) {
+    public @NonNull
+    IInteractiveElement getElement(@NonNull String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
-        IInteractiveElement element = elements.get(ContainersFactory.sanitizeElementId(elementId));
+        elementId = ContainersFactory.sanitizeElementId(elementId);
+        IInteractiveElement element = elements.get(elementId);
         Preconditions.checkArgument(element != null, EXCEPTION_UNKNOWN_ELEMENT_ID, elementId, getName(), elements.keySet());
         return element;
     }
@@ -418,7 +426,8 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @param elementId - the ID of action element
      * @return controller of the element
      */
-    private IInteractiveElement getEditableElement(String elementId) {
+    private @NonNull
+    IInteractiveElement getEditableElement(@NonNull String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = getElement(elementId);
         Preconditions.checkArgument(element instanceof IEditable, EXCEPTION_ELEMENT_IS_NOT_EDITABLE, element.getClass().getSimpleName(), elementId);
@@ -442,7 +451,8 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl 
      * @param elementId - the ID of action element
      * @return controller of the element
      */
-    private IInteractiveElement getReadableElement(String elementId) {
+    private @NonNull
+    IInteractiveElement getReadableElement(@NonNull String elementId) {
         Preconditions.checkArgument(StringUtils.isNoneBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         IInteractiveElement element = getElement(elementId);
         Preconditions.checkArgument(element instanceof IReadable, EXCEPTION_ELEMENT_IS_NOT_READABLE, element.getClass().getSimpleName(), elementId);

@@ -38,9 +38,10 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
- * @author  Sergey Mishanin
+ * @author Sergey Mishanin
  */
 @Component
 @Primary
@@ -252,5 +253,9 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     @Override
     public Spliterator<T> spliterator() {
         return getContainers().spliterator();
+    }
+
+    public Stream<T> stream() {
+        return getContainers().stream();
     }
 }

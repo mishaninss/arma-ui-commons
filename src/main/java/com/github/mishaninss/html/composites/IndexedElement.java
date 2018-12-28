@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Element
 public class IndexedElement<T extends IInteractiveElement> implements IInteractiveElement, INamed, Iterable<T> {
@@ -227,5 +228,9 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
     @Override
     public Iterator<T> iterator() {
         return getElements().iterator();
+    }
+
+    public Stream<T> stream(){
+        return getElements().stream();
     }
 }
