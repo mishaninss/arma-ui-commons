@@ -91,6 +91,7 @@ public class UiCommonsProperties{
         public static final String TIMEOUTS_PAGE_LOAD = "arma.driver.timeouts.page.load";
         public static final String TIMEOUTS_DRIVER_OPERATION = "arma.driver.timeouts.drivers.operation";
         public static final String BROWSER_LOGS_LEVEL = "arma.driver.browser.logs.level";
+        public static final String DOWNLOADS_DIR = "arma.driver.downloads.dir";
 
         @Autowired
         private Environment environment;
@@ -103,6 +104,8 @@ public class UiCommonsProperties{
         public int timeoutsPageLoad;
         @Value("${" + TIMEOUTS_DRIVER_OPERATION + ":60000}")
         public int timeoutsDriverOperation;
+        @Value("${" + DOWNLOADS_DIR + ":}")
+        public String downloadsDir;
 
         public Level browserLogsLevel;
 

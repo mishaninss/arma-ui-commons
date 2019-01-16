@@ -836,7 +836,13 @@ public class ContainersFactory {
     public static @NonNull
     String sanitizeElementId(@NonNull String elementId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
-        return StringUtils.normalizeSpace(elementId.toLowerCase()).replace(" ", "_");
+        elementId = StringUtils.normalizeSpace(elementId.replace("_", " "));
+        if (elementId.contains(" ")){
+            elementId = elementId.toLowerCase().replace(" ", "_");
+        } else {
+            elementId = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(elementId), "_").toLowerCase();
+        }
+        return elementId;
     }
 
     private void initTable(@NonNull Table instance) throws IllegalAccessException {

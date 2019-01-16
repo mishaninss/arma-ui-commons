@@ -35,10 +35,10 @@ public class DataObjectUtils {
     private DataObjectUtils() {
     }
 
-    public static Map<String, String> normalizeKeys(Map<String, String> data){
+    public static Map<String, String> normalizeKeys(Map<String, String> data) {
         return data.entrySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> StringUtils.normalizeSpace(entry.getKey().trim().toLowerCase()).replaceAll("\\s", "_"),
+                        entry -> ContainersFactory.sanitizeElementId(entry.getKey()),
                         Map.Entry::getValue
                 ));
     }
@@ -101,7 +101,7 @@ public class DataObjectUtils {
 
     private static Method findSetter(Class<?> clazz, String property) {
         Method[] methods = clazz.getMethods();
-        String getterName = ContainersFactory.sanitizeElementId("set" + property);
+        String getterName = "set_" + ContainersFactory.sanitizeElementId(property);
         for (Method method : methods) {
             if (StringUtils.equals(getterName, ContainersFactory.sanitizeElementId(method.getName()))) {
                 return method;
@@ -112,7 +112,7 @@ public class DataObjectUtils {
 
     private static Method findGetter(Class<?> clazz, String property) {
         Method[] methods = clazz.getMethods();
-        String getterName = ContainersFactory.sanitizeElementId("get" + property);
+        String getterName = "get_" + ContainersFactory.sanitizeElementId(property);
         for (Method method : methods) {
             if (StringUtils.equals(getterName, ContainersFactory.sanitizeElementId(method.getName()))) {
                 return method;
