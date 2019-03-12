@@ -233,4 +233,12 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
     public Stream<T> stream(){
         return getElements().stream();
     }
+
+    public T first(){
+        return index(1);
+    }
+
+    public T last(){
+        return index(count());
+    }
 }

@@ -46,13 +46,28 @@ import java.util.stream.Stream;
 @Component
 @Primary
 public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaContainer implements Iterable<T> {
+    @ElementsDriver
+    protected IElementsDriver elementsDriver;
     private T wrappedContainer;
     private Map<Integer, T> indexedContainers = new HashMap<>();
 
-    @ElementsDriver
-    protected IElementsDriver elementsDriver;
-
     public IndexedContainer() {
+    }
+
+    public IndexedContainer(T wrappedContainer) {
+        wrap(wrappedContainer);
+    }
+
+    public static String getIndexedLocator(String locator, int index) {
+        return locator.contains("%d")
+                ? String.format(locator, index)
+                : "#" + index + "#" + locator;
+    }
+
+    public static String getLocatorForCounting(String locator) {
+        return locator.contains("%d")
+                ? StringUtils.replace(locator, "%d", "*")
+                : locator;
     }
 
     @PostConstruct
@@ -65,10 +80,6 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
 
     void wrap(T wrappedContainer) {
         this.wrappedContainer = wrappedContainer;
-    }
-
-    public IndexedContainer(T wrappedContainer) {
-        wrap(wrappedContainer);
     }
 
     @SuppressWarnings("unchecked")
@@ -100,12 +111,6 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
         return IntStream.rangeClosed(1, count)
                 .mapToObj(this::index)
                 .collect(Collectors.toList());
-    }
-
-    public static String getIndexedLocator(String locator, int index) {
-        return locator.contains("%d")
-                ? String.format(locator, index)
-                : "#" + index + "#" + locator;
     }
 
     public int count() {
@@ -179,7 +184,16 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     }
 
     public Optional<T> findContainer(Predicate<T> checker) {
+        return findContainerWithKnownCount(checker, count());
+    }
+
+    public Optional<T> findContainer(Predicate<T> checker, int limit) {
         int count = count();
+        count = count > limit ? limit : count;
+        return findContainerWithKnownCount(checker, count);
+    }
+
+    private Optional<T> findContainerWithKnownCount(Predicate<T> checker, int count) {
         for (int index = 1; index <= count; index++) {
             T container = index(index);
             if (checker.test(container)) {
@@ -222,12 +236,6 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
 
     public T last() {
         return index(count());
-    }
-
-    public static String getLocatorForCounting(String locator) {
-        return locator.contains("%d")
-                ? StringUtils.replace(locator, "%d", "*")
-                : locator;
     }
 
     @Override

@@ -113,15 +113,19 @@ public class DataObject {
             if (field != null) {
                 Method getter = findGetter(clazz, field.getName());
                 if (getter != null) {
-                    return String.valueOf(MethodUtils.invokeMethod(this, true, getter.getName()));
+                    return objectToStringOrNull(MethodUtils.invokeMethod(this, true, getter.getName()));
                 } else {
-                    return String.valueOf(FieldUtils.readField(field, this, true));
+                    return objectToStringOrNull(FieldUtils.readField(field, this, true));
                 }
             }
         } catch (Exception ex) {
             LOGGER.trace("Could not get {} property of {} data object", property, this.getClass());
         }
         return null;
+    }
+
+    private String objectToStringOrNull(Object obj){
+        return obj == null ? null : String.valueOf(obj);
     }
 
     private Method findSetter(Class<?> clazz, String property) {

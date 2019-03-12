@@ -91,7 +91,8 @@ public final class LocatorType {
     public static String buildArg(String locator) {
         Matcher m = ARG_LOCATOR_PATTERN.matcher(locator);
         if (m.matches()){
-            return buildLocator(String.format("*[%s='%s']", m.group(2), m.group(8)), CSS);
+            String value = m.group(8).replace("'", "\\'");
+            return buildLocator(String.format("*[%s='%s']", m.group(2), value), CSS);
         } else {
             throw new ContainerInitException("Incorrect format of locator " + locator);
         }
