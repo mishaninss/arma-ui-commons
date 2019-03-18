@@ -24,44 +24,51 @@ import java.util.Map;
 
 /**
  * Provides common interface for an abstract UI element
+ *
  * @author Sergey Mishanin
-  */
+ */
 public interface IListenableElement {
+
+    static LinkedHashSet<IElementEventHandler> getListenersIfApplicable(Object object, ElementEvent event) {
+        LinkedHashSet<IElementEventHandler> listeners = null;
+        if (object instanceof IListenableElement) {
+            listeners = ((IListenableElement) object).getEventListeners(event);
+        }
+        return listeners != null ? listeners : new LinkedHashSet<>();
+    }
 
     IListenableElement addEventListener(ElementEvent event, IElementEventHandler listener);
 
-    default IListenableElement addEventListener(IElementEventHandler listener){
-        for (ElementEvent event: ElementEvent.values()){
+    default IListenableElement addEventListener(IElementEventHandler listener) {
+        for (ElementEvent event : ElementEvent.values()) {
             addEventListener(event, listener);
         }
         return this;
     }
 
-    IListenableElement setEventListeners(Map<ElementEvent, LinkedHashSet<IElementEventHandler>> listeners);
-
-    default IListenableElement addEventListeners(ElementEvent event, IElementEventHandler... listeners){
-        for (IElementEventHandler listener: listeners){
+    default IListenableElement addEventListeners(ElementEvent event, IElementEventHandler... listeners) {
+        for (IElementEventHandler listener : listeners) {
             addEventListener(event, listener);
         }
         return this;
     }
 
-    default IListenableElement addEventListeners(IElementEventHandler... listeners){
-        for (ElementEvent event: ElementEvent.values()){
+    default IListenableElement addEventListeners(IElementEventHandler... listeners) {
+        for (ElementEvent event : ElementEvent.values()) {
             addEventListeners(event, listeners);
         }
         return this;
     }
 
-    default IListenableElement addEventListeners(Iterable<IElementEventHandler> listeners){
-        for (ElementEvent event: ElementEvent.values()){
+    default IListenableElement addEventListeners(Iterable<IElementEventHandler> listeners) {
+        for (ElementEvent event : ElementEvent.values()) {
             addEventListeners(event, listeners);
         }
         return this;
     }
 
-    default IListenableElement addEventListeners(ElementEvent event, Iterable<IElementEventHandler> listeners){
-        for (IElementEventHandler listener: listeners){
+    default IListenableElement addEventListeners(ElementEvent event, Iterable<IElementEventHandler> listeners) {
+        for (IElementEventHandler listener : listeners) {
             addEventListener(event, listener);
         }
         return this;
@@ -69,15 +76,9 @@ public interface IListenableElement {
 
     Map<ElementEvent, LinkedHashSet<IElementEventHandler>> getEventListeners();
 
-    default LinkedHashSet<IElementEventHandler> getEventListeners(ElementEvent event){
-        return getEventListeners().get(event);
-    }
+    IListenableElement setEventListeners(Map<ElementEvent, LinkedHashSet<IElementEventHandler>> listeners);
 
-    static LinkedHashSet<IElementEventHandler> getListenersIfApplicable(Object object, ElementEvent event){
-        if (object instanceof IListenableElement){
-            return ((IListenableElement) object).getEventListeners(event);
-        } else {
-            return new LinkedHashSet<>();
-        }
+    default LinkedHashSet<IElementEventHandler> getEventListeners(ElementEvent event) {
+        return getEventListeners().get(event);
     }
 }

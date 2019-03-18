@@ -26,7 +26,11 @@ import com.github.mishaninss.html.listeners.ElementEvent;
 import com.github.mishaninss.html.listeners.FiresEvent;
 import com.github.mishaninss.html.listeners.IElementEventHandler;
 import com.github.mishaninss.uidriver.Arma;
-import com.github.mishaninss.uidriver.interfaces.*;
+import com.github.mishaninss.uidriver.interfaces.IElementActionsChain;
+import com.github.mishaninss.uidriver.interfaces.IElementReadActionDriver;
+import com.github.mishaninss.uidriver.interfaces.IElementWaitingDriver;
+import com.github.mishaninss.uidriver.interfaces.ILocatable;
+import com.github.mishaninss.uidriver.interfaces.IThisElementDriver;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -34,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -47,32 +52,32 @@ import java.util.function.Function;
  */
 @Element
 @Primary
-public class ArmaElement implements IInteractiveElement, IListenableElement, INamed{
+public class ArmaElement implements IInteractiveElement, IListenableElement, INamed {
+    static final String EXCEPTION_ILLEGAL_TYPE_OF_VALUE = "Illegal type of a value [%s]";
+    private static final String EXCEPTION_ILLEGAL_LOCATOR = "Locator cannot be null or empty string";
     @Autowired
     protected Arma arma;
     protected Function<IInteractiveElement, String> reader;
-
-    static final String EXCEPTION_ILLEGAL_TYPE_OF_VALUE = "Illegal type of a value [%s]";
-    private static final String EXCEPTION_ILLEGAL_LOCATOR = "Locator cannot be null or empty string";
-
     protected String name;
     protected String locator;
-    private   boolean optional = false;
-    private   boolean contextLookup = true;
+    private boolean optional = false;
+    private boolean contextLookup = true;
     private ILocatable context;
     private IInteractiveContainer nextPage;
     private Map<ElementEvent, LinkedHashSet<IElementEventHandler>> eventListeners = new EnumMap<>(ElementEvent.class);
 
 // Constructors ********************************************************************************************************
 
-    public ArmaElement(){}
+    public ArmaElement() {
+    }
 
     /**
      * Creates an instance of Basic element
+     *
      * @param locator - locator of the element
      */
-    public ArmaElement(String locator){
-        if (StringUtils.isBlank(locator)){
+    public ArmaElement(String locator) {
+        if (StringUtils.isBlank(locator)) {
             throw new IllegalArgumentException(EXCEPTION_ILLEGAL_LOCATOR);
         }
         this.locator = locator;
@@ -80,33 +85,34 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     /**
      * Creates an instance of Basic element
+     *
      * @param locator - locator of the element
      * @param context - container of the element
      */
-    public ArmaElement(String locator, IInteractiveContainer context){
+    public ArmaElement(String locator, IInteractiveContainer context) {
         this(locator);
         this.context = context;
     }
 
-    public ArmaElement(IInteractiveElement element){
+    public ArmaElement(IInteractiveElement element) {
         this.locator = element.getLocator();
         this.optional = element.isOptional();
         this.contextLookup = element.useContextLookup();
         this.context = element.getContext();
         this.nextPage = element.nextPage();
-        if (element instanceof IListenableElement){
-            setEventListeners(((IListenableElement)element).getEventListeners());
+        if (element instanceof IListenableElement) {
+            setEventListeners(((IListenableElement) element).getEventListeners());
         }
-        if (element instanceof INamed){
-            setName(((INamed)element).getName());
+        if (element instanceof INamed) {
+            setName(((INamed) element).getName());
         }
-        if (element instanceof ArmaElement){
+        if (element instanceof ArmaElement) {
             this.reader = ((ArmaElement) element).reader;
         }
     }
 
     @PostConstruct
-    protected void init(){
+    protected void init() {
         reader = arma.element()::getTextFromElement;
     }
 
@@ -114,36 +120,36 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 
     @Override
     @FiresEvent(ElementEvent.CHANGE_VALUE)
-    public void changeValue(final Object value){
+    public void changeValue(final Object value) {
         arma.element().sendKeysToElement(this, value.toString());
     }
 
     @Override
     @FiresEvent(ElementEvent.READ_VALUE)
-    public String readValue(){
+    public String readValue() {
         return reader.apply(this);
     }
 
     @Override
     @FiresEvent(ElementEvent.ACTION)
-    public void performAction(){
+    public void performAction() {
         arma.element().clickOnElement(this);
     }
 
     @Override
     @FiresEvent(ElementEvent.IS_DISPLAYED)
-    public boolean isDisplayed(){
+    public boolean isDisplayed() {
         return arma.element().isElementDisplayed(this);
     }
 
     @Override
     @FiresEvent(ElementEvent.IS_DISPLAYED)
-    public boolean isDisplayed(boolean shouldWait){
+    public boolean isDisplayed(boolean shouldWait) {
         return arma.element().isElementDisplayed(this, shouldWait);
     }
 
     @Override
-    public boolean isEnabled(){
+    public boolean isEnabled() {
         return arma.element().isElementEnabled(this);
     }
 
@@ -189,8 +195,8 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
     }
 
     @Override
-    public IInteractiveContainer nextPage(){
-        if (nextPage == null && context != null && IInteractiveContainer.class.isAssignableFrom(context.getClass())){
+    public IInteractiveContainer nextPage() {
+        if (nextPage == null && context != null && IInteractiveContainer.class.isAssignableFrom(context.getClass())) {
             nextPage = (IInteractiveContainer) context;
         }
         return nextPage;
@@ -229,49 +235,59 @@ public class ArmaElement implements IInteractiveElement, IListenableElement, INa
 // INamed **************************************************************************************************************
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public ArmaElement setName(String name) {
         this.name = name;
         return this;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
 
 // Other stuff *********************************************************************************************************
 
-    public IThisElementDriver perform(){
+    public IThisElementDriver perform() {
         return arma.applicationContext().getBean(IThisElementDriver.class, this);
     }
 
     @FiresEvent(ElementEvent.ACTION)
-    public <R> R perform(Function<IInteractiveElement, R> function){
+    public <R> R perform(Function<IInteractiveElement, R> function) {
         return function.apply(this);
     }
 
-    public IElementActionsChain action(){
+    public IElementActionsChain action() {
         return arma.applicationContext().getBean(IElementActionsChain.class, this, true);
     }
 
-    public IElementActionsChain actions(){
+    public IElementActionsChain actions() {
         return arma.applicationContext().getBean(IElementActionsChain.class, this);
     }
 
-    public IElementReadActionDriver read(){
+    public IElementReadActionDriver read() {
         return arma.applicationContext().getBean(IElementReadActionDriver.class, this);
     }
 
-    public IElementWaitingDriver waitUntil(){
+    public IElementWaitingDriver waitUntil() {
         return arma.applicationContext().getBean(IElementWaitingDriver.class, this);
     }
 
-    public ElementBuilder elementBy(){
+    public <R> R raw(Function<IInteractiveElement, R> function) {
+        Map<ElementEvent, LinkedHashSet<IElementEventHandler>> eventHandlers = getEventListeners();
+        try {
+            eventListeners = Collections.emptyMap();
+            return perform(function);
+        } finally {
+            setEventListeners(eventHandlers);
+        }
+    }
+
+    public ElementBuilder elementBy() {
         return arma.elementBy(this);
     }
 
-    public IndexedElementBuilder elementsBy(){
+    public IndexedElementBuilder elementsBy() {
         return arma.elementsBy(this);
     }
 
