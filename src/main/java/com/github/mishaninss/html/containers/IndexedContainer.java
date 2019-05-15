@@ -114,9 +114,10 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     }
 
     public int count() {
-        String originalLocator = wrappedContainer.getLocator();
-        if (StringUtils.isNoneBlank(originalLocator)) {
-            return elementsDriver.getElementsCount(getLocatorForCounting(originalLocator));
+        if (StringUtils.isNotBlank(getLocator())) {
+            return elementsDriver.getElementsCount(this);
+        } else if (StringUtils.isNotBlank(wrappedContainer.getLocator())) {
+            return elementsDriver.getElementsCount(getLocatorForCounting(wrappedContainer.getLocator()));
         } else {
             String locator = wrappedContainer.getElements().values().iterator().next().getLocator();
             return elementsDriver.getElementsCount(getLocatorForCounting(locator));

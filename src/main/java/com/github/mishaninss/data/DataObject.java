@@ -130,9 +130,9 @@ public class DataObject {
 
     private Method findSetter(Class<?> clazz, String property) {
         Method[] methods = clazz.getMethods();
-        String getterName = ContainersFactory.sanitizeElementId("set" + property);
+        String setterName = ContainersFactory.sanitizeElementId("set" + StringUtils.capitalize(property));
         for (Method method : methods) {
-            if (StringUtils.equals(getterName, ContainersFactory.sanitizeElementId(method.getName()))
+            if (StringUtils.equals(setterName, ContainersFactory.sanitizeElementId(method.getName()))
                     && method.getParameterCount() == 1
                     && method.getParameterTypes()[0] == String.class) {
                 return method;
