@@ -22,12 +22,14 @@ import java.util.Map;
 
 /**
  * Controller for abstract set of elements
+ *
  * @author Sergey Mishanin
  */
 public interface IBatchElementsContainer extends IInteractiveContainer {
 
     /**
      * Performs actions to change values of elements with given IDs
+     *
      * @param inputData - a key-value map, where a key is and ID of an element, and value is a desired value
      * @return this container
      */
@@ -35,6 +37,7 @@ public interface IBatchElementsContainer extends IInteractiveContainer {
 
     /**
      * Performs actions to read values of all elements in this container
+     *
      * @return a key-value map, where a key is and ID of an element, and value is a value of an element
      */
     Map<String, String> readValues();

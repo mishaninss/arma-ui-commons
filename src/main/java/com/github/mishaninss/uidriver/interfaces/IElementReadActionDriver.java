@@ -24,7 +24,7 @@ public interface IElementReadActionDriver extends ILocatableWrapper{
     @FiresEvent(ElementEvent.READ_VALUE)
     boolean isSelected();
 
-    @FiresEvent(ElementEvent.READ_VALUE)
+    @FiresEvent(value = ElementEvent.READ_VALUE, message = "attribute [${1}]")
     String attribute(String attribute);
 
     @FiresEvent(ElementEvent.READ_VALUE)

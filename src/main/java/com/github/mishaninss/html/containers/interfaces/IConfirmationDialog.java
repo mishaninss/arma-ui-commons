@@ -20,25 +20,33 @@ import com.github.mishaninss.html.interfaces.IInteractiveContainer;
 
 /**
  * Controller for an abstract confirmation dialog.
+ *
  * @author Sergey Mishanin
  */
 public interface IConfirmationDialog extends IInteractiveContainer {
-    
-    /** Contains available IDs of action elements*/
-    class Buttons{
+
+    /**
+     * Contains available IDs of action elements
+     */
+    class Buttons {
         public static final String ACCEPT = "Accept";
         public static final String DECLINE = "Cancel";
 
-        private Buttons(){}
+        private Buttons() {
+        }
     }
-    
-    /** Performs click on the Accept button */
-    default void accept(){
+
+    /**
+     * Performs click on the Accept button
+     */
+    default void accept() {
         performAction(Buttons.ACCEPT);
     }
-    
-    /** Performs click on the Cancel button */
-    default void decline(){
+
+    /**
+     * Performs click on the Cancel button
+     */
+    default void decline() {
         performAction(Buttons.DECLINE);
     }
 }

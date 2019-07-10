@@ -55,7 +55,7 @@ public abstract class BaseLoggingEventHandler implements IElementEventHandler {
         String message;
         switch (event){
             case READ_VALUE:
-                String actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim(): "value";
+                String actionName = StringUtils.isNoneBlank(comment) ? StringUtils.removeStart(comment, "read").trim(): "value";
                 message = getLogMessage(MESSAGE_GET_VALUE, element, actionName, args);
                 logMessage(message);
                 break;

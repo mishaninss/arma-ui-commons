@@ -21,17 +21,8 @@ import com.github.mishaninss.data.UiCommonsProperties;
 import com.github.mishaninss.exceptions.ContainerInitException;
 import com.github.mishaninss.html.composites.IndexedElement;
 import com.github.mishaninss.html.composites.TemplatedElement;
-import com.github.mishaninss.html.containers.annotations.Container;
-import com.github.mishaninss.html.containers.annotations.ContextualContainer;
-import com.github.mishaninss.html.containers.annotations.ContextualElement;
-import com.github.mishaninss.html.containers.annotations.ContextualUrl;
-import com.github.mishaninss.html.containers.annotations.DefaultEventHandlersProvider;
-import com.github.mishaninss.html.containers.annotations.Element;
-import com.github.mishaninss.html.containers.annotations.ElementIds;
-import com.github.mishaninss.html.containers.annotations.Nested;
 import com.github.mishaninss.html.containers.annotations.Optional;
-import com.github.mishaninss.html.containers.annotations.Reader;
-import com.github.mishaninss.html.containers.annotations.Url;
+import com.github.mishaninss.html.containers.annotations.*;
 import com.github.mishaninss.html.containers.interfaces.IBatchElementsContainer;
 import com.github.mishaninss.html.containers.interfaces.IDefaultEventHandlersProvider;
 import com.github.mishaninss.html.containers.interfaces.IHaveUrl;
@@ -43,11 +34,7 @@ import com.github.mishaninss.html.containers.table.annotations.IContextualTable;
 import com.github.mishaninss.html.containers.table.annotations.ITable;
 import com.github.mishaninss.html.elements.ArmaElement;
 import com.github.mishaninss.html.elements.NoopElement;
-import com.github.mishaninss.html.interfaces.IElementsContainer;
-import com.github.mishaninss.html.interfaces.IInteractiveContainer;
-import com.github.mishaninss.html.interfaces.IInteractiveElement;
-import com.github.mishaninss.html.interfaces.IListenableElement;
-import com.github.mishaninss.html.interfaces.INamed;
+import com.github.mishaninss.html.interfaces.*;
 import com.github.mishaninss.html.listeners.IFrameEventHandler;
 import com.github.mishaninss.html.readers.NoopReader;
 import com.github.mishaninss.uidriver.LocatorType;
@@ -75,13 +62,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -263,7 +244,8 @@ public class ContainersFactory {
         }
     }
 
-    private @Nullable Container getContainerProps(@NonNull IElementsContainer instance) {
+    private @Nullable
+    Container getContainerProps(@NonNull IElementsContainer instance) {
         Class<? extends IElementsContainer> clazz = instance.getClass();
         if (clazz.isAnnotationPresent(ContextualContainer.class)) {
             ContextualContainer contextualContainer = clazz.getAnnotation(ContextualContainer.class);
@@ -355,21 +337,27 @@ public class ContainersFactory {
     private void setContainerLocator(@NonNull IElementsContainer instance) {
         Container containerProps = getContainerProps(instance);
         if (containerProps != null) {
-            String locator = getTypedContainerLocator(containerProps);
-            if (StringUtils.isNotBlank(locator)) {
-                instance.setLocator(locator);
-                return;
-            }
-            locator = containerProps.value();
-            if (StringUtils.isNotBlank(locator)) {
-                instance.setLocator(locator);
-                return;
-            }
-            locator = containerProps.locator();
+            String locator = getContainerLocator(containerProps);
             if (StringUtils.isNotBlank(locator)) {
                 instance.setLocator(locator);
             }
         }
+    }
+
+    public static String getContainerLocator(Container containerProps) {
+        String locator = getTypedContainerLocator(containerProps);
+        if (StringUtils.isNotBlank(locator)) {
+            return locator;
+        }
+        locator = containerProps.value();
+        if (StringUtils.isNotBlank(locator)) {
+            return locator;
+        }
+        locator = containerProps.locator();
+        if (StringUtils.isNotBlank(locator)) {
+            return locator;
+        }
+        return null;
     }
 
     private void setContainerUrl(@Nullable IElementsContainer instance) {
@@ -400,7 +388,8 @@ public class ContainersFactory {
         }
     }
 
-    private @NonNull Map<String, List<String>> loadLocators(@NonNull IElementsContainer instance) throws IOException {
+    private @NonNull
+    Map<String, List<String>> loadLocators(@NonNull IElementsContainer instance) throws IOException {
         Class<? extends IElementsContainer> clazz = instance.getClass();
         Map<String, List<String>> loadedLocators = new LinkedHashMap<>();
         Container containerProps = getContainerProps(instance);
@@ -687,7 +676,8 @@ public class ContainersFactory {
         }
     }
 
-    private @NonNull List<String> getElementLocators(@NonNull Field controllerField) {
+    private @NonNull
+    List<String> getElementLocators(@NonNull Field controllerField) {
         Element elementProps = getElementProps(controllerField);
         if (elementProps != null) {
             List<String> locators = Arrays.asList(elementProps.locators());
@@ -759,7 +749,7 @@ public class ContainersFactory {
         return null;
     }
 
-    private String getTypedContainerLocator(Container containerProps) {
+    private static String getTypedContainerLocator(Container containerProps) {
         String locator = containerProps.byId();
         if (StringUtils.isNotBlank(locator)) {
             return LocatorType.buildId(locator);
@@ -837,7 +827,7 @@ public class ContainersFactory {
     String sanitizeElementId(@NonNull String elementId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(elementId), EXCEPTION_EMPTY_ELEMENT_ID);
         elementId = StringUtils.normalizeSpace(elementId.replace("_", " "));
-        if (elementId.contains(" ")){
+        if (elementId.contains(" ")) {
             elementId = elementId.toLowerCase().replace(" ", "_");
         } else {
             elementId = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(elementId), "_").toLowerCase();
@@ -1022,7 +1012,8 @@ public class ContainersFactory {
         return new ContainerInitException(String.format(message, args), cause);
     }
 
-    private @NonNull List<String> resolvePlaceholders(@NonNull List<String> values) {
+    private @NonNull
+    List<String> resolvePlaceholders(@NonNull List<String> values) {
         return values.stream().map(env::resolvePlaceholders).collect(Collectors.toList());
     }
 }

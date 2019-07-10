@@ -17,6 +17,8 @@
 package com.github.mishaninss.data;
 
 import com.github.mishaninss.html.containers.ContainersFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -34,9 +36,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DataObject {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObject.class);
     private static final Map<String, Supplier<String>> valueGenerators = new HashMap<>();
-    private Map<String, String> valuesMap;
+
+    private transient Map<String, String> valuesMap;
 
     public static void addValueGenerator(String key, Supplier<String> generator) {
         valueGenerators.put(key, generator);
@@ -124,7 +128,7 @@ public class DataObject {
         return null;
     }
 
-    private String objectToStringOrNull(Object obj){
+    private String objectToStringOrNull(Object obj) {
         return obj == null ? null : String.valueOf(obj);
     }
 
@@ -164,5 +168,10 @@ public class DataObject {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return GSON.toJson(this);
     }
 }

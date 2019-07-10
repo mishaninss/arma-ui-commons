@@ -26,14 +26,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -122,6 +115,10 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
             String locator = wrappedContainer.getElements().values().iterator().next().getLocator();
             return elementsDriver.getElementsCount(getLocatorForCounting(locator));
         }
+    }
+
+    public int fastCount() {
+        return arma.waiting().executeWithoutWaiting(this::count);
     }
 
     public List<Map<String, String>> readAll() {

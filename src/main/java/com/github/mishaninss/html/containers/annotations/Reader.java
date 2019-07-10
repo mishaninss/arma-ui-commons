@@ -32,7 +32,9 @@ import java.util.function.Function;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface Reader {
-    /** If an element constructor requires multiple locators to be passed, use this parameter to specify a list of locators */
+    /**
+     * If an element constructor requires multiple locators to be passed, use this parameter to specify a list of locators
+     */
     String[] args() default {};
 
     Class<? extends Function<IInteractiveElement, String>> value();

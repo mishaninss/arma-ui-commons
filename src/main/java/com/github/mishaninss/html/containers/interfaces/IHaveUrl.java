@@ -27,37 +27,37 @@ public interface IHaveUrl {
 
     String getUrl();
 
-    default String getUrl(Object... args){
+    default String getUrl(Object... args) {
         return String.format(getUrl(), args);
     }
 
-    default void goToUrl(){
+    default void goToUrl() {
         String url = getUrl();
-        if (StringUtils.isBlank(url)){
+        if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("URL was not specified for this container");
         }
         Arma.get().page().goToUrl(url);
     }
 
-    default void goToUrl(Object... args){
+    default void goToUrl(Object... args) {
         String url = getUrl();
-        if (StringUtils.isBlank(url)){
+        if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("URL was not specified for this container");
         }
         url = String.format(url, args);
         Arma.get().page().goToUrl(url);
     }
 
-    static String getUrlIfApplicable(Object object){
-        if (object instanceof IHaveUrl){
+    static String getUrlIfApplicable(Object object) {
+        if (object instanceof IHaveUrl) {
             return ((IHaveUrl) object).getUrl();
         } else {
             return null;
         }
     }
 
-    static void setUrlIfApplicable(Object object, String url){
-        if (object instanceof IHaveUrl){
+    static void setUrlIfApplicable(Object object, String url) {
+        if (object instanceof IHaveUrl) {
             ((IHaveUrl) object).setUrl(url);
         }
     }

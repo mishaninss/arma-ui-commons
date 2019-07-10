@@ -36,6 +36,7 @@ import com.github.mishaninss.uidriver.interfaces.IPageDriver;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
@@ -44,6 +45,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SuppressWarnings("unused")
 @Aspect
@@ -61,9 +64,9 @@ public class InteractiveElementAspects {
 
 
     @Pointcut("call(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
-	public void firesEvent() {
-		//NOSONAR
-	}
+    public void firesEvent() {
+        //NOSONAR
+    }
 
     @Pointcut("withincode(@com.github.mishaninss.html.listeners.FiresEvent * * (..))")
     public void withinCodeFiresEvent() {
@@ -72,11 +75,11 @@ public class InteractiveElementAspects {
 
     @Before("firesEvent() && !withinCodeFiresEvent()")
     public void adviceBeforeFireEvent(JoinPoint joinPoint) {
-	    Object target = joinPoint.getTarget();
+        Object target = joinPoint.getTarget();
         if (target != null) {
             if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
                 executeBeforeEvents((IInteractiveElement) target, joinPoint);
-            } else if (target instanceof ILocatableWrapper){
+            } else if (target instanceof ILocatableWrapper) {
                 target = ((ILocatableWrapper) target).getElement();
                 if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
                     executeBeforeEvents((IInteractiveElement) target, joinPoint);
@@ -85,20 +88,31 @@ public class InteractiveElementAspects {
         }
     }
 
-    private String getActionName(Signature signature){
-        return ACTION_NAMES.computeIfAbsent(signature, sign ->
-                StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(sign.getName()), " ")
-                    .toLowerCase()
-                    .trim());
+    private String getActionName(Signature signature, String message, Object[] args) {
+        if (StringUtils.isNotBlank(message)) {
+            if (args.length > 0 && message.contains("{")) {
+                Map<String, String> values = IntStream.range(0, args.length).boxed().collect(Collectors.<Integer, String, String>toMap(
+                        i -> String.valueOf(i + 1),
+                        i -> String.valueOf(args[i])
+                ));
+                message = new StringSubstitutor(values).replace(message);
+            }
+            return message;
+        } else {
+            return ACTION_NAMES.computeIfAbsent(signature, sign ->
+                    StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(sign.getName()), " ")
+                            .toLowerCase()
+                            .trim());
+        }
     }
 
-    private void executeBeforeEvents(IInteractiveElement element, JoinPoint joinPoint){
+    private void executeBeforeEvents(IInteractiveElement element, JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         FiresEvent firesEvent = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
         ElementEvent event = firesEvent.value();
         LinkedHashSet<IElementEventHandler> listeners = ((IListenableElement) element).getEventListeners(event);
         if (CollectionUtils.isNotEmpty(listeners)) {
-            listeners.forEach(listener -> listener.beforeEvent(element, event, getActionName(joinPoint.getSignature()), args));
+            listeners.forEach(listener -> listener.beforeEvent(element, event, getActionName(joinPoint.getSignature(), firesEvent.message(), joinPoint.getArgs()), args));
         }
     }
 
@@ -108,7 +122,7 @@ public class InteractiveElementAspects {
         if (target != null) {
             if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
                 executeAfterEvents((IInteractiveElement) target, joinPoint, ret);
-            } else if (target instanceof ILocatableWrapper){
+            } else if (target instanceof ILocatableWrapper) {
                 target = ((ILocatableWrapper) target).getElement();
                 if (target instanceof IListenableElement && target instanceof IInteractiveElement) {
                     executeAfterEvents((IInteractiveElement) target, joinPoint, ret);
@@ -117,19 +131,25 @@ public class InteractiveElementAspects {
         }
     }
 
-    private void executeAfterEvents(IInteractiveElement element, JoinPoint joinPoint, Object ret){
-        FiresEvent firesEvent = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
+    private void executeAfterEvents(IInteractiveElement element, JoinPoint joinPoint, Object ret) {
+        FiresEvent firesEvent = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(FiresEvent.class);
         ElementEvent event = firesEvent.value();
+        String message = firesEvent.message();
+        if (StringUtils.isNotBlank(message)) {
+            if (message.contains("{")) {
+
+            }
+        }
         LinkedList<IElementEventHandler> listeners = new LinkedList<>(IListenableElement.getListenersIfApplicable(element, event));
         if (CollectionUtils.isNotEmpty(listeners)) {
             Iterator<IElementEventHandler> iterator = listeners.descendingIterator();
             while (iterator.hasNext()) {
-                iterator.next().afterEvent(element, event, getActionName(joinPoint.getSignature()), ret);
+                iterator.next().afterEvent(element, event, getActionName(joinPoint.getSignature(), firesEvent.message(), joinPoint.getArgs()), ret);
             }
         }
     }
 
-    @AfterThrowing(value="firesEvent() && !withinCodeFiresEvent()", throwing="e")
+    @AfterThrowing(value = "firesEvent() && !withinCodeFiresEvent()", throwing = "e")
     public void adviceAfterThrowingFromEventFiringMethod(Exception e, JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
         IInteractiveElement element = null;
@@ -148,20 +168,20 @@ public class InteractiveElementAspects {
         }
     }
 
-    private void rethrowException(IInteractiveElement element, String action, Exception ex){
+    private void rethrowException(IInteractiveElement element, String action, Exception ex) {
         Throwable cause = ex;
-        if (cause instanceof InvocationTargetException && cause.getCause() != null){
+        if (cause instanceof InvocationTargetException && cause.getCause() != null) {
             cause = cause.getCause();
         }
         StringBuilder sb = new StringBuilder();
         sb.append("Error in attempt to ").append(action);
 
         String name = "";
-        if (element instanceof INamed){
-            name = ((INamed)element).getName();
+        if (element instanceof INamed) {
+            name = ((INamed) element).getName();
         }
 
-        if (!StringUtils.isBlank(name)){
+        if (!StringUtils.isBlank(name)) {
             sb.append(" [").append(name).append("]");
         } else {
             sb.append(" [").append(element.getLocator()).append("]");
@@ -169,32 +189,32 @@ public class InteractiveElementAspects {
 
         sb.append("\nLocator: ").append(element.getLocatorsPath());
 
-        if (cause instanceof SessionLostException){
+        if (cause instanceof SessionLostException) {
             throw clearStacktrace(new SessionLostException(sb.toString(), cause));
-       } else {
-        	if (browserDriver.isBrowserStarted()) {
-				reporter.attachScreenshot(pageDriver.takeScreenshot());
-				if (properties.driver().areConsoleLogsEnabled()){
-				    reporter.attachText(StringUtils.join(browserDriver.getLogEntries("browser"), "\n"), "Browser logs");
+        } else {
+            if (browserDriver.isBrowserStarted()) {
+                reporter.attachScreenshot(pageDriver.takeScreenshot());
+                if (properties.driver().areConsoleLogsEnabled()) {
+                    reporter.attachText(StringUtils.join(browserDriver.getLogEntries("browser"), "\n"), "Browser logs");
                 }
-				sb.append("\nURL: ").append(pageDriver.getCurrentUrl());
-				sb.append("\nPage title: ").append(pageDriver.getPageTitle());
-			}
+                sb.append("\nURL: ").append(pageDriver.getCurrentUrl());
+                sb.append("\nPage title: ").append(pageDriver.getPageTitle());
+            }
 
             throw clearStacktrace(new InteractionException(sb.toString(), cause));
         }
     }
 
     @SuppressWarnings("ThrowableNotThrown")
-    private <T extends Throwable> T clearStacktrace(T ex){
+    private <T extends Throwable> T clearStacktrace(T ex) {
         String[] stacktraceWhitelist = properties.framework().stackTraceWhiteList;
         if (ArrayUtils.isNotEmpty(stacktraceWhitelist)) {
             StackTraceElement[] trace = ex.getStackTrace();
             List<StackTraceElement> clearTrace = new LinkedList<>();
             for (StackTraceElement element : trace) {
                 String className = element.getClassName();
-                if ((StringUtils.startsWith(className ,"com.github.mishaninss") || StringUtils.startsWithAny(className, stacktraceWhitelist))
-                        && !StringUtils.startsWith(className,"com.github.mishaninss.aspects")
+                if ((StringUtils.startsWith(className, "com.github.mishaninss") || StringUtils.startsWithAny(className, stacktraceWhitelist))
+                        && !StringUtils.startsWith(className, "com.github.mishaninss.aspects")
                         && element.getLineNumber() > 1) {
                     clearTrace.add(element);
                 }

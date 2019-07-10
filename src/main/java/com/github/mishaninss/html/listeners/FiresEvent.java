@@ -25,4 +25,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface FiresEvent {
     ElementEvent value();
+    String message() default "";
 }

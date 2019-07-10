@@ -39,27 +39,27 @@ public class HighlightEventHandler implements IElementEventHandler {
     @Override
     public void beforeEvent(IInteractiveElement element, ElementEvent event, String comment, Object... args) {
         String actionName;
-        switch (event){
-            case CHANGE_VALUE:
-                elementDriver.highlightElement(element);
-                Object value = ArrayUtils.isNotEmpty(args) ? args[0] : "";
-                elementDriver.addElementDebugInfo(element, String.format(CHANGE_VALUE_MESSAGE, value), "");
-                GenericUtils.pause(TimeUnit.MILLISECONDS,700);
-                break;
-            case READ_VALUE:
-                actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim(): "value";
-                elementDriver.highlightElement(element);
-                elementDriver.addElementDebugInfo(element, String.format(READ_VALUE_MESSAGE, actionName), "");
-                GenericUtils.pause(TimeUnit.MILLISECONDS,700);
-                break;
-            case ACTION:
-                actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "perform").trim(): "value";
-                elementDriver.highlightElement(element);
-                elementDriver.addElementDebugInfo(element, String.format(PERFORM_ACTION_MESSAGE, actionName), "");
-                GenericUtils.pause(TimeUnit.MILLISECONDS,700);
-                break;
-            default:
+        if (elementDriver.isElementDisplayed(element, false)) {
+            switch (event) {
+                case CHANGE_VALUE:
+                    elementDriver.highlightElement(element);
+                    Object value = ArrayUtils.isNotEmpty(args) ? args[0] : "";
+                    elementDriver.addElementDebugInfo(element, String.format(CHANGE_VALUE_MESSAGE, value), "");
+                    break;
+                case READ_VALUE:
+                    actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "read").trim() : "value";
+                    elementDriver.highlightElement(element);
+                    elementDriver.addElementDebugInfo(element, String.format(READ_VALUE_MESSAGE, actionName), "");
+                    break;
+                case ACTION:
+                    actionName = StringUtils.isNoneBlank(comment) ? StringUtils.stripStart(comment, "perform").trim() : "value";
+                    elementDriver.highlightElement(element);
+                    elementDriver.addElementDebugInfo(element, String.format(PERFORM_ACTION_MESSAGE, actionName), "");
+                    break;
+                default:
+            }
         }
+        GenericUtils.pause(TimeUnit.MILLISECONDS,700);
     }
 
     @Override
@@ -67,14 +67,11 @@ public class HighlightEventHandler implements IElementEventHandler {
         switch (event){
             case CHANGE_VALUE:
             case READ_VALUE:
-                elementDriver.unhighlightElement(element);
-                elementDriver.removeElementDebugInfo();
-                break;
             case ACTION:
                 if (elementDriver.isElementDisplayed(element, false)) {
                     elementDriver.unhighlightElement(element);
-                    elementDriver.removeElementDebugInfo();
                 }
+                elementDriver.removeElementDebugInfo();
                 break;
             case IS_DISPLAYED:
                 if (args.length > 0 && args[0] instanceof Boolean && (boolean)args[0]) {

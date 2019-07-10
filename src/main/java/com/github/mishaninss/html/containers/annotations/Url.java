@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface Url {
     String prop() default UiCommonsProperties.Application.APP_LOCALE;
+
     String val() default "";
+
     String value() default "";
 }

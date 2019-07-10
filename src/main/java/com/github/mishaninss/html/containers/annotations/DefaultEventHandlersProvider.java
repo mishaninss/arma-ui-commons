@@ -28,4 +28,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Autowired
 @Qualifier
-public @interface DefaultEventHandlersProvider {}
+public @interface DefaultEventHandlersProvider {
+}

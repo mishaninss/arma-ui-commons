@@ -108,4 +108,8 @@ public interface IWaitingDriver {
     void waitForPageUpdate(long timeoutInSeconds);
 
     void waitForPageUpdate(long timeout, TemporalUnit unit);
+
+    <T> T executeWithoutWaiting(Supplier<T> supplier);
+
+    void executeWithoutWaiting(Runnable runnable);
 }

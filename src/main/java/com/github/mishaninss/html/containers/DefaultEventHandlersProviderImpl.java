@@ -46,16 +46,16 @@ public class DefaultEventHandlersProviderImpl implements IDefaultEventHandlersPr
 
     @PostConstruct
     @SuppressWarnings("unchecked")
-    private void init(){
+    private void init() {
         Set<String> eventHandlersClasses = getEventHandlersDefinitions();
-        if (CollectionUtils.isNotEmpty(eventHandlersClasses)){
-            for(String eventHandlerClassName: eventHandlersClasses){
-                try{
+        if (CollectionUtils.isNotEmpty(eventHandlersClasses)) {
+            for (String eventHandlerClassName : eventHandlersClasses) {
+                try {
                     Class<? extends IElementEventHandler> eventHandlerClass = (Class<? extends IElementEventHandler>) Class.forName(eventHandlerClassName.trim());
                     defaultEventHandlers.add(applicationContext.getBean(eventHandlerClass));
-                } catch (ClassNotFoundException ex){
+                } catch (ClassNotFoundException ex) {
                     reporter.warn("Provided event handler class " + eventHandlerClassName + " was not found", ex);
-                } catch (ClassCastException ex){
+                } catch (ClassCastException ex) {
                     reporter.warn("Provided event handler class " + eventHandlerClassName + " is not compatible with " + IElementEventHandler.class.getCanonicalName(), ex);
                 }
 
@@ -63,7 +63,7 @@ public class DefaultEventHandlersProviderImpl implements IDefaultEventHandlersPr
         } else {
             defaultEventHandlers.add(applicationContext.getBean(WaitingEventHandler.class));
             defaultEventHandlers.add(applicationContext.getBean(LoggingEventHandler.class));
-            if (properties.driver().areConsoleLogsEnabled()){
+            if (properties.driver().areConsoleLogsEnabled()) {
                 defaultEventHandlers.add(applicationContext.getBean(BrowserConsoleLoggingEventHandler.class));
             }
             defaultEventHandlers.add(applicationContext.getBean(ScrollingEventHandler.class));
@@ -73,12 +73,12 @@ public class DefaultEventHandlersProviderImpl implements IDefaultEventHandlersPr
         }
     }
 
-    private Set<String> getEventHandlersDefinitions(){
+    private Set<String> getEventHandlersDefinitions() {
         Set<String> eventHandlersClasses = properties.framework().defaultEventHandlers;
-        if (CollectionUtils.isEmpty(eventHandlersClasses)){
+        if (CollectionUtils.isEmpty(eventHandlersClasses)) {
             return eventHandlersClasses;
         }
-        if (eventHandlersClasses.size() == 1 && StringUtils.isEmpty(eventHandlersClasses.iterator().next())){
+        if (eventHandlersClasses.size() == 1 && StringUtils.isEmpty(eventHandlersClasses.iterator().next())) {
             return new HashSet<>();
         }
         return eventHandlersClasses;
