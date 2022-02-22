@@ -1,0 +1,8 @@
+apply from: '../arma/build-commons.gradle'
+
+description = """"""
+
+dependencies {
+    api "com.github.mishaninss:arma-commons:${armaVersion}"
+    aspects "com.github.mishaninss:arma-ui-commons:${armaVersion}"
+}
