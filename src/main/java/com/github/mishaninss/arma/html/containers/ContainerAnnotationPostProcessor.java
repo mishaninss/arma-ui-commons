@@ -1,6 +1,7 @@
 package com.github.mishaninss.arma.html.containers;
 
 import com.github.mishaninss.arma.html.containers.annotations.Container;
+import com.github.mishaninss.arma.html.interfaces.INamed;
 import com.github.mishaninss.arma.uidriver.interfaces.ILocatable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,15 @@ public class ContainerAnnotationPostProcessor implements BeanPostProcessor {
   public Object postProcessAfterInitialization(Object bean, String beanName) {
     configureFieldInjection(bean, beanName);
     if (applicationContext.containsBean("proto_" + beanName)) {
-      ArmaContainer proto = applicationContext.getBean("proto_" + beanName, ArmaContainer.class);
+      ILocatable proto = applicationContext.getBean("proto_" + beanName, ILocatable.class);
       if (proto.getContext() != null) {
-        ((ArmaContainer) bean).setContext(proto.getContext());
+        ((ILocatable) bean).setContext(proto.getContext());
       }
       if (StringUtils.isNotBlank(proto.getLocator())) {
-        ((ArmaContainer) bean).setLocator(proto.getLocator());
+        ((ILocatable) bean).setLocator(proto.getLocator());
+      }
+      if (proto instanceof INamed && StringUtils.isNotBlank(((INamed) proto).getName())) {
+        ((INamed) bean).setName(((INamed) proto).getName());
       }
     }
     return bean;

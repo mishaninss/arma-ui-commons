@@ -2,6 +2,7 @@ package com.github.mishaninss.arma.html.containers;
 
 import com.github.mishaninss.arma.html.containers.annotations.Container;
 import com.github.mishaninss.arma.html.containers.annotations.Nested;
+import com.github.mishaninss.arma.html.interfaces.INamed;
 import com.github.mishaninss.arma.uidriver.interfaces.ILocatable;
 import java.lang.reflect.Field;
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +49,16 @@ public class ContainerFieldCallback implements ReflectionUtils.FieldCallback {
           factory.registerBeanDefinition(containerBeanName, bd);
           factory.autowireBean(container);
           factory.initializeBean(container, containerBeanName);
+          String name = getName(field);
+          if (StringUtils.isNotBlank(name) && container instanceof INamed){
+            ((INamed) container).setName(name);
+          }
           FieldUtils.writeField(field, bean, container, true);
         } else {
+          String name = getName(field);
+          if (StringUtils.isNotBlank(name) && container instanceof INamed){
+            ((INamed) container).setName(name);
+          }
           FieldUtils.writeField(field, bean, container, true);
           return;
         }
@@ -93,5 +102,17 @@ public class ContainerFieldCallback implements ReflectionUtils.FieldCallback {
     } catch (Exception ex) {
       return null;
     }
+  }
+
+  private String getName(Field field) {
+    String name = null;
+    if (field.isAnnotationPresent(Container.class)) {
+      Container props = field.getAnnotation(Container.class);
+      name = props.value();
+      if (StringUtils.isBlank(name)) {
+        name = props.name();
+      }
+    }
+    return name;
   }
 }

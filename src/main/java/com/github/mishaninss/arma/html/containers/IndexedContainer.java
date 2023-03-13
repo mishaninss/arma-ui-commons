@@ -72,7 +72,7 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
     if (index < 0) {
       index = count() + 1 + index;
     }
-    return indexedContainers.computeIfAbsent(index,
+    T container = indexedContainers.computeIfAbsent(index,
         i -> {
           T clone = containersFactory.cloneContainer(wrappedContainer);
           String locator = clone.getLocator();
@@ -92,6 +92,10 @@ public class IndexedContainer<T extends IBatchElementsContainer> extends ArmaCon
               INamed.getNameIfApplicable(clone).trim() + " [" + i + "]");
           return clone;
         });
+    if (container instanceof ArmaContainer) {
+      ((ArmaContainer) container).getNestedContainers().forEach(c -> c.setContext(container));
+    }
+    return container;
   }
 
   public List<T> getContainers() {

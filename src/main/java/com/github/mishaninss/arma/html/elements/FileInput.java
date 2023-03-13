@@ -63,7 +63,7 @@ public class FileInput extends ArmaElement implements IEditable, IReadable, Init
         if (!file.exists()) {
             throw new IllegalArgumentException(String.format("Файл [%s] не существует", file.getAbsolutePath()));
         }
-        arma.element().sendKeysToElement(this, file.getAbsolutePath());
+        arma.element().setInputFile(this, file.getAbsolutePath());
     }
 
     @FiresEvent(ElementEvent.READ_VALUE)

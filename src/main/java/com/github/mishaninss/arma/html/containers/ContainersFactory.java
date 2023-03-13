@@ -267,7 +267,7 @@ public class ContainersFactory implements InitializingBean, DisposableBean {
 
   private void setContainerName(@NonNull IElementsContainer instance) {
     Class<? extends IElementsContainer> clazz = instance.getClass();
-    if (instance instanceof INamed) {
+    if (instance instanceof INamed && ((INamed) instance).getName() == null) {
       String name = getContainerName(clazz);
       ((INamed) instance).setName(StringUtils.normalizeSpace(name));
     }

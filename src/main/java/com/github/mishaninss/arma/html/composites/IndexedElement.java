@@ -127,6 +127,24 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
     return indexes;
   }
 
+  public List<Integer> findIndexes(String expected) {
+    return findIndexes(v -> StringUtils.equals(v, expected));
+  }
+
+  public int findIndex(Predicate<String> predicate) {
+    int count = count();
+    for (int i = 1; i <= count; i++) {
+      if (predicate.test(index(i).readValue())) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  public int findIndex(String expected) {
+    return findIndex(v -> StringUtils.equals(v, expected));
+  }
+
   public List<Integer> findIndexesOfAllValues(Collection<String> values) {
     int count = count();
     List<Integer> indexes = new ArrayList<>();
@@ -135,12 +153,13 @@ public class IndexedElement<T extends IInteractiveElement> implements IInteracti
       if (newValues.remove(index(i).readValue())) {
         indexes.add(i);
       }
-      if (newValues.isEmpty()){
+      if (newValues.isEmpty()) {
         break;
       }
     }
-    if (!newValues.isEmpty()){
-      throw new RuntimeException("List of " + this.getLoggableName() + " elements doesn't contain values: " + newValues);
+    if (!newValues.isEmpty()) {
+      throw new RuntimeException(
+          "List of " + this.getLoggableName() + " elements doesn't contain values: " + newValues);
     }
     return indexes;
   }

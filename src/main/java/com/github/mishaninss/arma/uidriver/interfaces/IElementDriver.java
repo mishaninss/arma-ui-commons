@@ -159,4 +159,8 @@ public interface IElementDriver {
   void scrollIntoViewIfNeeded(@NonNull ILocatable element, boolean allignToTop);
 
   Dimension getSize(ILocatable element);
+
+  void setInputFile(@NonNull ILocatable element, String path);
+
+  void clickOutsideOfElement(ILocatable locatable);
 }

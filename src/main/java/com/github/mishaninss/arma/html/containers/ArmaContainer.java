@@ -561,9 +561,11 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl,
    * @param elementIds - required Element IDs
    */
   private Map<String, IInteractiveElement> getReadableElements(Collection<String> elementIds) {
+    List<String> ids = elementIds.stream().map(DataObject::sanitizeElementId)
+        .collect(Collectors.toList());
     return elements.entrySet().stream().
         filter(
-            entry -> elementIds.contains(entry.getKey()) && entry.getValue() instanceof IReadable).
+            entry -> ids.contains(entry.getKey()) && entry.getValue() instanceof IReadable).
         collect(LinkedHashMap::new,
             (map, entry) -> map.put(entry.getKey(), entry.getValue()),
             HashMap::putAll);
@@ -608,7 +610,7 @@ public class ArmaContainer implements IBatchElementsContainer, INamed, IHaveUrl,
     return applicationContext.getBean(IndexedElementBuilder.class).withContext(this);
   }
 
-  private List<ArmaContainer> getNestedContainers() {
+  protected List<ArmaContainer> getNestedContainers() {
     List<Field> nestedContainerFields = FieldUtils
         .getFieldsListWithAnnotation(this.getClass(), Nested.class);
     return nestedContainerFields.stream()

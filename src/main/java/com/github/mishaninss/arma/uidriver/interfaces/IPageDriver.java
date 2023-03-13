@@ -2,6 +2,7 @@ package com.github.mishaninss.arma.uidriver.interfaces;
 
 import com.github.mishaninss.arma.uidriver.Arma;
 
+import com.github.mishaninss.arma.utils.Dimension;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -52,4 +53,6 @@ public interface IPageDriver {
     boolean scrollToBottom();
 
     IPageDriver scrollToTop();
+
+    Dimension getViewportSize();
 }
