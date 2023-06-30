@@ -19,7 +19,9 @@ package com.github.mishaninss.arma.uidriver.interfaces;
 import java.time.temporal.TemporalUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -60,9 +62,16 @@ public interface IWaitingDriver extends InitializingBean, DisposableBean {
 
   void waitForElementIsNotVisible(ILocatable element);
 
+  void waitForElementIsNotVisible(ILocatable element, String message);
+
+  void waitForElementIsNotVisible(ILocatable element, long timeoutInSeconds, String message);
+
   void waitForElementIsNotVisible(ILocatable element, long timeoutInSeconds);
 
   void waitForElementIsNotVisible(ILocatable element, long timeout, TemporalUnit unit);
+
+  void waitForElementIsNotVisible(ILocatable element, long timeout, TemporalUnit unit,
+      String message);
 
   void waitForElementIsClickable(ILocatable element);
 

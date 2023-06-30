@@ -1,68 +1,76 @@
 package com.github.mishaninss.arma.uidriver.interfaces;
 
 import com.github.mishaninss.arma.html.interfaces.IInteractiveElement;
-
 import java.time.temporal.TemporalUnit;
 import java.util.function.Function;
 
 public interface IElementWaitingDriver {
-    IElementQuietWaitingDriver quietly();
 
-    void exists();
+  IElementQuietWaitingDriver quietly();
 
-    void exists(long timeoutInSeconds);
+  void exists();
 
-    void exists(long timeout, TemporalUnit unit);
+  void exists(long timeoutInSeconds);
 
-    void isVisible();
+  void exists(long timeout, TemporalUnit unit);
 
-    void isVisible(long timeoutInSeconds);
+  void isVisible();
 
-    void isVisible(long timeout, TemporalUnit unit);
+  void isVisible(long timeoutInSeconds);
 
-    void isNotVisible();
+  void isVisible(long timeout, TemporalUnit unit);
 
-    void isNotVisible(long timeoutInSeconds);
+  void isNotVisible();
 
-    void isNotVisible(long timeout, TemporalUnit unit);
+  void isNotVisible(String message);
 
-    void isClickable();
+  void isNotVisible(long timeoutInSeconds);
 
-    void isClickable(long timeoutInSeconds);
+  void isNotVisible(long timeoutInSeconds, String message);
 
-    void isClickable(long timeout, TemporalUnit unit);
+  void isNotVisible(long timeout, TemporalUnit unit);
 
-    void attributeToBeNotEmpty(String attribute);
+  void isNotVisible(long timeout, TemporalUnit unit, String message);
 
-    void attributeToBeNotEmpty(String attribute, long timeoutInSeconds);
+  void isClickable();
 
-    void attributeToBeNotEmpty(String attribute, long timeout, TemporalUnit unit);
+  void isClickable(long timeoutInSeconds);
 
-    void attributeToBe(String attribute, String value);
+  void isClickable(long timeout, TemporalUnit unit);
 
-    void attributeToBe(String attribute, String value, long timeoutInSeconds);
+  void attributeToBeNotEmpty(String attribute);
 
-    void attributeToBe(String attribute, String value, long timeout, TemporalUnit unit);
+  void attributeToBeNotEmpty(String attribute, long timeoutInSeconds);
 
-    void attributeContains(String attribute, String value);
+  void attributeToBeNotEmpty(String attribute, long timeout, TemporalUnit unit);
 
-    void attributeContains(String attribute, String value, long timeoutInSeconds);
+  void attributeToBe(String attribute, String value);
 
-    void attributeContains(String attribute, String value, long timeout, TemporalUnit unit);
+  void attributeToBe(String attribute, String value, long timeoutInSeconds);
 
-    void valueToBe(String value);
+  void attributeToBe(String attribute, String value, long timeout, TemporalUnit unit);
 
-    void valueNotToBe(String value);
+  void attributeContains(String attribute, String value);
 
-    <T> T condition(Function<IInteractiveElement, T> condition);
+  void attributeContains(String attribute, String value, long timeoutInSeconds);
 
-    <T> T condition(Function<IInteractiveElement, T> condition, String message);
+  void attributeContains(String attribute, String value, long timeout, TemporalUnit unit);
 
-    <T> T condition(Function<IInteractiveElement, T> condition, long timeoutInSeconds);
+  void valueToBe(String value);
 
-    <T> T condition(Function<IInteractiveElement, T> condition, long timeoutInSeconds, String message);
+  void valueNotToBe(String value);
 
-    <T> T condition(Function<IInteractiveElement, T> condition, long timeout, TemporalUnit unit);
+  <T> T condition(Function<IInteractiveElement, T> condition);
 
-    <T> T condition(Function<IInteractiveElement, T> condition, long timeout, TemporalUnit unit, String message);
+  <T> T condition(Function<IInteractiveElement, T> condition, String message);
+
+  <T> T condition(Function<IInteractiveElement, T> condition, long timeoutInSeconds);
+
+  <T> T condition(Function<IInteractiveElement, T> condition, long timeoutInSeconds,
+      String message);
+
+  <T> T condition(Function<IInteractiveElement, T> condition, long timeout, TemporalUnit unit);
+
+  <T> T condition(Function<IInteractiveElement, T> condition, long timeout, TemporalUnit unit,
+      String message);
 }

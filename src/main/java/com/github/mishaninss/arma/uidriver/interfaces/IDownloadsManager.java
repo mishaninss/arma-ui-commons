@@ -23,6 +23,7 @@ import java.util.List;
 public interface IDownloadsManager {
 
     File getDownloadedFile(String fileName) throws IOException;
+    File getDownloadedFile(String fileName, int timeout) throws IOException;
 
     List<String> getDownloadedFileNames();
 

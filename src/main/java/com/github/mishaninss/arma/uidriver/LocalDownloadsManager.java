@@ -75,6 +75,10 @@ public class LocalDownloadsManager implements IDownloadsManager, InitializingBea
     return Paths.get(getDownloadsDir(), fileName).toFile();
   }
 
+  public File getDownloadedFile(String fileName, int timeout) {
+    return Paths.get(getDownloadsDir(), fileName).toFile();
+  }
+
   @Override
   public List<String> getDownloadedFileNames() {
     Path dir = Paths.get(getDownloadsDir());
